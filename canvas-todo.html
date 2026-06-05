@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Canvas Planner · BCC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --pink:   #FAC0D1;
+      --green:  #2D5A3D;
+      --sage:   #7A9E87;
+      --cream:  #FDF8F5;
+      --white:  #FFFFFF;
+      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --r-card:   14px;
+      --r-input:   8px;
+      --r-assign: 10px;
+      --r-pill:   20px;
+
+      --sci112: #4A90D9;
+      --hst111: #9B59B6;
+      --hst112: #C9975A;
+
+      --overdue: #C0392B;
+      --soon:    #D68910;
+      --upcoming:#2D5A3D;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      background: var(--cream);
+      color: #2A2A2A;
+      min-height: 100vh;
+    }
+
+    /* ── Header ──────────────────────────────────────────────────────────── */
+    header {
+      background: var(--green);
+      padding: 24px 32px 22px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 2rem;
+      color: var(--white);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    .header-sub {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: var(--pink);
+      margin-top: 5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .header-right { text-align: right; }
+
+    .week-label {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .week-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      color: var(--white);
+    }
+
+    /* ── Layout ──────────────────────────────────────────────────────────── */
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 28px 16px 56px;
+    }
+
+    /* ── Token card ──────────────────────────────────────────────────────── */
+    .token-card {
+      background: var(--white);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow);
+      padding: 22px 24px;
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--sage);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .token-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="password"] {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1.5px solid #E4DDD7;
+      border-radius: var(--r-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      background: var(--cream);
+      color: #2A2A2A;
+      outline: none;
+      transition: border-color 0.18s;
+    }
+
+    input[type="password"]:focus { border-color: var(--sage); }
+    input[type="password"]::placeholder { color: #C0B8B2; }
+
+    .btn-primary {
+      background: var(--green);
+      color: var(--white);
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--r-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.18s, opacity 0.18s;
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: #3a7351; }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .token-hint {
+      margin-top: 9px;
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: #B8B0AA;
+      line-height: 1.5;
+    }
+
+    /* ── Setup notice (shown when PROXY_URL not configured) ─────────────── */
+    .setup-notice {
+      background: #FFF8EC;
+      border: 1.5px solid #F5DFA0;
+      border-radius: var(--r-input);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      font-size: 0.82rem;
+      color: #7A5C10;
+      line-height: 1.6;
+    }
+
+    .setup-notice strong { font-weight: 500; }
+
+    /* ── Error banner ────────────────────────────────────────────────────── */
+    .error-banner {
+      background: #FDEAEA;
+      border: 1.5px solid #F1BEBE;
+      border-radius: var(--r-input);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      font-size: 0.82rem;
+      color: #922B21;
+      line-height: 1.5;
+      display: none;
+    }
+
+    /* ── Results section ─────────────────────────────────────────────────── */
+    .results-section { display: none; }
+
+    .results-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .results-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--green);
+      line-height: 1;
+    }
+
+    .accent-bar {
+      height: 2px;
+      width: 36px;
+      background: linear-gradient(to right, var(--pink), transparent);
+      border-radius: 2px;
+      margin-top: 5px;
+    }
+
+    .btn-refresh {
+      background: none;
+      border: 1.5px solid var(--sage);
+      color: var(--sage);
+      padding: 7px 16px;
+      border-radius: var(--r-input);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-refresh:hover:not(:disabled) { background: var(--sage); color: var(--white); }
+    .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Summary pills ───────────────────────────────────────────────────── */
+    .summary-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 13px;
+      border-radius: var(--r-pill);
+      font-size: 0.76rem;
+      font-weight: 500;
+    }
+
+    .pill-total   { background: var(--green); color: var(--white); }
+    .pill-overdue { background: #FDEAEA;      color: var(--overdue); }
+    .pill-soon    { background: #FEF5E3;      color: var(--soon); }
+
+    .pill-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ── Filter row ──────────────────────────────────────────────────────── */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid #E4DDD7;
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      color: #6B6560;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .filter-btn:hover { border-color: var(--sage); color: var(--green); }
+
+    .filter-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--white);
+    }
+
+    .filter-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Course section ──────────────────────────────────────────────────── */
+    .course-section { margin-bottom: 30px; }
+
+    .course-header {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 11px;
+    }
+
+    .course-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .course-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--green);
+    }
+
+    .course-remaining {
+      font-size: 0.73rem;
+      color: var(--sage);
+      font-weight: 300;
+      margin-left: 2px;
+    }
+
+    /* ── Assignment card ─────────────────────────────────────────────────── */
+    .a-card {
+      background: var(--white);
+      border-radius: var(--r-assign);
+      box-shadow: var(--shadow);
+      padding: 13px 16px;
+      margin-bottom: 9px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border-left: 3px solid transparent;
+      transition: opacity 0.2s;
+    }
+
+    .a-card.s-overdue  { border-left-color: #E74C3C; }
+    .a-card.s-soon     { border-left-color: #F39C12; }
+    .a-card.s-upcoming { border-left-color: var(--sage); }
+
+    .a-card.is-checked { opacity: 0.42; }
+    .a-card.is-checked .a-title { text-decoration: line-through; color: #AAA; }
+
+    .cb-wrap {
+      padding-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .cb-wrap input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border: 2px solid #CEC6C0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      position: relative;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .cb-wrap input[type="checkbox"]:checked {
+      background: var(--sage);
+      border-color: var(--sage);
+    }
+
+    .cb-wrap input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: 2px solid var(--white);
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .a-body { flex: 1; min-width: 0; }
+
+    .a-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #2A2A2A;
+      line-height: 1.4;
+      margin-bottom: 5px;
+      word-break: break-word;
+    }
+
+    .a-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .a-date {
+      font-size: 0.74rem;
+      font-weight: 300;
+      color: #9A9289;
+    }
+
+    .status-tag {
+      font-size: 0.67rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tag-overdue  { background: #FDEAEA; color: var(--overdue); }
+    .tag-soon     { background: #FEF5E3; color: var(--soon); }
+    .tag-upcoming { background: #EBF4EF; color: var(--upcoming); }
+
+    .a-pts {
+      font-size: 0.72rem;
+      font-weight: 300;
+      color: #B8B0AA;
+    }
+
+    /* ── Empty / loading states ──────────────────────────────────────────── */
+    .state-card {
+      background: var(--white);
+      border-radius: var(--r-card);
+      box-shadow: var(--shadow);
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .state-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .state-body {
+      font-size: 0.82rem;
+      font-weight: 300;
+      color: #B0A8A2;
+      line-height: 1.5;
+    }
+
+    .no-assignments {
+      font-size: 0.78rem;
+      font-weight: 300;
+      color: #C0B8B2;
+      font-style: italic;
+      padding: 4px 0 4px 4px;
+    }
+
+    /* ── Spinner ─────────────────────────────────────────────────────────── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 560px) {
+      header { padding: 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
+      .header-right { text-align: left; }
+      .container { padding: 18px 12px 48px; }
+      .token-row { flex-direction: column; }
+      .btn-primary { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Canvas Planner</h1>
+    <div class="header-sub">BCC · Summer 2026</div>
+  </div>
+  <div class="header-right">
+    <div class="week-label">Week of</div>
+    <div class="week-value" id="weekValue"></div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Setup notice — hidden once PROXY_URL is configured -->
+  <div class="setup-notice" id="setupNotice" style="display:none">
+    <strong>Setup needed:</strong> Open this file, find <code>PROXY_URL</code> near the top of the
+    &lt;script&gt;, and replace <code>'YOUR_CLOUDFLARE_WORKER_URL'</code> with your deployed worker
+    URL. See <code>cloudflare-worker.js</code> for deploy instructions.
+  </div>
+
+  <!-- Token input -->
+  <div class="token-card">
+    <label class="field-label" for="tokenInput">Canvas Access Token</label>
+    <div class="token-row">
+      <input type="password" id="tokenInput"
+             placeholder="Paste your Canvas access token here…"
+             autocomplete="off" spellcheck="false" />
+      <button class="btn-primary" id="loadBtn" onclick="loadAssignments()">Load</button>
+    </div>
+    <div class="token-hint">
+      Token is used only for this session — never written to storage.
+      Generate one in Canvas → Account → Settings → New Access Token.
+    </div>
+  </div>
+
+  <!-- Error banner -->
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- Results -->
+  <div class="results-section" id="resultsSection">
+    <div class="results-top">
+      <div>
+        <div class="results-title">Your Week</div>
+        <div class="accent-bar"></div>
+      </div>
+      <button class="btn-refresh" id="refreshBtn" onclick="doRefresh()">↻ Refresh</button>
+    </div>
+
+    <div class="summary-row" id="summaryRow"></div>
+    <div class="filter-row" id="filterRow"></div>
+    <div id="assignmentList"></div>
+  </div>
+
+  <!-- All-clear empty state -->
+  <div class="state-card" id="allClearState" style="display:none">
+    <div class="state-heading">All clear</div>
+    <div class="state-body">No assignments due in the next 14 days.</div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ────────────────────────────────────────────────────────────────────
+// After deploying cloudflare-worker.js, replace the string below with your worker URL.
+// Example: 'https://canvas-proxy.yourname.workers.dev'
+const PROXY_URL = 'YOUR_CLOUDFLARE_WORKER_URL';
+
+const COURSE_STYLES = {
+  'SCI-112': { label: 'SCI-112 · Ecology',         color: '#4A90D9', key: 'sci112' },
+  'HST-111': { label: 'HST-111 · The West & World I',  color: '#9B59B6', key: 'hst111' },
+  'HST-112': { label: 'HST-112 · The West & World II', color: '#C9975A', key: 'hst112' },
+};
+
+const FILTERS = [
+  { key: 'all',    label: 'All',     color: null },
+  { key: 'sci112', label: 'SCI-112', color: '#4A90D9' },
+  { key: 'hst111', label: 'HST-111', color: '#9B59B6' },
+  { key: 'hst112', label: 'HST-112', color: '#C9975A' },
+];
+
+const CHECKS_KEY = 'canvas_checked_v1';
+
+// ─── STATE ─────────────────────────────────────────────────────────────────────
+let allAssignments = [];
+let checkedIds     = new Set(JSON.parse(localStorage.getItem(CHECKS_KEY) || '[]'));
+let activeFilter   = 'all';
+
+// ─── BOOT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setWeekLabel();
+
+  if (PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL') {
+    document.getElementById('setupNotice').style.display = 'block';
+  }
+
+  document.getElementById('tokenInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loadAssignments();
+  });
+});
+
+function setWeekLabel() {
+  const now  = new Date();
+  const end  = new Date(now);
+  end.setDate(end.getDate() + 6);
+  const fmt  = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  document.getElementById('weekValue').textContent = `${fmt(now)} – ${fmt(end)}`;
+}
+
+// ─── LOAD ──────────────────────────────────────────────────────────────────────
+async function loadAssignments() {
+  const token = document.getElementById('tokenInput').value.trim();
+  if (!token) { showError('Paste your Canvas access token above, then click Load.'); return; }
+
+  if (PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL') {
+    showError(
+      'PROXY_URL is not configured. Open this file, find the PROXY_URL constant in the ' +
+      '<script> block, and replace it with your Cloudflare Worker URL. ' +
+      'See cloudflare-worker.js for setup instructions.'
+    );
+    return;
+  }
+
+  setLoading(true);
+  clearError();
+
+  try {
+    // Fetch active enrolled courses
+    const courses = await fetchAllPages('/api/v1/courses?enrollment_state=active&per_page=50', token);
+
+    // Build a lookup: canvas course id → { id, code }
+    const courseById = {};
+    for (const c of courses) {
+      if (!c.id) continue;
+      courseById[c.id] = { id: c.id, code: normalizeCode(c.course_code || c.name || '') };
+    }
+
+    // Define time window
+    const now      = new Date();
+    const pastEdge = new Date(now); pastEdge.setDate(pastEdge.getDate() - 7);
+    const futureEdge = new Date(now); futureEdge.setDate(futureEdge.getDate() + 14);
+
+    // Fetch all assignments concurrently
+    const promises = Object.values(courseById).map(async course => {
+      try {
+        const params = `?per_page=50&order_by=due_at&include[]=submission`;
+        const assigns = await fetchAllPages(`/api/v1/courses/${course.id}/assignments${params}`, token);
+        return assigns
+          .filter(a => {
+            if (!a.due_at) return false;
+            const due = new Date(a.due_at);
+            return due >= pastEdge && due <= futureEdge;
+          })
+          .map(a => ({
+            id:         String(a.id),
+            title:      a.name || 'Untitled',
+            dueAt:      new Date(a.due_at),
+            courseId:   course.id,
+            courseCode: course.code,
+            points:     a.points_possible,
+            submitted:  !!(a.submission && a.submission.submitted_at),
+          }));
+      } catch (_) {
+        return [];
+      }
+    });
+
+    const nested = await Promise.all(promises);
+    allAssignments = nested.flat().sort((a, b) => a.dueAt - b.dueAt);
+
+    render();
+    setLoading(false);
+    document.getElementById('resultsSection').style.display = 'block';
+
+  } catch (err) {
+    setLoading(false);
+    showError(friendlyError(err));
+  }
+}
+
+// ─── API HELPERS ───────────────────────────────────────────────────────────────
+async function fetchAllPages(endpoint, token) {
+  const results = [];
+  let url = proxyBase() + endpoint;
+
+  while (url) {
+    const res = await fetch(url, { headers: { 'X-Canvas-Token': token } });
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      throw new Error(`Canvas API ${res.status}: ${body.slice(0, 120)}`);
+    }
+    const data = await res.json();
+    results.push(...(Array.isArray(data) ? data : [data]));
+
+    // Worker rewrites pagination URLs to point through itself — follow directly
+    const link  = res.headers.get('Link') || '';
+    const match = link.match(/<([^>]+)>;\s*rel="next"/);
+    url = match ? match[1] : null;
+  }
+
+  return results;
+}
+
+function proxyBase() {
+  return PROXY_URL.replace(/\/$/, '');
+}
+
+// ─── NORMALIZATION ─────────────────────────────────────────────────────────────
+function normalizeCode(raw) {
+  // Canvas course_code can be "SCI-112-01", "SCI112", "SCI-112 Ecology", etc.
+  const m = raw.replace(/\s.*/, '').match(/^([A-Z]+)-?(\d{3})/i);
+  return m ? `${m[1].toUpperCase()}-${m[2]}` : raw.toUpperCase().slice(0, 10);
+}
+
+function courseStyle(code) {
+  if (COURSE_STYLES[code]) return COURSE_STYLES[code];
+  // Partial match — in case normalisation yields slight variants
+  for (const [key, val] of Object.entries(COURSE_STYLES)) {
+    if (code && code.startsWith(key.slice(0, 6))) return val;
+  }
+  return { label: code || 'Other', color: '#999999', key: 'other' };
+}
+
+function assignmentStatus(a) {
+  const diffMs   = a.dueAt - new Date();
+  const diffDays = diffMs / 86400000;
+  if (diffMs < 0)     return 'overdue';
+  if (diffDays <= 2)  return 'soon';
+  return 'upcoming';
+}
+
+// ─── RENDER ────────────────────────────────────────────────────────────────────
+function render() {
+  const visible = activeFilter === 'all'
+    ? allAssignments
+    : allAssignments.filter(a => courseStyle(a.courseCode).key === activeFilter);
+
+  renderSummary(visible);
+  renderFilters();
+  renderList(visible);
+
+  const isEmpty = allAssignments.length === 0;
+  document.getElementById('allClearState').style.display  = isEmpty ? 'block' : 'none';
+  document.getElementById('resultsSection').style.display = isEmpty ? 'none'  : 'block';
+}
+
+function renderSummary(visible) {
+  const pending = visible.filter(a => !checkedIds.has(a.id));
+  const overdue = pending.filter(a => assignmentStatus(a) === 'overdue').length;
+  const soon    = pending.filter(a => assignmentStatus(a) === 'soon').length;
+
+  document.getElementById('summaryRow').innerHTML = [
+    `<span class="pill pill-total">${pending.length} pending</span>`,
+    overdue > 0 ? `<span class="pill pill-overdue"><span class="pill-dot"></span>${overdue} overdue</span>` : '',
+    soon    > 0 ? `<span class="pill pill-soon"><span class="pill-dot"></span>${soon} due soon</span>` : '',
+  ].join('');
+}
+
+function renderFilters() {
+  document.getElementById('filterRow').innerHTML = FILTERS.map(f => `
+    <button class="filter-btn ${activeFilter === f.key ? 'active' : ''}"
+            onclick="setFilter('${f.key}')">
+      ${f.color ? `<span class="filter-dot" style="background:${f.color}"></span>` : ''}
+      ${esc(f.label)}
+    </button>
+  `).join('');
+}
+
+function renderList(visible) {
+  const el = document.getElementById('assignmentList');
+
+  // Group by course code
+  const groups = {};
+  for (const a of visible) {
+    const code = a.courseCode || 'Other';
+    (groups[code] = groups[code] || []).push(a);
+  }
+
+  if (!Object.keys(groups).length) {
+    el.innerHTML = `<div class="state-card"><div class="state-body">No assignments match this filter.</div></div>`;
+    return;
+  }
+
+  const courseOrder = Object.keys(COURSE_STYLES);
+  const sorted = Object.keys(groups).sort((a, b) => {
+    const ai = courseOrder.indexOf(a);
+    const bi = courseOrder.indexOf(b);
+    if (ai < 0 && bi < 0) return a.localeCompare(b);
+    if (ai < 0) return  1;
+    if (bi < 0) return -1;
+    return ai - bi;
+  });
+
+  el.innerHTML = sorted.map(code => {
+    const style    = courseStyle(code);
+    const items    = groups[code];
+    const pending  = items.filter(a => !checkedIds.has(a.id)).length;
+    const cards    = items.map(a => cardHTML(a)).join('');
+
+    return `
+      <div class="course-section">
+        <div class="course-header">
+          <span class="course-dot" style="background:${style.color}"></span>
+          <span class="course-name">${esc(style.label)}</span>
+          <span class="course-remaining">${pending} remaining</span>
+        </div>
+        ${items.length ? cards : '<div class="no-assignments">Nothing due this window.</div>'}
+      </div>
+    `;
+  }).join('');
+}
+
+function cardHTML(a) {
+  const status  = assignmentStatus(a);
+  const checked = checkedIds.has(a.id);
+
+  const tagClass   = { overdue: 'tag-overdue', soon: 'tag-soon', upcoming: 'tag-upcoming' }[status];
+  const tagLabel   = { overdue: 'Overdue',     soon: 'Due Soon', upcoming: 'Upcoming'     }[status];
+  const statusCls  = `s-${status}`;
+
+  const dateStr = a.dueAt.toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric',
+    hour: 'numeric', minute: '2-digit',
+  });
+
+  const ptsHTML = a.points != null ? `<span class="a-pts">${a.points} pts</span>` : '';
+
+  return `
+    <div class="a-card ${statusCls} ${checked ? 'is-checked' : ''}" id="card-${esc(a.id)}">
+      <div class="cb-wrap">
+        <input type="checkbox" ${checked ? 'checked' : ''}
+               onchange="toggleCheck('${esc(a.id)}')"
+               aria-label="${esc(a.title)}" />
+      </div>
+      <div class="a-body">
+        <div class="a-title">${esc(a.title)}</div>
+        <div class="a-meta">
+          <span class="a-date">${esc(dateStr)}</span>
+          <span class="status-tag ${tagClass}">${tagLabel}</span>
+          ${ptsHTML}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ACTIONS ───────────────────────────────────────────────────────────────────
+function setFilter(key) {
+  activeFilter = key;
+  render();
+}
+
+function toggleCheck(id) {
+  if (checkedIds.has(id)) {
+    checkedIds.delete(id);
+  } else {
+    checkedIds.add(id);
+  }
+  localStorage.setItem(CHECKS_KEY, JSON.stringify([...checkedIds]));
+
+  const card = document.getElementById(`card-${id}`);
+  if (card) card.classList.toggle('is-checked', checkedIds.has(id));
+
+  const visible = activeFilter === 'all'
+    ? allAssignments
+    : allAssignments.filter(a => courseStyle(a.courseCode).key === activeFilter);
+  renderSummary(visible);
+
+  // Update remaining count for this card's course
+  const courseCode = allAssignments.find(a => a.id === id)?.courseCode;
+  if (courseCode) {
+    document.querySelectorAll('.course-section').forEach(section => {
+      const dot = section.querySelector('.course-dot');
+      if (!dot) return;
+      const nameEl = section.querySelector('.course-name');
+      const style  = Object.values(COURSE_STYLES).find(s => nameEl?.textContent.includes(s.label.split('·')[0].trim()));
+      if (!style) return;
+      const sectionItems = allAssignments.filter(a => courseStyle(a.courseCode).key === style.key);
+      const rem = sectionItems.filter(a => !checkedIds.has(a.id)).length;
+      const remEl = section.querySelector('.course-remaining');
+      if (remEl) remEl.textContent = `${rem} remaining`;
+    });
+  }
+}
+
+async function doRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled  = true;
+  btn.textContent = '↻ Refreshing…';
+  await loadAssignments();
+  btn.disabled  = false;
+  btn.textContent = '↻ Refresh';
+}
+
+// ─── UI HELPERS ────────────────────────────────────────────────────────────────
+function setLoading(on) {
+  const btn = document.getElementById('loadBtn');
+  btn.disabled = on;
+  btn.innerHTML = on ? '<span class="spinner"></span>Loading…' : 'Load';
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBanner');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function clearError() {
+  const el = document.getElementById('errorBanner');
+  el.style.display = 'none';
+  el.textContent = '';
+}
+
+function friendlyError(err) {
+  const msg = String(err.message || err);
+  if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('TypeError')) {
+    return 'Could not reach the proxy. Verify your Cloudflare Worker is deployed and PROXY_URL is correct in this file.';
+  }
+  if (msg.includes('401') || msg.includes('403')) {
+    return 'Invalid or expired token. Generate a fresh one in Canvas → Account → Settings → New Access Token.';
+  }
+  if (msg.includes('404')) {
+    return 'Endpoint not found (404). Make sure your Cloudflare Worker is routing to bristolcc.instructure.com correctly.';
+  }
+  return msg;
+}
+
+function esc(str) {
+  return String(str)
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#39;');
+}
+</script>
+</body>
+</html>
