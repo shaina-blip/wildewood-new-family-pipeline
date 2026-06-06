@@ -791,7 +791,11 @@ function renderCard(task) {
   const remBtn = document.createElement('button');
   remBtn.className = 'remind-btn';
   remBtn.textContent = '+ Remind';
-  remBtn.addEventListener('click', () => shareTask(task));
+  remBtn.addEventListener('click', () => {
+    // Scroll card to top of viewport so the iOS share popover has room to expand
+    card.scrollIntoView({ behavior: 'instant', block: 'start' });
+    shareTask(task);
+  });
 
   meta.appendChild(remBtn);
 
