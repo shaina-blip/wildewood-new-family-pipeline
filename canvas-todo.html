@@ -444,7 +444,7 @@
       <h1>Study Planner</h1>
       <p id="headerSub">BCC Summer 2026</p>
     </div>
-    <button class="share-week-btn" id="shareWeekBtn">+ Remind this week</button>
+    <button class="share-week-btn" id="shareWeekBtn">Copy this week</button>
   </div>
 
   <div class="summary-pills" id="summaryPills"></div>
@@ -679,10 +679,10 @@ function showToast(msg) {
 
 /* ── Share / remind ─────────────────────────────────────────── */
 async function shareTask(task) {
-  const text = `${task.course}: ${task.title}\nDue: ${formatShortDate(task.dueDate)}`;
+  const text = `[${task.course}] ${task.title}\nDue: ${formatShortDate(task.dueDate)}`;
   if (navigator.share) {
     try {
-      await navigator.share({ title: task.course, text });
+      await navigator.share({ title: `[${task.course}] ${task.title}`, text });
       showToast('Sent to share sheet!');
     } catch (e) {
       if (e.name !== 'AbortError') fallbackCopy(text);
@@ -692,20 +692,13 @@ async function shareTask(task) {
   }
 }
 
-async function shareWeek(tasks) {
-  if (!tasks.length) { showToast('No tasks to share this week.'); return; }
-  const lines = tasks.map(t => `• ${t.course}: ${t.title} (due ${formatShortDate(t.dueDate)})`);
+function shareWeek(tasks) {
+  if (!tasks.length) { showToast('No tasks to copy this week.'); return; }
+  const lines = tasks.map(t => `• [${t.course}] ${t.title} — due ${formatShortDate(t.dueDate)}`);
   const text = `This week's tasks:\n${lines.join('\n')}`;
-  if (navigator.share) {
-    try {
-      await navigator.share({ title: "This week's tasks", text });
-      showToast('Sent to share sheet!');
-    } catch (e) {
-      if (e.name !== 'AbortError') fallbackCopy(text);
-    }
-  } else {
-    fallbackCopy(text);
-  }
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Week copied to clipboard!');
+  }).catch(() => showToast('Could not copy — try a per-task Remind button instead.'));
 }
 
 function fallbackCopy(text) {
