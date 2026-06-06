@@ -508,8 +508,9 @@
       <button class="btn-primary" id="loadBtn" onclick="loadAssignments()">Load</button>
     </div>
     <div class="token-hint">
-      Token is used only for this session — never written to storage.
+      Token is saved on this device for convenience.
       Generate one in Canvas → Account → Settings → New Access Token.
+      <a href="#" onclick="forgetToken(); return false;" style="color:var(--sage);margin-left:6px;">Forget token</a>
     </div>
   </div>
 
@@ -559,6 +560,7 @@ const FILTERS = [
 ];
 
 const CHECKS_KEY = 'canvas_checked_v1';
+const TOKEN_KEY  = 'canvas_token_v1';
 
 // ─── STATE ─────────────────────────────────────────────────────────────────────
 let allAssignments = [];
@@ -571,6 +573,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL') {
     document.getElementById('setupNotice').style.display = 'block';
+  }
+
+  const saved = localStorage.getItem(TOKEN_KEY);
+  if (saved) {
+    document.getElementById('tokenInput').value = saved;
+    loadAssignments();
   }
 
   document.getElementById('tokenInput').addEventListener('keydown', e => {
@@ -605,7 +613,7 @@ async function loadAssignments() {
 
   try {
     // Fetch active enrolled courses
-    const courses = await fetchAllPages('/api/v1/courses?enrollment_state=active&per_page=50', token);
+    const courses = await fetchAllPages('/api/v1/courses?enrollment_type[]=student&per_page=50', token);
 
     // Build a lookup: canvas course id → { id, code }
     const courseById = {};
@@ -647,6 +655,7 @@ async function loadAssignments() {
     const nested = await Promise.all(promises);
     allAssignments = nested.flat().sort((a, b) => a.dueAt - b.dueAt);
 
+    localStorage.setItem(TOKEN_KEY, token);
     render();
     setLoading(false);
     document.getElementById('resultsSection').style.display = 'block';
@@ -888,6 +897,14 @@ function clearError() {
   const el = document.getElementById('errorBanner');
   el.style.display = 'none';
   el.textContent = '';
+}
+
+function forgetToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('tokenInput').value = '';
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('allClearState').style.display = 'none';
+  clearError();
 }
 
 function friendlyError(err) {
