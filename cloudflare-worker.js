@@ -1,21 +1,17 @@
 /**
- * Canvas CORS Proxy — Cloudflare Worker
+ * Canvas + Calendar CORS Proxy — Cloudflare Worker
  *
- * Deploy steps:
- *  1. Sign up free at cloudflare.com
- *  2. Go to Workers & Pages → Create Application → Create Worker
- *  3. Paste this file and click Deploy
- *  4. Copy the worker URL shown (e.g. https://canvas-proxy.yourname.workers.dev)
- *  5. Paste that URL into the PROXY_URL constant at the top of canvas-todo.html
- *
- * How it works:
- *  - Browser sends GET requests to the worker with header X-Canvas-Token: <token>
- *  - Worker rewrites the request to bristolcc.instructure.com with a proper
- *    Authorization: Bearer header and returns the response with CORS headers
- *  - The token is never stored anywhere — one request in, one request out
+ * Endpoints:
+ *  GET /* with X-Canvas-Token header   → proxies to bristolcc.instructure.com (Canvas API)
+ *  GET /calendar with X-Calendar-URL  → proxies .ics feeds from whitelisted calendar hosts
  */
 
 const CANVAS_BASE = 'https://bristolcc.instructure.com';
+
+const CALENDAR_ALLOWED_HOSTS = [
+  'calendar.google.com',
+  'wildewoodeducation.teachworks.com',
+];
 
 export default {
   async fetch(request) {
@@ -30,6 +26,45 @@ export default {
       });
     }
 
+    const incoming = new URL(request.url);
+
+    // ── Calendar proxy ──────────────────────────────────────────
+    if (incoming.pathname === '/calendar') {
+      const calUrl = request.headers.get('X-Calendar-URL');
+      if (!calUrl) {
+        return new Response(JSON.stringify({ error: 'Missing X-Calendar-URL header' }), {
+          status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
+        });
+      }
+
+      let parsed;
+      try { parsed = new URL(calUrl); } catch {
+        return new Response(JSON.stringify({ error: 'Invalid calendar URL' }), {
+          status: 400, headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (!CALENDAR_ALLOWED_HOSTS.includes(parsed.hostname)) {
+        return new Response(JSON.stringify({ error: 'Calendar host not allowed: ' + parsed.hostname }), {
+          status: 403, headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
+        });
+      }
+
+      try {
+        const calRes = await fetch(calUrl, { headers: { 'Accept': 'text/calendar, */*' } });
+        const body = await calRes.text();
+        return new Response(body, {
+          status: calRes.status,
+          headers: { ...corsHeaders(), 'Content-Type': 'text/calendar; charset=utf-8' },
+        });
+      } catch (err) {
+        return new Response(JSON.stringify({ error: 'Failed to fetch calendar: ' + err.message }), {
+          status: 502, headers: { ...corsHeaders(), 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // ── Canvas proxy ────────────────────────────────────────────
     const token = request.headers.get('X-Canvas-Token');
     if (!token) {
       return new Response(JSON.stringify({ error: 'Missing X-Canvas-Token header' }), {
@@ -38,17 +73,13 @@ export default {
       });
     }
 
-    const incoming = new URL(request.url);
     const canvasUrl = CANVAS_BASE + incoming.pathname + incoming.search;
 
     let canvasRes;
     try {
       canvasRes = await fetch(canvasUrl, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-        },
+        headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
       });
     } catch (err) {
       return new Response(JSON.stringify({ error: 'Failed to reach Canvas: ' + err.message }), {
@@ -58,14 +89,11 @@ export default {
     }
 
     const responseHeaders = new Headers(corsHeaders());
-    const contentType = canvasRes.headers.get('Content-Type') || 'application/json';
-    responseHeaders.set('Content-Type', contentType);
+    responseHeaders.set('Content-Type', canvasRes.headers.get('Content-Type') || 'application/json');
 
-    // Rewrite Link header pagination URLs so the browser can follow them through the proxy
     const linkHeader = canvasRes.headers.get('Link');
     if (linkHeader) {
-      const workerOrigin = incoming.origin;
-      const rewritten = linkHeader.replace(/https:\/\/bristolcc\.instructure\.com/g, workerOrigin);
+      const rewritten = linkHeader.replace(/https:\/\/bristolcc\.instructure\.com/g, incoming.origin);
       responseHeaders.set('Link', rewritten);
     }
 
@@ -78,7 +106,7 @@ function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'X-Canvas-Token, Content-Type',
+    'Access-Control-Allow-Headers': 'X-Canvas-Token, X-Calendar-URL, Content-Type',
     'Access-Control-Expose-Headers': 'Link',
   };
 }

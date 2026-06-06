@@ -18,11 +18,9 @@
       --r-card:   14px;
       --r-assign: 10px;
       --r-pill:   20px;
-
       --sci112: #4A90D9;
       --hst111: #9B59B6;
       --hst112: #C9975A;
-
       --overdue: #C0392B;
       --soon:    #D68910;
       --ok:      #2D5A3D;
@@ -38,406 +36,164 @@
     }
 
     /* ── Header ─────────────────────────────────────────── */
-    header {
-      background: var(--green);
-      padding: 22px 24px 18px;
-    }
-    .header-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .header-title h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.75rem;
-      font-weight: 500;
-      color: var(--white);
-      line-height: 1;
-    }
-    .header-title p {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.65);
-      margin-top: 4px;
-    }
-    .share-week-btn {
-      background: var(--pink);
-      color: var(--green);
-      border: none;
-      border-radius: var(--r-pill);
-      padding: 8px 16px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-    }
+    header { background: var(--green); padding: 22px 24px 18px; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .header-title h1 { font-family: 'Cormorant Garamond', serif; font-size: 1.75rem; font-weight: 500; color: var(--white); line-height: 1; }
+    .header-title p { font-size: 0.75rem; color: rgba(255,255,255,0.65); margin-top: 4px; }
+    .share-week-btn { background: var(--pink); color: var(--green); border: none; border-radius: var(--r-pill); padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
     .share-week-btn:active { opacity: 0.8; }
 
-    /* Summary pills */
-    .summary-pills {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 12px;
-      border-radius: var(--r-pill);
-      font-size: 0.72rem;
-      font-weight: 500;
-      background: rgba(255,255,255,0.15);
-      color: var(--white);
-    }
+    .summary-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: var(--r-pill); font-size: 0.72rem; font-weight: 500; background: rgba(255,255,255,0.15); color: var(--white); }
     .pill.overdue { background: rgba(192,57,43,0.75); }
     .pill.soon    { background: rgba(214,137,16,0.75); }
     .pill.ok      { background: rgba(122,158,135,0.5); }
-    .pill-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-      opacity: 0.85;
-    }
+    .pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.85; }
 
-    /* View tabs */
-    .view-tabs {
-      display: flex;
-      gap: 4px;
-    }
-    .tab-btn {
-      flex: 1;
-      padding: 8px 6px;
-      background: rgba(255,255,255,0.12);
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.7);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .tab-btn.active {
-      background: var(--white);
-      color: var(--green);
-      font-weight: 500;
-    }
-    .tab-btn:active { opacity: 0.8; }
+    .view-tabs { display: flex; gap: 4px; }
+    .tab-btn { flex: 1; padding: 8px 6px; background: rgba(255,255,255,0.12); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.15s; }
+    .tab-btn.active { background: var(--white); color: var(--green); font-weight: 500; }
 
-    /* ── Main container ──────────────────────────────────── */
+    /* ── Main ────────────────────────────────────────────── */
     main { padding: 16px 16px 0; }
 
-    /* Course filter */
-    .course-filter {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-    .filter-btn {
-      padding: 5px 14px;
-      border-radius: var(--r-pill);
-      border: 1.5px solid #ddd;
-      background: var(--white);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      cursor: pointer;
-      color: #666;
-      transition: all 0.15s;
-    }
-    .filter-btn.active-all  { background: var(--green); color: var(--white); border-color: var(--green); }
+    .course-filter { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-btn { padding: 5px 14px; border-radius: var(--r-pill); border: 1.5px solid #ddd; background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 500; cursor: pointer; color: #666; transition: all 0.15s; }
+    .filter-btn.active-all  { background: var(--green);  color: var(--white); border-color: var(--green); }
     .filter-btn.active-sci  { background: var(--sci112); color: var(--white); border-color: var(--sci112); }
     .filter-btn.active-h1   { background: var(--hst111); color: var(--white); border-color: var(--hst111); }
     .filter-btn.active-h2   { background: var(--hst112); color: var(--white); border-color: var(--hst112); }
 
-    /* Week nav (This Week view) */
-    .week-nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-    .week-nav-label {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: var(--green);
-    }
+    .week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .week-nav-label { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 500; color: var(--green); }
     .week-nav-btns { display: flex; gap: 8px; align-items: center; }
-    .week-arrow-btn {
-      background: var(--white);
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      width: 32px; height: 32px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      font-size: 1rem;
-      color: var(--green);
-    }
-    .week-arrow-btn:active { background: #eee; }
-    .today-btn {
-      background: var(--green);
-      color: var(--white);
-      border: none;
-      border-radius: 8px;
-      padding: 0 12px;
-      height: 32px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .today-btn:active { opacity: 0.8; }
+    .week-arrow-btn { background: var(--white); border: 1.5px solid #ddd; border-radius: 8px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; color: var(--green); }
+    .today-btn { background: var(--green); color: var(--white); border: none; border-radius: 8px; padding: 0 12px; height: 32px; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 500; cursor: pointer; }
 
-    /* Day group */
     .day-group { margin-bottom: 20px; }
-    .day-heading {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .day-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--green);
-      white-space: nowrap;
-    }
+    .day-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .day-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 500; color: var(--green); white-space: nowrap; }
     .day-name.today-label { color: var(--overdue); font-weight: 600; }
-    .day-date {
-      font-size: 0.72rem;
-      color: #888;
-    }
-    .day-divider {
-      flex: 1;
-      height: 1px;
-      background: #e0dcd7;
-    }
+    .day-date { font-size: 0.72rem; color: #888; }
+    .day-divider { flex: 1; height: 1px; background: #e0dcd7; }
 
-    /* Due group (Upcoming view) */
     .due-group { margin-bottom: 24px; }
-    .due-heading {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--green);
-      margin-bottom: 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #e0dcd7;
-    }
+    .due-heading { font-family: 'Cormorant Garamond', serif; font-size: 0.95rem; font-weight: 500; color: var(--green); margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #e0dcd7; }
 
-    /* Empty state */
-    .empty-state {
-      text-align: center;
-      padding: 40px 20px;
-      color: #aaa;
-      font-size: 0.88rem;
-    }
+    .empty-state { text-align: center; padding: 40px 20px; color: #aaa; font-size: 0.88rem; }
     .empty-state .emoji { font-size: 2rem; display: block; margin-bottom: 10px; }
 
     /* ── Assignment card ─────────────────────────────────── */
-    .assign-card {
-      background: var(--white);
-      border-radius: var(--r-assign);
-      box-shadow: var(--shadow);
-      padding: 12px 14px;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      position: relative;
-      border-left: 4px solid transparent;
-    }
+    .assign-card { background: var(--white); border-radius: var(--r-assign); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; border-left: 4px solid transparent; }
     .assign-card.sci { border-left-color: var(--sci112); }
     .assign-card.h1  { border-left-color: var(--hst111); }
     .assign-card.h2  { border-left-color: var(--hst112); }
     .assign-card.done { opacity: 0.45; }
 
-    .assign-check {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 20px; height: 20px;
-      min-width: 20px;
-      border-radius: 50%;
-      border: 2px solid #ccc;
-      cursor: pointer;
-      margin-top: 1px;
-      position: relative;
-      transition: all 0.15s;
-    }
+    .assign-check { appearance: none; -webkit-appearance: none; width: 20px; height: 20px; min-width: 20px; border-radius: 50%; border: 2px solid #ccc; cursor: pointer; margin-top: 1px; position: relative; transition: all 0.15s; }
     .assign-card.sci .assign-check { border-color: var(--sci112); }
     .assign-card.h1  .assign-check { border-color: var(--hst111); }
     .assign-card.h2  .assign-check { border-color: var(--hst112); }
-    .assign-check:checked { background: currentColor; border-color: currentColor; }
     .assign-card.sci .assign-check:checked { background: var(--sci112); border-color: var(--sci112); }
     .assign-card.h1  .assign-check:checked { background: var(--hst111); border-color: var(--hst111); }
     .assign-card.h2  .assign-check:checked { background: var(--hst112); border-color: var(--hst112); }
-    .assign-check:checked::after {
-      content: '';
-      position: absolute;
-      top: 3px; left: 6px;
-      width: 5px; height: 9px;
-      border: 2px solid #fff;
-      border-top: none;
-      border-left: none;
-      transform: rotate(45deg);
-    }
+    .assign-check:checked::after { content: ''; position: absolute; top: 3px; left: 6px; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
 
     .assign-body { flex: 1; min-width: 0; }
-    .assign-course-tag {
-      display: inline-block;
-      font-size: 0.65rem;
-      font-weight: 500;
-      padding: 2px 7px;
-      border-radius: 4px;
-      color: var(--white);
-      margin-bottom: 4px;
-    }
-    .sci .assign-course-tag  { background: var(--sci112); }
-    .h1  .assign-course-tag  { background: var(--hst111); }
-    .h2  .assign-course-tag  { background: var(--hst112); }
-
-    .assign-title {
-      font-size: 0.88rem;
-      font-weight: 400;
-      line-height: 1.35;
-      color: #2A2A2A;
-    }
-    .assign-meta {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 5px;
-      flex-wrap: wrap;
-    }
-    .due-label {
-      font-size: 0.7rem;
-      color: #999;
-    }
+    .assign-course-tag { display: inline-block; font-size: 0.65rem; font-weight: 500; padding: 2px 7px; border-radius: 4px; color: var(--white); margin-bottom: 4px; }
+    .sci .assign-course-tag { background: var(--sci112); }
+    .h1  .assign-course-tag { background: var(--hst111); }
+    .h2  .assign-course-tag { background: var(--hst112); }
+    .assign-title { font-size: 0.88rem; line-height: 1.35; color: #2A2A2A; }
+    .assign-meta { display: flex; align-items: center; gap: 10px; margin-top: 5px; flex-wrap: wrap; }
+    .due-label { font-size: 0.7rem; color: #999; }
     .due-label.overdue { color: var(--overdue); font-weight: 500; }
     .due-label.soon    { color: var(--soon); font-weight: 500; }
-
-    .remind-btn {
-      margin-left: auto;
-      padding: 4px 10px;
-      border-radius: 6px;
-      border: 1.5px solid var(--sage);
-      background: transparent;
-      color: var(--sage);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 500;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
+    .remind-btn { margin-left: auto; padding: 4px 10px; border-radius: 6px; border: 1.5px solid var(--sage); background: transparent; color: var(--sage); font-family: 'DM Sans', sans-serif; font-size: 0.7rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
     .remind-btn:active { background: var(--sage); color: var(--white); }
 
-    /* ── Canvas settings ─────────────────────────────────── */
-    .settings-section {
-      margin-top: 24px;
-    }
-    .settings-toggle {
-      width: 100%;
-      background: transparent;
-      border: none;
-      border-top: 1px solid #e0dcd7;
-      padding: 14px 0 4px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      color: #888;
-      cursor: pointer;
-      text-align: left;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+    /* ── Dashboard ───────────────────────────────────────── */
+    #dashboard { display: none; }
+
+    .dash-greeting { margin-bottom: 20px; }
+    .dash-greet-text { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 500; color: var(--green); line-height: 1.1; }
+    .dash-date-text { font-size: 0.78rem; color: #888; margin-top: 3px; }
+
+    .dash-alert { background: #FFF3CD; border: 1.5px solid #F0C84A; border-radius: 10px; padding: 12px 14px; margin-bottom: 16px; }
+    .dash-alert-title { font-size: 0.75rem; font-weight: 500; color: #7A5C00; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .dash-alert-item { font-size: 0.82rem; color: #5A4000; margin-bottom: 3px; line-height: 1.35; }
+
+    .dash-section-title { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 500; color: var(--green); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+
+    /* Progress bars */
+    .progress-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .progress-card { background: var(--white); border-radius: var(--r-assign); box-shadow: var(--shadow); padding: 10px 14px; }
+    .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .progress-course { font-size: 0.75rem; font-weight: 500; }
+    .progress-count { font-size: 0.7rem; color: #888; }
+    .progress-bar-bg { height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+
+    /* Schedule */
+    .schedule-list { margin-bottom: 20px; }
+    .sched-loading { font-size: 0.82rem; color: #aaa; padding: 16px 0; text-align: center; }
+    .sched-no-cal { background: var(--white); border-radius: var(--r-assign); padding: 12px 14px; font-size: 0.82rem; color: #888; box-shadow: var(--shadow); }
+    .sched-no-cal a { color: var(--sage); text-decoration: none; font-weight: 500; cursor: pointer; }
+    .event-item { background: var(--white); border-radius: var(--r-assign); box-shadow: var(--shadow); padding: 10px 14px; margin-bottom: 6px; display: flex; gap: 12px; align-items: center; }
+    .event-time { font-size: 0.7rem; color: #888; white-space: nowrap; min-width: 80px; }
+    .event-title { font-size: 0.82rem; color: #2A2A2A; flex: 1; }
+    .event-free { background: rgba(122,158,135,0.1); border: 1.5px dashed var(--sage); border-radius: var(--r-assign); padding: 8px 14px; margin-bottom: 6px; display: flex; gap: 12px; align-items: center; }
+    .event-free .event-time { color: var(--sage); }
+    .event-free .event-title { color: var(--sage); font-size: 0.78rem; }
+
+    /* Extra appointments */
+    .extra-form { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .extra-input { flex: 1; min-width: 120px; padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; background: var(--white); }
+    .extra-input:focus { outline: none; border-color: var(--sage); }
+    .extra-time { width: 90px; padding: 8px 10px; border: 1.5px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; background: var(--white); }
+    .extra-time:focus { outline: none; border-color: var(--sage); }
+    .extra-add-btn { padding: 8px 14px; background: var(--sage); color: var(--white); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .extra-tag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--white); border: 1.5px solid #ddd; border-radius: var(--r-pill); font-size: 0.75rem; margin: 2px 4px 2px 0; }
+    .extra-tag-remove { background: none; border: none; color: #aaa; cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1; }
+
+    /* Recommendations */
+    .rec-card { background: var(--white); border-radius: var(--r-assign); box-shadow: var(--shadow); padding: 12px 14px; margin-bottom: 8px; border-left: 4px solid var(--sage); }
+    .rec-time-slot { font-size: 0.7rem; font-weight: 500; color: var(--sage); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .rec-task { font-size: 0.85rem; color: #2A2A2A; line-height: 1.35; margin-bottom: 6px; }
+    .rec-task strong { font-weight: 500; }
+    .rec-why { font-size: 0.7rem; color: #aaa; margin-bottom: 8px; }
+    .rec-remind-btn { padding: 5px 12px; border-radius: 6px; border: 1.5px solid var(--sage); background: transparent; color: var(--sage); font-family: 'DM Sans', sans-serif; font-size: 0.72rem; font-weight: 500; cursor: pointer; }
+    .rec-remind-btn:active { background: var(--sage); color: var(--white); }
+    .rec-empty { font-size: 0.85rem; color: #aaa; padding: 10px 0; }
+
+    /* ── Settings ────────────────────────────────────────── */
+    .settings-section { margin-top: 24px; }
+    .settings-toggle { width: 100%; background: transparent; border: none; border-top: 1px solid #e0dcd7; padding: 14px 0 4px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: #888; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 6px; }
     .settings-toggle .chevron { transition: transform 0.2s; }
     .settings-toggle.open .chevron { transform: rotate(180deg); }
-    .settings-body {
-      display: none;
-      padding: 14px 0 0;
-    }
+    .settings-body { display: none; padding: 14px 0 0; }
     .settings-body.open { display: block; }
-    .settings-body label {
-      display: block;
-      font-size: 0.78rem;
-      color: #555;
-      margin-bottom: 5px;
-    }
+    .settings-body label { display: block; font-size: 0.78rem; color: #555; margin-bottom: 5px; margin-top: 10px; }
+    .settings-body label:first-of-type { margin-top: 0; }
     .settings-body input[type="password"],
-    .settings-body input[type="text"] {
-      width: 100%;
-      padding: 10px 12px;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      background: var(--white);
-      margin-bottom: 10px;
-    }
+    .settings-body input[type="text"],
+    .settings-body input[type="url"] { width: 100%; padding: 10px 12px; border: 1.5px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; background: var(--white); margin-bottom: 6px; }
     .settings-body input:focus { outline: none; border-color: var(--sage); }
-    .settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn-primary {
-      padding: 9px 18px;
-      background: var(--green);
-      color: var(--white);
-      border: none;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-    }
+    .settings-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .btn-primary { padding: 9px 18px; background: var(--green); color: var(--white); border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500; cursor: pointer; }
     .btn-primary:active { opacity: 0.85; }
-    .btn-ghost {
-      padding: 9px 14px;
-      background: transparent;
-      color: #999;
-      border: 1.5px solid #ddd;
-      border-radius: 8px;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.82rem;
-      cursor: pointer;
-    }
-    .settings-status {
-      font-size: 0.78rem;
-      color: var(--sage);
-      margin-top: 8px;
-      min-height: 18px;
-    }
+    .btn-ghost { padding: 9px 14px; background: transparent; color: #999; border: 1.5px solid #ddd; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 0.82rem; cursor: pointer; }
+    .settings-status { font-size: 0.78rem; color: var(--sage); margin-top: 8px; min-height: 18px; }
     .settings-status.err { color: var(--overdue); }
+    .settings-divider { height: 1px; background: #e0dcd7; margin: 14px 0; }
 
     /* ── Toast ───────────────────────────────────────────── */
-    #toast {
-      position: fixed;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #2A2A2A;
-      color: var(--white);
-      padding: 10px 20px;
-      border-radius: var(--r-pill);
-      font-size: 0.82rem;
-      font-weight: 400;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      transition: transform 0.25s ease, opacity 0.25s ease;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 999;
-      white-space: nowrap;
-      max-width: 90vw;
-    }
+    #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: #2A2A2A; color: var(--white); padding: 10px 20px; border-radius: var(--r-pill); font-size: 0.82rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2); transition: transform 0.25s ease, opacity 0.25s ease; opacity: 0; pointer-events: none; z-index: 999; white-space: nowrap; max-width: 90vw; }
     #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
 
-<!-- ── Header ──────────────────────────────────────────────── -->
 <header>
   <div class="header-top">
     <div class="header-title">
@@ -446,48 +202,65 @@
     </div>
     <button class="share-week-btn" id="shareWeekBtn">Copy this week</button>
   </div>
-
   <div class="summary-pills" id="summaryPills"></div>
-
   <div class="view-tabs">
-    <button class="tab-btn active" data-view="week">This Week</button>
+    <button class="tab-btn active" data-view="home">Home</button>
+    <button class="tab-btn" data-view="week">This Week</button>
     <button class="tab-btn" data-view="today">Today</button>
     <button class="tab-btn" data-view="upcoming">Upcoming</button>
   </div>
 </header>
 
-<!-- ── Main ────────────────────────────────────────────────── -->
 <main>
 
-  <!-- Course filter -->
-  <div class="course-filter">
-    <button class="filter-btn active-all" data-course="all">All</button>
-    <button class="filter-btn" data-course="SCI-112">SCI-112</button>
-    <button class="filter-btn" data-course="HST-111">HST-111</button>
-    <button class="filter-btn" data-course="HST-112">HST-112</button>
-  </div>
+  <!-- Dashboard (home view) -->
+  <div id="dashboard"></div>
 
-  <!-- Week nav (shown in "week" view only) -->
-  <div class="week-nav" id="weekNav">
-    <span class="week-nav-label" id="weekNavLabel"></span>
-    <div class="week-nav-btns">
-      <button class="week-arrow-btn" id="prevWeekBtn">&#8249;</button>
-      <button class="today-btn" id="thisWeekBtn">Today</button>
-      <button class="week-arrow-btn" id="nextWeekBtn">&#8250;</button>
+  <!-- Task list area (week/today/upcoming views) -->
+  <div id="taskListArea">
+    <div class="course-filter">
+      <button class="filter-btn active-all" data-course="all">All</button>
+      <button class="filter-btn" data-course="SCI-112">SCI-112</button>
+      <button class="filter-btn" data-course="HST-111">HST-111</button>
+      <button class="filter-btn" data-course="HST-112">HST-112</button>
     </div>
+    <div class="week-nav" id="weekNav">
+      <span class="week-nav-label" id="weekNavLabel"></span>
+      <div class="week-nav-btns">
+        <button class="week-arrow-btn" id="prevWeekBtn">&#8249;</button>
+        <button class="today-btn" id="thisWeekBtn">Today</button>
+        <button class="week-arrow-btn" id="nextWeekBtn">&#8250;</button>
+      </div>
+    </div>
+    <div id="taskList"></div>
   </div>
 
-  <!-- Task list -->
-  <div id="taskList"></div>
-
-  <!-- Canvas sync settings (collapsible) -->
+  <!-- Settings (always at bottom) -->
   <div class="settings-section">
     <button class="settings-toggle" id="settingsToggle">
-      <span>⚙ Canvas sync settings</span>
+      <span>⚙ Settings</span>
       <span class="chevron">▾</span>
     </button>
     <div class="settings-body" id="settingsBody">
-      <label for="tokenInput">Canvas access token</label>
+
+      <label>Wildewood / work calendar URL</label>
+      <input type="url" id="calUrl1" placeholder="https://calendar.google.com/calendar/ical/…" />
+
+      <label>Teachworks schedule URL</label>
+      <input type="url" id="calUrl2" placeholder="https://wildewoodeducation.teachworks.com/icalendar/…" />
+
+      <label>Other calendar URL (optional)</label>
+      <input type="url" id="calUrl3" placeholder="https://…" />
+
+      <div class="settings-actions">
+        <button class="btn-primary" id="saveCalBtn">Save calendars</button>
+        <button class="btn-ghost" id="refreshCalBtn">Refresh now</button>
+      </div>
+      <div class="settings-status" id="calStatus"></div>
+
+      <div class="settings-divider"></div>
+
+      <label>Canvas access token</label>
       <input type="password" id="tokenInput" placeholder="Paste token here…" autocomplete="off" />
       <div class="settings-actions">
         <button class="btn-primary" id="syncBtn">Sync from Canvas</button>
@@ -505,167 +278,163 @@
 'use strict';
 
 /* ── Constants ──────────────────────────────────────────────── */
-const PROXY_URL   = 'https://canvas-proxy.shaina-4f5.workers.dev';
-const TOKEN_KEY   = 'canvas_token_v1';
-const CHECKS_KEY  = 'canvas_checked_v1';
+const PROXY_URL  = 'https://canvas-proxy.shaina-4f5.workers.dev';
+const TOKEN_KEY  = 'canvas_token_v1';
+const CHECKS_KEY = 'canvas_checked_v1';
+const CAL_KEY    = 'cal_urls_v1';
+const EXTRA_KEY  = 'cal_extra_v1';
 
 /* ── Static task data ───────────────────────────────────────── */
-// [id, course, title, workDate (YYYY-MM-DD), dueDate (YYYY-MM-DD)]
 const RAW = [
-  // HST-112 (26 tasks — weekly Read+Post cycle)
-  ['h2-1a', 'HST-112', 'Read: Transoceanic Encounters · Go through PowerPoints',             '2026-06-05', '2026-06-08'],
-  ['h2-1b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 1',                              '2026-06-08', '2026-06-08'],
-  ['h2-2a', 'HST-112', 'Read: Transformation of Europe · New Worlds · PowerPoints',          '2026-06-12', '2026-06-15'],
-  ['h2-2b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 2',                              '2026-06-15', '2026-06-15'],
-  ['h2-3a', 'HST-112', 'Read: Africa & Atlantic World · East Asia · PowerPoints',            '2026-06-19', '2026-06-22'],
-  ['h2-3b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 3',                              '2026-06-22', '2026-06-22'],
-  ['h2-4a', 'HST-112', 'Read: Islamic Empires · National States · PowerPoints',              '2026-06-26', '2026-06-29'],
-  ['h2-4b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 4',                              '2026-06-29', '2026-06-29'],
-  ['h2-5a', 'HST-112', 'Read: Industrial Society · Americas Independence · PowerPoints',     '2026-07-03', '2026-07-06'],
-  ['h2-5b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 5',                              '2026-07-06', '2026-07-06'],
+  // HST-112 (26 tasks)
+  ['h2-1a', 'HST-112', 'Read: Transoceanic Encounters · Go through PowerPoints',              '2026-06-05','2026-06-08'],
+  ['h2-1b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 1',                               '2026-06-08','2026-06-08'],
+  ['h2-2a', 'HST-112', 'Read: Transformation of Europe · New Worlds · PowerPoints',           '2026-06-12','2026-06-15'],
+  ['h2-2b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 2',                               '2026-06-15','2026-06-15'],
+  ['h2-3a', 'HST-112', 'Read: Africa & Atlantic World · East Asia · PowerPoints',             '2026-06-19','2026-06-22'],
+  ['h2-3b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 3',                               '2026-06-22','2026-06-22'],
+  ['h2-4a', 'HST-112', 'Read: Islamic Empires · National States · PowerPoints',               '2026-06-26','2026-06-29'],
+  ['h2-4b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 4',                               '2026-06-29','2026-06-29'],
+  ['h2-5a', 'HST-112', 'Read: Industrial Society · Americas Independence · PowerPoints',      '2026-07-03','2026-07-06'],
+  ['h2-5b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 5',                               '2026-07-06','2026-07-06'],
   ['h2-6a', 'HST-112', 'Read: Societies at Crossroads · Building Global Empires · PowerPoints','2026-07-10','2026-07-13'],
-  ['h2-6b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 6',                              '2026-07-13', '2026-07-13'],
-  ['h2-7a', 'HST-112', 'Read: The Great War · Age of Anxiety · PowerPoints',                 '2026-07-17', '2026-07-20'],
-  ['h2-7b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 7',                              '2026-07-20', '2026-07-20'],
-  ['h2-8a', 'HST-112', 'Read: Nationalism + Political Identities · PowerPoints',             '2026-07-24', '2026-07-27'],
-  ['h2-8b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 8',                              '2026-07-27', '2026-07-27'],
-  ['h2-9a', 'HST-112', 'Read: New Conflagrations: World War II · PowerPoints',               '2026-07-31', '2026-08-03'],
-  ['h2-9b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 9',                              '2026-08-03', '2026-08-03'],
-  ['h2-10a','HST-112', 'Read: Bipolar World + End of Empire · PowerPoints',                  '2026-08-07', '2026-08-10'],
-  ['h2-10b','HST-112', 'Submit Post Alert + Peer Reply · Wk 10',                             '2026-08-10', '2026-08-10'],
-  ['h2-11a','HST-112', 'Read: A World without Borders · PowerPoints',                        '2026-08-12', '2026-08-15'],
-  ['h2-11b','HST-112', 'Submit Post Alert + Peer Reply · Wk 11',                             '2026-08-15', '2026-08-15'],
-  ['h2-12a','HST-112', 'Read: Recent Past (American Yawp) · PowerPoints',                   '2026-08-18', '2026-08-21'],
-  ['h2-12b','HST-112', 'Submit Post Alert + Peer Reply · Wk 12',                             '2026-08-21', '2026-08-21'],
-  ['h2-fp', 'HST-112', 'Work on Final Project',                                              '2026-08-12', '2026-08-19'],
-  ['h2-fps','HST-112', 'Submit Final Project',                                               '2026-08-19', '2026-08-19'],
-
+  ['h2-6b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 6',                               '2026-07-13','2026-07-13'],
+  ['h2-7a', 'HST-112', 'Read: The Great War · Age of Anxiety · PowerPoints',                  '2026-07-17','2026-07-20'],
+  ['h2-7b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 7',                               '2026-07-20','2026-07-20'],
+  ['h2-8a', 'HST-112', 'Read: Nationalism + Political Identities · PowerPoints',              '2026-07-24','2026-07-27'],
+  ['h2-8b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 8',                               '2026-07-27','2026-07-27'],
+  ['h2-9a', 'HST-112', 'Read: New Conflagrations: World War II · PowerPoints',                '2026-07-31','2026-08-03'],
+  ['h2-9b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 9',                               '2026-08-03','2026-08-03'],
+  ['h2-10a','HST-112', 'Read: Bipolar World + End of Empire · PowerPoints',                   '2026-08-07','2026-08-10'],
+  ['h2-10b','HST-112', 'Submit Post Alert + Peer Reply · Wk 10',                              '2026-08-10','2026-08-10'],
+  ['h2-11a','HST-112', 'Read: A World without Borders · PowerPoints',                         '2026-08-12','2026-08-15'],
+  ['h2-11b','HST-112', 'Submit Post Alert + Peer Reply · Wk 11',                              '2026-08-15','2026-08-15'],
+  ['h2-12a','HST-112', 'Read: Recent Past (American Yawp) · PowerPoints',                    '2026-08-18','2026-08-21'],
+  ['h2-12b','HST-112', 'Submit Post Alert + Peer Reply · Wk 12',                              '2026-08-21','2026-08-21'],
+  ['h2-fp', 'HST-112', 'Work on Final Project',                                               '2026-08-12','2026-08-19'],
+  ['h2-fps','HST-112', 'Submit Final Project',                                                '2026-08-19','2026-08-19'],
   // HST-111 (15 tasks)
-  ['h1-0',  'HST-111', 'Complete Intro Assignment + Critical Analysis Guide',                '2026-06-02', '2026-06-03'],
-  ['h1-1a', 'HST-111', 'Post Ch. 1 Prehistory — Initial Discussion',                        '2026-06-11', '2026-06-11'],
-  ['h1-1b', 'HST-111', 'Post Ch. 1 Prehistory — Reply Discussion',                          '2026-06-13', '2026-06-13'],
-  ['h1-2d', 'HST-111', 'Draft Ch. 2 Critical Analysis (library)',                            '2026-06-14', '2026-06-16'],
-  ['h1-2s', 'HST-111', 'Polish + Submit Ch. 2 Critical Analysis',                           '2026-06-16', '2026-06-16'],
-  ['h1-4d', 'HST-111', 'Draft Ch. 4 Critical Analysis (library)',                            '2026-06-21', '2026-06-23'],
-  ['h1-4s', 'HST-111', 'Polish + Submit Ch. 4 Critical Analysis',                           '2026-06-23', '2026-06-23'],
-  ['h1-5d', 'HST-111', 'Draft Ch. 5 Critical Analysis (library)',                            '2026-06-28', '2026-06-30'],
-  ['h1-5s', 'HST-111', 'Polish + Submit Ch. 5 Critical Analysis',                           '2026-06-30', '2026-06-30'],
-  ['h1-7a', 'HST-111', 'Post Ch. 7 Imperial Anchors — Initial Discussion',                  '2026-07-08', '2026-07-08'],
-  ['h1-7b', 'HST-111', 'Post Ch. 7 Imperial Anchors — Reply Discussion',                    '2026-07-10', '2026-07-11'],
-  ['h1-8d', 'HST-111', 'Draft Ch. 8 Critical Analysis (library)',                            '2026-07-19', '2026-07-21'],
-  ['h1-8s', 'HST-111', 'Polish + Submit Ch. 8 Critical Analysis',                           '2026-07-21', '2026-07-21'],
-  ['h1-fa', 'HST-111', 'Begin Final Assignment',                                             '2026-07-28', '2026-08-20'],
-  ['h1-fs', 'HST-111', 'Submit Final Assignment',                                            '2026-08-20', '2026-08-20'],
-
-  // SCI-112 (40 tasks)
-  ['s-1l',  'SCI-112', 'Wk 1: Lectures + Videos — Ecology Intro / Biotic vs. Abiotic',      '2026-06-01', '2026-06-14'],
-  ['s-1b',  'SCI-112', 'Wk 1: Lab Assignment',                                              '2026-06-03', '2026-06-14'],
-  ['s-1r',  'SCI-112', 'Wk 1: Review Sheet',                                                '2026-06-04', '2026-06-14'],
-  ['s-2l',  'SCI-112', 'Wk 2: Lectures + Videos — Biomes',                                  '2026-06-08', '2026-06-14'],
-  ['s-2b',  'SCI-112', 'Wk 2: Lab Assignment',                                              '2026-06-10', '2026-06-14'],
-  ['s-2r',  'SCI-112', 'Wk 2: Review Sheet + Submit Unit 1',                                '2026-06-13', '2026-06-14'],
-  ['s-3l',  'SCI-112', 'Wk 3: Lectures + Videos — Matter, Energy + Ecosystems',             '2026-06-15', '2026-06-28'],
-  ['s-3b',  'SCI-112', 'Wk 3: Lab Assignment',                                              '2026-06-17', '2026-06-28'],
-  ['s-3r',  'SCI-112', 'Wk 3: Review Sheet',                                                '2026-06-18', '2026-06-28'],
-  ['s-4l',  'SCI-112', 'Wk 4: Lectures + Videos — Population Genetics + Natural Selection', '2026-06-22', '2026-06-28'],
-  ['s-4b',  'SCI-112', 'Wk 4: Lab Assignment',                                              '2026-06-24', '2026-06-28'],
-  ['s-4q',  'SCI-112', 'Quiz Weeks 1–3 + Submit Unit 2',                                    '2026-06-27', '2026-06-28'],
-  ['s-5l',  'SCI-112', 'Wk 5: Lectures + Videos — Biodiversity',                            '2026-06-29', '2026-07-12'],
-  ['s-5b',  'SCI-112', 'Wk 5: Lab Assignment',                                              '2026-07-01', '2026-07-12'],
-  ['s-5r',  'SCI-112', 'Wk 5: Review Sheet · Start Article Search',                         '2026-07-02', '2026-07-12'],
-  ['s-6l',  'SCI-112', 'Wk 6: Lectures + Videos — Community Ecology',                       '2026-07-06', '2026-07-12'],
-  ['s-6b',  'SCI-112', 'Wk 6: Lab Assignment',                                              '2026-07-08', '2026-07-12'],
-  ['s-6r',  'SCI-112', 'Wk 6: Review Sheet + Submit Unit 3',                                '2026-07-11', '2026-07-12'],
-  ['s-ex1p','SCI-112', 'Prepare for Exam 1 (Weeks 1–6)',                                     '2026-07-16', '2026-07-19'],
-  ['s-ex1s','SCI-112', 'Take + Submit Exam 1',                                               '2026-07-19', '2026-07-19'],
-  ['s-7l',  'SCI-112', 'Wk 7: Lectures + Videos — Population Ecology + Life Histories',     '2026-07-13', '2026-07-26'],
-  ['s-7b',  'SCI-112', 'Wk 7: Lab Assignment',                                              '2026-07-15', '2026-07-26'],
-  ['s-7r',  'SCI-112', 'Wk 7: Review Sheet · Work on Article Review',                       '2026-07-16', '2026-07-26'],
-  ['s-8l',  'SCI-112', 'Wk 8: Lectures + Videos — Human Population',                        '2026-07-20', '2026-07-26'],
-  ['s-8b',  'SCI-112', 'Wk 8: Lab Assignment',                                              '2026-07-22', '2026-07-26'],
-  ['s-8r',  'SCI-112', 'Article Review Due + Submit Unit 4',                                 '2026-07-25', '2026-07-26'],
-  ['s-9l',  'SCI-112', 'Wk 9: Lectures + Videos — Conservation Biology',                    '2026-07-27', '2026-08-09'],
-  ['s-9b',  'SCI-112', 'Wk 9: Lab Assignment',                                              '2026-07-29', '2026-08-09'],
-  ['s-9r',  'SCI-112', 'Wk 9: Review Sheet',                                                '2026-07-30', '2026-08-09'],
-  ['s-10l', 'SCI-112', 'Wk 10: Lectures + Videos — Soil + Agriculture',                     '2026-08-03', '2026-08-09'],
-  ['s-10b', 'SCI-112', 'Wk 10: Lab Assignment',                                             '2026-08-05', '2026-08-09'],
-  ['s-10r', 'SCI-112', 'Wk 10: Review Sheet + Submit Unit 5',                               '2026-08-08', '2026-08-09'],
-  ['s-11l', 'SCI-112', 'Wk 11: Lectures + Videos — Fresh Water + Oceans',                   '2026-08-10', '2026-08-22'],
-  ['s-11b', 'SCI-112', 'Wk 11: Lab Assignment',                                             '2026-08-12', '2026-08-22'],
-  ['s-11r', 'SCI-112', 'Wk 11: Review Sheet · Begin Final Exam Prep',                       '2026-08-13', '2026-08-22'],
-  ['s-12l', 'SCI-112', 'Wk 12: Lectures + Videos — Climate + Climate Change',               '2026-08-17', '2026-08-22'],
-  ['s-12b', 'SCI-112', 'Wk 12: Lab Assignment',                                             '2026-08-19', '2026-08-22'],
-  ['s-ex2p','SCI-112', 'Prepare for Final Exam (Weeks 7–12)',                                '2026-08-20', '2026-08-22'],
-  ['s-ex2s','SCI-112', 'Take + Submit Final Exam + Unit 6',                                  '2026-08-22', '2026-08-22'],
+  ['h1-0',  'HST-111', 'Complete Intro Assignment + Critical Analysis Guide',                 '2026-06-02','2026-06-03'],
+  ['h1-1a', 'HST-111', 'Post Ch. 1 Prehistory — Initial Discussion',                         '2026-06-11','2026-06-11'],
+  ['h1-1b', 'HST-111', 'Post Ch. 1 Prehistory — Reply Discussion',                           '2026-06-13','2026-06-13'],
+  ['h1-2d', 'HST-111', 'Draft Ch. 2 Critical Analysis (library)',                             '2026-06-14','2026-06-16'],
+  ['h1-2s', 'HST-111', 'Polish + Submit Ch. 2 Critical Analysis',                            '2026-06-16','2026-06-16'],
+  ['h1-4d', 'HST-111', 'Draft Ch. 4 Critical Analysis (library)',                             '2026-06-21','2026-06-23'],
+  ['h1-4s', 'HST-111', 'Polish + Submit Ch. 4 Critical Analysis',                            '2026-06-23','2026-06-23'],
+  ['h1-5d', 'HST-111', 'Draft Ch. 5 Critical Analysis (library)',                             '2026-06-28','2026-06-30'],
+  ['h1-5s', 'HST-111', 'Polish + Submit Ch. 5 Critical Analysis',                            '2026-06-30','2026-06-30'],
+  ['h1-7a', 'HST-111', 'Post Ch. 7 Imperial Anchors — Initial Discussion',                   '2026-07-08','2026-07-08'],
+  ['h1-7b', 'HST-111', 'Post Ch. 7 Imperial Anchors — Reply Discussion',                     '2026-07-10','2026-07-11'],
+  ['h1-8d', 'HST-111', 'Draft Ch. 8 Critical Analysis (library)',                             '2026-07-19','2026-07-21'],
+  ['h1-8s', 'HST-111', 'Polish + Submit Ch. 8 Critical Analysis',                            '2026-07-21','2026-07-21'],
+  ['h1-fa', 'HST-111', 'Begin Final Assignment',                                              '2026-07-28','2026-08-20'],
+  ['h1-fs', 'HST-111', 'Submit Final Assignment',                                             '2026-08-20','2026-08-20'],
+  // SCI-112 (39 tasks)
+  ['s-1l',  'SCI-112', 'Wk 1: Lectures + Videos — Ecology Intro / Biotic vs. Abiotic',       '2026-06-01','2026-06-14'],
+  ['s-1b',  'SCI-112', 'Wk 1: Lab Assignment',                                               '2026-06-03','2026-06-14'],
+  ['s-1r',  'SCI-112', 'Wk 1: Review Sheet',                                                 '2026-06-04','2026-06-14'],
+  ['s-2l',  'SCI-112', 'Wk 2: Lectures + Videos — Biomes',                                   '2026-06-08','2026-06-14'],
+  ['s-2b',  'SCI-112', 'Wk 2: Lab Assignment',                                               '2026-06-10','2026-06-14'],
+  ['s-2r',  'SCI-112', 'Wk 2: Review Sheet + Submit Unit 1',                                 '2026-06-13','2026-06-14'],
+  ['s-3l',  'SCI-112', 'Wk 3: Lectures + Videos — Matter, Energy + Ecosystems',              '2026-06-15','2026-06-28'],
+  ['s-3b',  'SCI-112', 'Wk 3: Lab Assignment',                                               '2026-06-17','2026-06-28'],
+  ['s-3r',  'SCI-112', 'Wk 3: Review Sheet',                                                 '2026-06-18','2026-06-28'],
+  ['s-4l',  'SCI-112', 'Wk 4: Lectures + Videos — Population Genetics + Natural Selection',  '2026-06-22','2026-06-28'],
+  ['s-4b',  'SCI-112', 'Wk 4: Lab Assignment',                                               '2026-06-24','2026-06-28'],
+  ['s-4q',  'SCI-112', 'Quiz Weeks 1–3 + Submit Unit 2',                                     '2026-06-27','2026-06-28'],
+  ['s-5l',  'SCI-112', 'Wk 5: Lectures + Videos — Biodiversity',                             '2026-06-29','2026-07-12'],
+  ['s-5b',  'SCI-112', 'Wk 5: Lab Assignment',                                               '2026-07-01','2026-07-12'],
+  ['s-5r',  'SCI-112', 'Wk 5: Review Sheet · Start Article Search',                          '2026-07-02','2026-07-12'],
+  ['s-6l',  'SCI-112', 'Wk 6: Lectures + Videos — Community Ecology',                        '2026-07-06','2026-07-12'],
+  ['s-6b',  'SCI-112', 'Wk 6: Lab Assignment',                                               '2026-07-08','2026-07-12'],
+  ['s-6r',  'SCI-112', 'Wk 6: Review Sheet + Submit Unit 3',                                 '2026-07-11','2026-07-12'],
+  ['s-ex1p','SCI-112', 'Prepare for Exam 1 (Weeks 1–6)',                                      '2026-07-16','2026-07-19'],
+  ['s-ex1s','SCI-112', 'Take + Submit Exam 1',                                                '2026-07-19','2026-07-19'],
+  ['s-7l',  'SCI-112', 'Wk 7: Lectures + Videos — Population Ecology + Life Histories',      '2026-07-13','2026-07-26'],
+  ['s-7b',  'SCI-112', 'Wk 7: Lab Assignment',                                               '2026-07-15','2026-07-26'],
+  ['s-7r',  'SCI-112', 'Wk 7: Review Sheet · Work on Article Review',                        '2026-07-16','2026-07-26'],
+  ['s-8l',  'SCI-112', 'Wk 8: Lectures + Videos — Human Population',                         '2026-07-20','2026-07-26'],
+  ['s-8b',  'SCI-112', 'Wk 8: Lab Assignment',                                               '2026-07-22','2026-07-26'],
+  ['s-8r',  'SCI-112', 'Article Review Due + Submit Unit 4',                                  '2026-07-25','2026-07-26'],
+  ['s-9l',  'SCI-112', 'Wk 9: Lectures + Videos — Conservation Biology',                     '2026-07-27','2026-08-09'],
+  ['s-9b',  'SCI-112', 'Wk 9: Lab Assignment',                                               '2026-07-29','2026-08-09'],
+  ['s-9r',  'SCI-112', 'Wk 9: Review Sheet',                                                 '2026-07-30','2026-08-09'],
+  ['s-10l', 'SCI-112', 'Wk 10: Lectures + Videos — Soil + Agriculture',                      '2026-08-03','2026-08-09'],
+  ['s-10b', 'SCI-112', 'Wk 10: Lab Assignment',                                              '2026-08-05','2026-08-09'],
+  ['s-10r', 'SCI-112', 'Wk 10: Review Sheet + Submit Unit 5',                                '2026-08-08','2026-08-09'],
+  ['s-11l', 'SCI-112', 'Wk 11: Lectures + Videos — Fresh Water + Oceans',                    '2026-08-10','2026-08-22'],
+  ['s-11b', 'SCI-112', 'Wk 11: Lab Assignment',                                              '2026-08-12','2026-08-22'],
+  ['s-11r', 'SCI-112', 'Wk 11: Review Sheet · Begin Final Exam Prep',                        '2026-08-13','2026-08-22'],
+  ['s-12l', 'SCI-112', 'Wk 12: Lectures + Videos — Climate + Climate Change',                '2026-08-17','2026-08-22'],
+  ['s-12b', 'SCI-112', 'Wk 12: Lab Assignment',                                              '2026-08-19','2026-08-22'],
+  ['s-ex2p','SCI-112', 'Prepare for Final Exam (Weeks 7–12)',                                 '2026-08-20','2026-08-22'],
+  ['s-ex2s','SCI-112', 'Take + Submit Final Exam + Unit 6',                                   '2026-08-22','2026-08-22'],
 ];
 
-/* ── Task objects ───────────────────────────────────────────── */
 const TASKS = RAW.map(([id, course, title, workDate, dueDate]) => ({
-  id, course, title,
-  workDate: parseDate(workDate),
-  dueDate:  parseDate(dueDate),
+  id, course, title, workDate: parseDate(workDate), dueDate: parseDate(dueDate),
 }));
+
+const COURSE_TOTALS = { 'SCI-112': 0, 'HST-111': 0, 'HST-112': 0 };
+TASKS.forEach(t => COURSE_TOTALS[t.course]++);
 
 /* ── Helpers ────────────────────────────────────────────────── */
 function parseDate(s) {
-  const [y, m, d] = s.split('-').map(Number);
-  return new Date(y, m - 1, d);
+  const [y,m,d] = s.split('-').map(Number);
+  return new Date(y, m-1, d);
 }
-
 function toYMD(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 }
-
-function today() {
-  const n = new Date();
-  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+function today() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function mondayOf(d) { const c = new Date(d); const dow = c.getDay(); c.setDate(c.getDate() + (dow===0 ? -6 : 1-dow)); return c; }
+function formatShortDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+function formatDayHeading(d) { return d.toLocaleDateString('en-US', { weekday: 'long' }); }
+function formatTime(d) {
+  let h = d.getHours(), m = d.getMinutes(), ampm = h >= 12 ? 'pm' : 'am';
+  h = h % 12 || 12;
+  return `${h}${m ? ':' + String(m).padStart(2,'0') : ''}${ampm}`;
 }
-
-function addDays(d, n) {
-  const r = new Date(d);
-  r.setDate(r.getDate() + n);
-  return r;
+function isSameDay(a, b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function isWritingTask(task) {
+  const t = task.title.toLowerCase();
+  return t.includes('draft') || t.includes('critical analysis') || t.includes('submit post') || t.includes('polish') || t.includes('post alert') || t.includes('discussion') || t.includes('final assignment') || t.includes('final project');
 }
-
-function mondayOf(d) {
-  const copy = new Date(d);
-  const dow = copy.getDay(); // 0=Sun
-  const diff = dow === 0 ? -6 : 1 - dow;
-  copy.setDate(copy.getDate() + diff);
-  return copy;
+function estimateMinutes(task) {
+  const t = task.title.toLowerCase();
+  if (t.includes('exam') || t.includes('final')) return 90;
+  if (t.includes('read') || t.includes('lecture')) return 60;
+  if (t.includes('draft') || t.includes('critical analysis')) return 75;
+  if (t.includes('lab')) return 50;
+  if (t.includes('review sheet') || t.includes('quiz')) return 40;
+  if (t.includes('submit') || t.includes('polish') || t.includes('post')) return 35;
+  return 45;
 }
-
-function formatShortDate(d) {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function formatDayHeading(d) {
-  return d.toLocaleDateString('en-US', { weekday: 'long' });
-}
-
+function courseClass(c) { if(c==='SCI-112') return 'sci'; if(c==='HST-111') return 'h1'; if(c==='HST-112') return 'h2'; return ''; }
 function urgencyLabel(workDate, todayDate) {
-  const diff = Math.round((workDate - todayDate) / 86400000);
+  const diff = Math.round((workDate-todayDate)/86400000);
   if (diff < 0)  return { cls: 'overdue', text: `Do by ${formatShortDate(workDate)} (past)` };
   if (diff === 0) return { cls: 'soon',   text: 'Do today' };
   if (diff <= 3)  return { cls: 'soon',   text: `Do by ${formatShortDate(workDate)}` };
   return { cls: '', text: `Do by ${formatShortDate(workDate)}` };
 }
 
-function courseClass(course) {
-  if (course === 'SCI-112') return 'sci';
-  if (course === 'HST-111') return 'h1';
-  if (course === 'HST-112') return 'h2';
-  return '';
-}
-
 /* ── Persistence ────────────────────────────────────────────── */
 let checked = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}');
 function saveChecks() { localStorage.setItem(CHECKS_KEY, JSON.stringify(checked)); }
 
+function loadCalUrls() { return JSON.parse(localStorage.getItem(CAL_KEY) || '[]'); }
+function saveCalUrls(arr) { localStorage.setItem(CAL_KEY, JSON.stringify(arr)); }
+
+function loadExtra() { return JSON.parse(localStorage.getItem(EXTRA_KEY) || '{}'); }
+function saveExtra(obj) { localStorage.setItem(EXTRA_KEY, JSON.stringify(obj)); }
+
 /* ── State ──────────────────────────────────────────────────── */
-let activeView   = 'week';
+let activeView   = 'home';
 let activeCourse = 'all';
-let weekOffset   = 0;  // 0 = current week, -1 = last week, +1 = next week
+let weekOffset   = 0;
+let calEvents    = [];   // parsed calendar events (all loaded)
 
 /* ── Toast ──────────────────────────────────────────────────── */
 let toastTimer;
@@ -677,44 +446,35 @@ function showToast(msg) {
   toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-/* ── Share / remind ─────────────────────────────────────────── */
-async function shareTask(task) {
+/* ── Share ──────────────────────────────────────────────────── */
+async function shareTask(task, suggestedTime) {
   const sameDates = toYMD(task.workDate) === toYMD(task.dueDate);
   const dateNote = sameDates
     ? `Do by: ${formatShortDate(task.workDate)}`
     : `Do by: ${formatShortDate(task.workDate)} · Submits: ${formatShortDate(task.dueDate)}`;
-  const text = `[${task.course}] ${task.title}\n${dateNote}`;
+  const timeNote = suggestedTime ? `\n⏰ Suggested: ${suggestedTime}` : '';
+  const text = `[${task.course}] ${task.title}${timeNote}\n${dateNote}`;
   if (navigator.share) {
-    try {
-      await navigator.share({ title: `[${task.course}] ${task.title}`, text });
-      showToast('Sent to share sheet!');
-    } catch (e) {
-      if (e.name !== 'AbortError') fallbackCopy(text);
-    }
-  } else {
-    fallbackCopy(text);
+    try { await navigator.share({ title: `[${task.course}] ${task.title}`, text }); showToast('Sent to share sheet!'); return; }
+    catch (e) { if (e.name === 'AbortError') return; }
   }
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!')).catch(() => showToast('Could not share.'));
 }
 
 function shareWeek(tasks) {
   if (!tasks.length) { showToast('No tasks to copy this week.'); return; }
   const lines = tasks.map(t => `• [${t.course}] ${t.title} — do by ${formatShortDate(t.workDate)}`);
   const text = `This week's tasks:\n${lines.join('\n')}`;
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Week copied to clipboard!');
-  }).catch(() => showToast('Could not copy — try a per-task Remind button instead.'));
+  navigator.clipboard.writeText(text).then(() => showToast('Week copied to clipboard!')).catch(() => showToast('Could not copy.'));
 }
 
 function fallbackCopy(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Copied to clipboard!');
-  }).catch(() => showToast('Could not share — copy manually.'));
+  navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => showToast('Could not copy.'));
 }
 
 /* ── Filtering ──────────────────────────────────────────────── */
 function filteredTasks() {
-  if (activeCourse === 'all') return TASKS;
-  return TASKS.filter(t => t.course === activeCourse);
+  return activeCourse === 'all' ? TASKS : TASKS.filter(t => t.course === activeCourse);
 }
 
 /* ── Summary pills ──────────────────────────────────────────── */
@@ -722,22 +482,366 @@ function renderSummary() {
   const td = today();
   const tasks = filteredTasks().filter(t => !checked[t.id]);
   const overdue = tasks.filter(t => t.workDate < td).length;
-  const soon    = tasks.filter(t => { const d = Math.round((t.workDate - td)/86400000); return d >= 0 && d <= 3; }).length;
-  const pending = tasks.length;
+  const soon    = tasks.filter(t => { const d=Math.round((t.workDate-td)/86400000); return d>=0&&d<=3; }).length;
   const pEl = document.getElementById('summaryPills');
   pEl.innerHTML = '';
-  const add = (cls, label) => {
-    const p = document.createElement('span');
-    p.className = `pill ${cls}`;
-    p.innerHTML = `<span class="pill-dot"></span>${label}`;
-    pEl.appendChild(p);
-  };
+  const add = (cls, label) => { const p=document.createElement('span'); p.className=`pill ${cls}`; p.innerHTML=`<span class="pill-dot"></span>${label}`; pEl.appendChild(p); };
   if (overdue) add('overdue', `${overdue} overdue`);
   if (soon)    add('soon',    `${soon} due soon`);
-  add('ok', `${pending} pending`);
+  add('ok', `${tasks.length} pending`);
 }
 
-/* ── Render: task card ──────────────────────────────────────── */
+/* ── iCal fetch + parse ─────────────────────────────────────── */
+async function fetchCalendars() {
+  const urls = loadCalUrls().filter(Boolean);
+  if (!urls.length) return [];
+  const all = [];
+  for (const url of urls) {
+    try {
+      const res = await fetch(`${PROXY_URL}/calendar`, { headers: { 'X-Calendar-URL': url } });
+      if (!res.ok) continue;
+      const text = await res.text();
+      all.push(...parseICS(text));
+    } catch { /* skip failed feed */ }
+  }
+  return all;
+}
+
+function parseICS(text) {
+  // Unfold continuation lines (RFC 5545)
+  text = text.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '').replace(/\r\n/g, '\n');
+  const lines = text.split('\n');
+  const events = [];
+  let cur = null;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (line === 'BEGIN:VEVENT') { cur = {}; continue; }
+    if (line === 'END:VEVENT')   { if (cur && cur.start && cur.end) events.push(cur); cur = null; continue; }
+    if (!cur) continue;
+    const colon = line.indexOf(':');
+    if (colon === -1) continue;
+    const key = line.slice(0, colon).toUpperCase();
+    const val = line.slice(colon + 1);
+    if (key === 'SUMMARY')          cur.summary = icsUnescape(val);
+    else if (key.startsWith('DTSTART')) cur.start = parseICSDate(val);
+    else if (key.startsWith('DTEND'))   cur.end   = parseICSDate(val);
+  }
+  return events.filter(e => e.start && e.end);
+}
+
+function icsUnescape(s) { return s.replace(/\\,/g,',').replace(/\\;/g,';').replace(/\\n/gi,'\n').replace(/\\\\/g,'\\'); }
+
+function parseICSDate(val) {
+  val = val.trim();
+  if (val.length === 8) {
+    // All-day DATE
+    return new Date(+val.slice(0,4), +val.slice(4,6)-1, +val.slice(6,8));
+  }
+  const y=+val.slice(0,4), mo=+val.slice(4,6)-1, d=+val.slice(6,8);
+  const h=+val.slice(9,11), m=+val.slice(11,13), s=+val.slice(13,15);
+  if (val.endsWith('Z')) return new Date(Date.UTC(y,mo,d,h,m,s));
+  return new Date(y,mo,d,h,m,s);
+}
+
+/* ── Free block detection ───────────────────────────────────── */
+function getFreeBlocks(events, date, extraBlocks) {
+  const DAY_START_H = 6, DAY_END_H = 23;
+  const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate(), DAY_START_H);
+  const dayEnd   = new Date(date.getFullYear(), date.getMonth(), date.getDate(), DAY_END_H);
+
+  const busy = [...events, ...extraBlocks]
+    .filter(e => e.start && e.end && isSameDay(e.start, date) && !(e.end <= dayStart) && !(e.start >= dayEnd))
+    .map(e => ({ start: e.start < dayStart ? dayStart : e.start, end: e.end > dayEnd ? dayEnd : e.end }))
+    .sort((a,b) => a.start - b.start);
+
+  // Merge overlapping busy blocks
+  const merged = [];
+  for (const b of busy) {
+    if (merged.length && b.start <= merged[merged.length-1].end) {
+      merged[merged.length-1].end = b.end > merged[merged.length-1].end ? b.end : merged[merged.length-1].end;
+    } else { merged.push({...b}); }
+  }
+
+  // Find gaps >= 30 min
+  const free = [];
+  let cursor = dayStart;
+  for (const b of merged) {
+    const gapMin = (b.start - cursor) / 60000;
+    if (gapMin >= 30) free.push({ start: cursor, end: b.start, minutes: gapMin });
+    if (b.end > cursor) cursor = b.end;
+  }
+  const trailingMin = (dayEnd - cursor) / 60000;
+  if (trailingMin >= 30) free.push({ start: cursor, end: dayEnd, minutes: trailingMin });
+  return free;
+}
+
+/* ── Recommendation engine ──────────────────────────────────── */
+function generateRecommendations(pendingTasks, freeBlocks) {
+  if (!freeBlocks.length || !pendingTasks.length) return [];
+
+  const td = today();
+  // Prioritize: overdue > due today > due this week, then by workDate
+  const sorted = [...pendingTasks].sort((a,b) => {
+    const da = Math.round((a.workDate-td)/86400000);
+    const db = Math.round((b.workDate-td)/86400000);
+    return da - db;
+  });
+
+  const recs = [];
+  const usedTaskIds = new Set();
+
+  for (const block of freeBlocks) {
+    const blockHour = block.start.getHours();
+    const isMorning = blockHour < 12;
+    const isEvening = blockHour >= 17;
+
+    // Find best matching task for this block
+    let match = null;
+    for (const task of sorted) {
+      if (usedTaskIds.has(task.id)) continue;
+      const mins = estimateMinutes(task);
+      if (mins > block.minutes + 15) continue; // doesn't fit
+      const writing = isWritingTask(task);
+      // Prefer writing tasks in morning, passive in evening
+      if (isMorning && writing) { match = task; break; }
+      if (isEvening && !writing) { match = task; break; }
+      if (!match) match = task; // fallback: first task that fits
+    }
+
+    if (!match) continue;
+    usedTaskIds.add(match.id);
+
+    let why = '';
+    if (isMorning && isWritingTask(match)) why = 'Writing task — best done in your peak morning window';
+    else if (isEvening && !isWritingTask(match)) why = 'Passive task — good for evening brain';
+    else if (match.workDate <= td) why = 'This one is past its do-date — highest priority';
+    else why = `Fits your ${block.minutes >= 60 ? Math.round(block.minutes/60)+'h' : block.minutes+'min'} window`;
+
+    recs.push({ task: match, block, suggestedTime: formatTime(block.start), why });
+  }
+
+  return recs;
+}
+
+/* ── Dashboard render ───────────────────────────────────────── */
+async function renderDashboard() {
+  const el = document.getElementById('dashboard');
+  el.style.display = 'block';
+  document.getElementById('taskListArea').style.display = 'none';
+  document.getElementById('summaryPills').style.display = 'none';
+  document.getElementById('shareWeekBtn').style.display = 'none';
+
+  const td = today();
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dateStr = td.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+
+  // Build HTML skeleton immediately
+  el.innerHTML = `
+    <div class="dash-greeting">
+      <div class="dash-greet-text">${greeting}, Shay</div>
+      <div class="dash-date-text">${dateStr}</div>
+    </div>
+    <div id="dashAlerts"></div>
+    <div class="dash-section-title">Your Progress</div>
+    <div class="progress-grid" id="progressGrid"></div>
+    <div class="dash-section-title">
+      Today's Schedule
+      <span style="font-size:0.72rem;font-weight:400;color:#aaa;" id="calRefreshNote"></span>
+    </div>
+    <div id="scheduleList" class="schedule-list"><div class="sched-loading">Loading calendar…</div></div>
+    <div id="extraSection"></div>
+    <div class="dash-section-title" style="margin-top:20px;">Today's Focus</div>
+    <div id="recList"></div>
+  `;
+
+  // Alerts
+  const alertEl = document.getElementById('dashAlerts');
+  const overdueTasks = TASKS.filter(t => !checked[t.id] && t.workDate < td);
+  const todayTasks   = TASKS.filter(t => !checked[t.id] && toYMD(t.workDate) === toYMD(td));
+  const soonTasks    = TASKS.filter(t => !checked[t.id] && t.workDate > td && Math.round((t.workDate-td)/86400000) <= 2);
+  if (overdueTasks.length || soonTasks.length) {
+    const items = [
+      ...overdueTasks.map(t => `<div class="dash-alert-item">⚠ [${t.course}] ${t.title} — past do-date</div>`),
+      ...soonTasks.map(t => `<div class="dash-alert-item">→ [${t.course}] ${t.title} — do by ${formatShortDate(t.workDate)}</div>`),
+    ].join('');
+    alertEl.innerHTML = `<div class="dash-alert"><div class="dash-alert-title">Needs attention</div>${items}</div>`;
+  }
+
+  // Progress bars
+  const pg = document.getElementById('progressGrid');
+  const courseInfo = [
+    { code: 'SCI-112', color: 'var(--sci112)' },
+    { code: 'HST-111', color: 'var(--hst111)' },
+    { code: 'HST-112', color: 'var(--hst112)' },
+  ];
+  for (const { code, color } of courseInfo) {
+    const total = COURSE_TOTALS[code];
+    const done  = TASKS.filter(t => t.course === code && checked[t.id]).length;
+    const pct   = total ? Math.round((done/total)*100) : 0;
+    const card = document.createElement('div');
+    card.className = 'progress-card';
+    card.innerHTML = `
+      <div class="progress-header">
+        <span class="progress-course" style="color:${color}">${code}</span>
+        <span class="progress-count">${done} / ${total} tasks · ${pct}%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" style="width:${pct}%;background:${color}"></div>
+      </div>`;
+    pg.appendChild(card);
+  }
+
+  // Fetch calendar events
+  const calUrls = loadCalUrls().filter(Boolean);
+  const schedEl = document.getElementById('scheduleList');
+
+  if (!calUrls.length) {
+    schedEl.innerHTML = `<div class="sched-no-cal">No calendars connected. <a id="openSettingsLink">Add them in Settings below</a> to get time-based recommendations.</div>`;
+    document.getElementById('openSettingsLink').addEventListener('click', () => {
+      document.getElementById('settingsToggle').click();
+      document.getElementById('settingsToggle').scrollIntoView({ behavior: 'smooth' });
+    });
+  } else {
+    try {
+      if (!calEvents.length) calEvents = await fetchCalendars();
+      document.getElementById('calRefreshNote').textContent = 'live';
+    } catch {
+      document.getElementById('calRefreshNote').textContent = 'cached';
+    }
+
+    // Today's events
+    const todayEvents = calEvents
+      .filter(e => isSameDay(e.start, td) && !(e.end.getHours() === 0 && e.end.getMinutes() === 0 && !isSameDay(e.start, e.end)))
+      .sort((a,b) => a.start - b.start);
+
+    const extraRaw = loadExtra()[toYMD(td)] || [];
+    const extraBlocks = extraRaw.map(x => {
+      const s = new Date(td.getFullYear(), td.getMonth(), td.getDate(), x.sh, x.sm);
+      const e = new Date(td.getFullYear(), td.getMonth(), td.getDate(), x.eh, x.em);
+      return { summary: x.summary, start: s, end: e };
+    });
+
+    schedEl.innerHTML = '';
+    const allBusy = [...todayEvents, ...extraBlocks].sort((a,b) => a.start - b.start);
+    if (!allBusy.length) {
+      schedEl.innerHTML = '<div class="sched-loading" style="color:#bbb">No events today</div>';
+    } else {
+      for (const ev of allBusy) {
+        const d = document.createElement('div');
+        d.className = 'event-item';
+        const isAllDay = ev.start.getHours()===0 && ev.start.getMinutes()===0 && ev.end.getHours()===0;
+        const timeStr = isAllDay ? 'All day' : `${formatTime(ev.start)} – ${formatTime(ev.end)}`;
+        d.innerHTML = `<span class="event-time">${timeStr}</span><span class="event-title">${ev.summary || 'Event'}</span>`;
+        schedEl.appendChild(d);
+      }
+    }
+
+    // Show free blocks
+    const freeBlocks = getFreeBlocks(calEvents, td, extraBlocks);
+    for (const fb of freeBlocks) {
+      if (fb.minutes < 30) continue;
+      const d = document.createElement('div');
+      d.className = 'event-free';
+      const dur = fb.minutes >= 60 ? `${Math.round(fb.minutes/60*10)/10}h` : `${Math.round(fb.minutes)}min`;
+      d.innerHTML = `<span class="event-time">${formatTime(fb.start)} – ${formatTime(fb.end)}</span><span class="event-title">Free · ${dur}</span>`;
+      schedEl.appendChild(d);
+    }
+    if (!freeBlocks.length && allBusy.length) {
+      const d = document.createElement('div');
+      d.className = 'event-free';
+      d.innerHTML = `<span class="event-title" style="color:#ccc">No free blocks detected today</span>`;
+      schedEl.appendChild(d);
+    }
+
+    // Extra appointments form
+    renderExtraForm(document.getElementById('extraSection'), td);
+
+    // Recommendations
+    const recEl = document.getElementById('recList');
+    const pending = TASKS.filter(t => !checked[t.id] && t.workDate <= addDays(td, 7));
+    const recs = generateRecommendations(pending, freeBlocks);
+
+    if (!recs.length && !freeBlocks.length) {
+      recEl.innerHTML = '<div class="rec-empty">No free blocks in your calendar today — nothing scheduled.</div>';
+    } else if (!recs.length) {
+      recEl.innerHTML = '<div class="rec-empty">You\'re all caught up for today.</div>';
+    } else {
+      for (const { task, block, suggestedTime, why } of recs) {
+        const card = document.createElement('div');
+        card.className = 'rec-card';
+        const dur = `${formatTime(block.start)} – ${formatTime(block.end)}`;
+        const sameDates = toYMD(task.workDate) === toYMD(task.dueDate);
+        const dateNote = sameDates ? formatShortDate(task.dueDate) : `do ${formatShortDate(task.workDate)}, submits ${formatShortDate(task.dueDate)}`;
+        card.innerHTML = `
+          <div class="rec-time-slot">${dur}</div>
+          <div class="rec-task"><strong>[${task.course}]</strong> ${task.title}</div>
+          <div class="rec-why">${why} · ${dateNote}</div>`;
+        const btn = document.createElement('button');
+        btn.className = 'rec-remind-btn';
+        btn.textContent = `+ Remind at ${suggestedTime}`;
+        btn.addEventListener('click', () => {
+          card.scrollIntoView({ behavior: 'instant', block: 'start' });
+          shareTask(task, `Today ${suggestedTime}`);
+        });
+        card.appendChild(btn);
+        recEl.appendChild(card);
+      }
+    }
+  }
+}
+
+function renderExtraForm(container, date) {
+  const dateKey = toYMD(date);
+  const existing = loadExtra()[dateKey] || [];
+
+  container.innerHTML = '';
+  const wrapper = document.createElement('div');
+  wrapper.style.marginTop = '10px';
+
+  // Existing extra tags
+  const tagRow = document.createElement('div');
+  tagRow.style.marginBottom = '8px';
+  existing.forEach((x, i) => {
+    const tag = document.createElement('span');
+    tag.className = 'extra-tag';
+    tag.innerHTML = `${x.summary} ${x.sh}:${String(x.sm).padStart(2,'0')}–${x.eh}:${String(x.em).padStart(2,'0')} <button class="extra-tag-remove" data-i="${i}">×</button>`;
+    tag.querySelector('button').addEventListener('click', () => {
+      const all = loadExtra();
+      all[dateKey] = (all[dateKey]||[]).filter((_,j)=>j!==i);
+      saveExtra(all);
+      renderDashboard();
+    });
+    tagRow.appendChild(tag);
+  });
+  wrapper.appendChild(tagRow);
+
+  // Add form
+  const form = document.createElement('div');
+  form.className = 'extra-form';
+  form.innerHTML = `
+    <input class="extra-input" id="extraDesc" placeholder="e.g. Doctor appointment" />
+    <input class="extra-time" id="extraStart" type="time" value="09:00" />
+    <input class="extra-time" id="extraEnd" type="time" value="10:00" />
+    <button class="extra-add-btn">+ Add</button>`;
+  form.querySelector('button').addEventListener('click', () => {
+    const desc  = form.querySelector('#extraDesc').value.trim();
+    const start = form.querySelector('#extraStart').value;
+    const end   = form.querySelector('#extraEnd').value;
+    if (!desc || !start || !end) return;
+    const [sh,sm] = start.split(':').map(Number);
+    const [eh,em] = end.split(':').map(Number);
+    const all = loadExtra();
+    if (!all[dateKey]) all[dateKey] = [];
+    all[dateKey].push({ summary: desc, sh, sm, eh, em });
+    saveExtra(all);
+    renderDashboard();
+  });
+  wrapper.appendChild(form);
+  container.appendChild(wrapper);
+}
+
+/* ── Task card ──────────────────────────────────────────────── */
 function renderCard(task) {
   const td     = today();
   const urg    = urgencyLabel(task.workDate, td);
@@ -746,12 +850,9 @@ function renderCard(task) {
 
   const card = document.createElement('div');
   card.className = `assign-card ${cls}${isDone ? ' done' : ''}`;
-  card.dataset.id = task.id;
 
   const chk = document.createElement('input');
-  chk.type = 'checkbox';
-  chk.className = 'assign-check';
-  chk.checked = isDone;
+  chk.type = 'checkbox'; chk.className = 'assign-check'; chk.checked = isDone;
   chk.addEventListener('change', () => {
     checked[task.id] = chk.checked ? 1 : 0;
     saveChecks();
@@ -759,183 +860,100 @@ function renderCard(task) {
     renderSummary();
   });
 
-  const body = document.createElement('div');
-  body.className = 'assign-body';
+  const body = document.createElement('div'); body.className = 'assign-body';
+  const tag  = document.createElement('span'); tag.className = 'assign-course-tag'; tag.textContent = task.course;
+  const title = document.createElement('div'); title.className = 'assign-title'; title.textContent = task.title;
+  const meta  = document.createElement('div'); meta.className = 'assign-meta';
 
-  const tag = document.createElement('span');
-  tag.className = 'assign-course-tag';
-  tag.textContent = task.course;
-
-  const title = document.createElement('div');
-  title.className = 'assign-title';
-  title.textContent = task.title;
-
-  const meta = document.createElement('div');
-  meta.className = 'assign-meta';
-
-  const doSpan = document.createElement('span');
-  doSpan.className = `due-label ${urg.cls}`;
-  doSpan.textContent = urg.text;
-
+  const doSpan = document.createElement('span'); doSpan.className = `due-label ${urg.cls}`; doSpan.textContent = urg.text;
   meta.appendChild(doSpan);
 
-  // Show teacher due date as secondary note only when it differs from workDate
   if (toYMD(task.dueDate) !== toYMD(task.workDate)) {
-    const submitSpan = document.createElement('span');
-    submitSpan.className = 'due-label';
-    submitSpan.style.color = '#bbb';
-    submitSpan.textContent = `submits ${formatShortDate(task.dueDate)}`;
-    meta.appendChild(submitSpan);
+    const sub = document.createElement('span'); sub.className = 'due-label'; sub.style.color = '#bbb';
+    sub.textContent = `submits ${formatShortDate(task.dueDate)}`; meta.appendChild(sub);
   }
 
-  const remBtn = document.createElement('button');
-  remBtn.className = 'remind-btn';
-  remBtn.textContent = '+ Remind';
-  remBtn.addEventListener('click', () => {
-    // Scroll card to top of viewport so the iOS share popover has room to expand
-    card.scrollIntoView({ behavior: 'instant', block: 'start' });
-    shareTask(task);
-  });
-
+  const remBtn = document.createElement('button'); remBtn.className = 'remind-btn'; remBtn.textContent = '+ Remind';
+  remBtn.addEventListener('click', () => { card.scrollIntoView({ behavior: 'instant', block: 'start' }); shareTask(task); });
   meta.appendChild(remBtn);
 
-  body.appendChild(tag);
-  body.appendChild(title);
-  body.appendChild(meta);
-
-  card.appendChild(chk);
-  card.appendChild(body);
+  body.appendChild(tag); body.appendChild(title); body.appendChild(meta);
+  card.appendChild(chk); card.appendChild(body);
   return card;
 }
 
-/* ── Render: This Week view ─────────────────────────────────── */
+/* ── Week / Today / Upcoming renders ───────────────────────── */
+function showTaskListArea() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('taskListArea').style.display = 'block';
+  document.getElementById('summaryPills').style.display = 'flex';
+  document.getElementById('shareWeekBtn').style.display = '';
+}
+
 function renderWeek() {
+  showTaskListArea();
   document.getElementById('weekNav').style.display = 'flex';
   const monday = addDays(mondayOf(today()), weekOffset * 7);
   const sunday = addDays(monday, 6);
   const td = today();
+  document.getElementById('weekNavLabel').textContent = `${formatShortDate(monday)} – ${formatShortDate(sunday)}`;
 
-  const label = `${formatShortDate(monday)} – ${formatShortDate(sunday)}`;
-  document.getElementById('weekNavLabel').textContent = label;
-
-  const tasks = filteredTasks().filter(t => {
-    return t.workDate >= monday && t.workDate <= sunday;
-  });
-
-  // update share-week button to include these tasks
+  const tasks = filteredTasks().filter(t => t.workDate >= monday && t.workDate <= sunday);
   document.getElementById('shareWeekBtn')._weekTasks = tasks;
 
-  const list = document.getElementById('taskList');
-  list.innerHTML = '';
+  const list = document.getElementById('taskList'); list.innerHTML = '';
+  if (!tasks.length) { list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>No tasks this week.</div>'; return; }
 
-  if (!tasks.length) {
-    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>No tasks this week.</div>';
-    return;
-  }
-
-  // Group by workDate
   const groups = {};
-  tasks.forEach(t => {
-    const k = toYMD(t.workDate);
-    if (!groups[k]) groups[k] = [];
-    groups[k].push(t);
-  });
-
-  Object.keys(groups).sort().forEach(dateKey => {
-    const groupTasks = groups[dateKey];
-    const d = parseDate(dateKey);
-    const isToday = toYMD(d) === toYMD(td);
-
-    const grp = document.createElement('div');
-    grp.className = 'day-group';
-
-    const heading = document.createElement('div');
-    heading.className = 'day-heading';
-
-    const dayName = document.createElement('span');
-    dayName.className = `day-name${isToday ? ' today-label' : ''}`;
-    dayName.textContent = isToday ? 'Today' : formatDayHeading(d);
-
-    const dateSpan = document.createElement('span');
-    dateSpan.className = 'day-date';
-    dateSpan.textContent = formatShortDate(d);
-
-    const divider = document.createElement('div');
-    divider.className = 'day-divider';
-
-    heading.appendChild(dayName);
-    heading.appendChild(dateSpan);
-    heading.appendChild(divider);
+  tasks.forEach(t => { const k=toYMD(t.workDate); if(!groups[k]) groups[k]=[]; groups[k].push(t); });
+  Object.keys(groups).sort().forEach(dk => {
+    const d = parseDate(dk); const isToday = dk === toYMD(td);
+    const grp = document.createElement('div'); grp.className = 'day-group';
+    const heading = document.createElement('div'); heading.className = 'day-heading';
+    const dayName = document.createElement('span'); dayName.className = `day-name${isToday?' today-label':''}`; dayName.textContent = isToday ? 'Today' : formatDayHeading(d);
+    const dateSp  = document.createElement('span'); dateSp.className = 'day-date'; dateSp.textContent = formatShortDate(d);
+    const div     = document.createElement('div');  div.className = 'day-divider';
+    heading.appendChild(dayName); heading.appendChild(dateSp); heading.appendChild(div);
     grp.appendChild(heading);
-
-    groupTasks.forEach(t => grp.appendChild(renderCard(t)));
+    groups[dk].forEach(t => grp.appendChild(renderCard(t)));
     list.appendChild(grp);
   });
 }
 
-/* ── Render: Today view ─────────────────────────────────────── */
 function renderToday() {
+  showTaskListArea();
   document.getElementById('weekNav').style.display = 'none';
-  const td = today();
-  const tdKey = toYMD(td);
+  const td = today(); const tdKey = toYMD(td);
   const tasks = filteredTasks().filter(t => toYMD(t.workDate) === tdKey);
-
-  const list = document.getElementById('taskList');
-  list.innerHTML = '';
-
-  if (!tasks.length) {
-    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing scheduled for today.</div>';
-    return;
-  }
-
+  const list = document.getElementById('taskList'); list.innerHTML = '';
+  if (!tasks.length) { list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing scheduled for today.</div>'; return; }
   tasks.forEach(t => list.appendChild(renderCard(t)));
 }
 
-/* ── Render: Upcoming view ──────────────────────────────────── */
 function renderUpcoming() {
+  showTaskListArea();
   document.getElementById('weekNav').style.display = 'none';
-  const td = today();
-  const end = addDays(td, 21);
+  const td = today(); const end = addDays(td, 21);
   const tasks = filteredTasks().filter(t => t.workDate >= td && t.workDate <= end);
+  const list = document.getElementById('taskList'); list.innerHTML = '';
+  if (!tasks.length) { list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing to do in the next 21 days.</div>'; return; }
 
-  const list = document.getElementById('taskList');
-  list.innerHTML = '';
-
-  if (!tasks.length) {
-    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing to do in the next 21 days.</div>';
-    return;
-  }
-
-  // Group by workDate
   const groups = {};
-  tasks.forEach(t => {
-    const k = toYMD(t.workDate);
-    if (!groups[k]) groups[k] = [];
-    groups[k].push(t);
-  });
-
-  Object.keys(groups).sort().forEach(dateKey => {
-    const d = parseDate(dateKey);
-    const grp = document.createElement('div');
-    grp.className = 'due-group';
-
-    const heading = document.createElement('div');
-    heading.className = 'due-heading';
-    const isToday = dateKey === toYMD(td);
-    heading.textContent = isToday
-      ? `Do today — ${formatShortDate(d)}`
-      : `Do ${formatDayHeading(d)}, ${formatShortDate(d)}`;
-
-    grp.appendChild(heading);
-    groups[dateKey].forEach(t => grp.appendChild(renderCard(t)));
+  tasks.forEach(t => { const k=toYMD(t.workDate); if(!groups[k]) groups[k]=[]; groups[k].push(t); });
+  Object.keys(groups).sort().forEach(dk => {
+    const d = parseDate(dk); const grp = document.createElement('div'); grp.className = 'due-group';
+    const h = document.createElement('div'); h.className = 'due-heading';
+    h.textContent = dk===toYMD(td) ? `Do today — ${formatShortDate(d)}` : `Do ${formatDayHeading(d)}, ${formatShortDate(d)}`;
+    grp.appendChild(h);
+    groups[dk].forEach(t => grp.appendChild(renderCard(t)));
     list.appendChild(grp);
   });
 }
 
-/* ── Main render dispatcher ─────────────────────────────────── */
 function render() {
   renderSummary();
-  if (activeView === 'week')     renderWeek();
+  if      (activeView === 'home')     renderDashboard();
+  else if (activeView === 'week')     renderWeek();
   else if (activeView === 'today')    renderToday();
   else if (activeView === 'upcoming') renderUpcoming();
 }
@@ -950,18 +968,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-/* ── Course filter buttons ──────────────────────────────────── */
+/* ── Course filter ──────────────────────────────────────────── */
 document.querySelectorAll('.filter-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-btn').forEach(b => {
-      b.className = 'filter-btn';
-    });
-    const course = btn.dataset.course;
-    activeCourse = course;
-    if (course === 'all')     btn.classList.add('active-all');
-    if (course === 'SCI-112') btn.classList.add('active-sci');
-    if (course === 'HST-111') btn.classList.add('active-h1');
-    if (course === 'HST-112') btn.classList.add('active-h2');
+    document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn');
+    activeCourse = btn.dataset.course;
+    if (activeCourse === 'all')     btn.classList.add('active-all');
+    if (activeCourse === 'SCI-112') btn.classList.add('active-sci');
+    if (activeCourse === 'HST-111') btn.classList.add('active-h1');
+    if (activeCourse === 'HST-112') btn.classList.add('active-h2');
     render();
   });
 });
@@ -969,12 +984,12 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 /* ── Week nav ───────────────────────────────────────────────── */
 document.getElementById('prevWeekBtn').addEventListener('click', () => { weekOffset--; render(); });
 document.getElementById('nextWeekBtn').addEventListener('click', () => { weekOffset++; render(); });
-document.getElementById('thisWeekBtn').addEventListener('click', () => { weekOffset = 0; render(); });
+document.getElementById('thisWeekBtn').addEventListener('click', () => { weekOffset=0; render(); });
 
-/* ── Share week button ──────────────────────────────────────── */
+/* ── Share week ─────────────────────────────────────────────── */
 document.getElementById('shareWeekBtn').addEventListener('click', () => {
-  const tasks = document.getElementById('shareWeekBtn')._weekTasks || [];
-  shareWeek(tasks.filter(t => !checked[t.id]));
+  const tasks = (document.getElementById('shareWeekBtn')._weekTasks || []).filter(t => !checked[t.id]);
+  shareWeek(tasks);
 });
 
 /* ── Settings toggle ────────────────────────────────────────── */
@@ -985,24 +1000,55 @@ document.getElementById('settingsToggle').addEventListener('click', () => {
   toggle.classList.toggle('open', open);
 });
 
+/* ── Calendar settings ──────────────────────────────────────── */
+const calStatus = document.getElementById('calStatus');
+
+// Pre-fill saved URLs
+const savedUrls = loadCalUrls();
+if (savedUrls[0]) document.getElementById('calUrl1').value = savedUrls[0];
+if (savedUrls[1]) document.getElementById('calUrl2').value = savedUrls[1];
+if (savedUrls[2]) document.getElementById('calUrl3').value = savedUrls[2];
+
+document.getElementById('saveCalBtn').addEventListener('click', () => {
+  const urls = [
+    document.getElementById('calUrl1').value.trim(),
+    document.getElementById('calUrl2').value.trim(),
+    document.getElementById('calUrl3').value.trim(),
+  ].filter(Boolean);
+  saveCalUrls(urls);
+  calEvents = []; // force refresh
+  calStatus.className = 'settings-status';
+  calStatus.textContent = 'Saved! Refreshing…';
+  fetchCalendars().then(evs => {
+    calEvents = evs;
+    calStatus.textContent = `Loaded ${evs.length} events.`;
+    if (activeView === 'home') renderDashboard();
+  }).catch(() => { calStatus.className = 'settings-status err'; calStatus.textContent = 'Could not load calendars. Check URLs.'; });
+});
+
+document.getElementById('refreshCalBtn').addEventListener('click', () => {
+  calEvents = [];
+  calStatus.textContent = 'Refreshing…';
+  calStatus.className = 'settings-status';
+  fetchCalendars().then(evs => {
+    calEvents = evs;
+    calStatus.textContent = `Refreshed — ${evs.length} events loaded.`;
+    if (activeView === 'home') renderDashboard();
+  }).catch(() => { calStatus.className = 'settings-status err'; calStatus.textContent = 'Refresh failed.'; });
+});
+
 /* ── Canvas sync ────────────────────────────────────────────── */
 const tokenInput = document.getElementById('tokenInput');
 const syncStatus = document.getElementById('syncStatus');
-
-// Auto-fill token from localStorage
 const savedToken = localStorage.getItem(TOKEN_KEY);
 if (savedToken) tokenInput.value = savedToken;
 
 async function fetchAllPages(url, token) {
-  let results = [];
-  let next = url;
+  let results = [], next = url;
   while (next) {
-    const res = await fetch(PROXY_URL + new URL(next).pathname + new URL(next).search, {
-      headers: { 'X-Canvas-Token': token }
-    });
+    const res = await fetch(PROXY_URL + new URL(next).pathname + new URL(next).search, { headers: { 'X-Canvas-Token': token } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    results = results.concat(data);
+    results = results.concat(await res.json());
     const link = res.headers.get('Link') || '';
     const m = link.match(/<([^>]+)>;\s*rel="next"/);
     next = m ? m[1] : null;
@@ -1013,27 +1059,20 @@ async function fetchAllPages(url, token) {
 document.getElementById('syncBtn').addEventListener('click', async () => {
   const token = tokenInput.value.trim();
   if (!token) { syncStatus.textContent = 'Paste your Canvas token first.'; syncStatus.className = 'settings-status err'; return; }
-  syncStatus.textContent = 'Syncing…';
-  syncStatus.className = 'settings-status';
+  syncStatus.textContent = 'Syncing…'; syncStatus.className = 'settings-status';
   try {
-    const courses = await fetchAllPages(
-      'https://bristolcc.instructure.com/api/v1/courses?enrollment_type[]=student&per_page=50',
-      token
-    );
+    const courses = await fetchAllPages('https://bristolcc.instructure.com/api/v1/courses?enrollment_type[]=student&per_page=50', token);
     const targetCodes = ['SCI-112','HST-111','HST-112'];
     const relevant = courses.filter(c => targetCodes.some(code => c.course_code && c.course_code.includes(code)));
     let added = 0;
     for (const course of relevant) {
-      const assignments = await fetchAllPages(
-        `https://bristolcc.instructure.com/api/v1/courses/${course.id}/assignments?per_page=50`,
-        token
-      );
+      const assignments = await fetchAllPages(`https://bristolcc.instructure.com/api/v1/courses/${course.id}/assignments?per_page=50`, token);
       assignments.forEach(a => {
         if (!a.due_at) return;
-        const due = new Date(a.due_at);
         const id = `canvas-${a.id}`;
         if (TASKS.find(t => t.id === id)) return;
-        const courseCode = targetCodes.find(code => (course.course_code || '').includes(code)) || course.course_code;
+        const due = new Date(a.due_at);
+        const courseCode = targetCodes.find(code => (course.course_code||'').includes(code)) || course.course_code;
         TASKS.push({ id, course: courseCode, title: a.name, workDate: due, dueDate: due });
         added++;
       });
@@ -1042,17 +1081,12 @@ document.getElementById('syncBtn').addEventListener('click', async () => {
     syncStatus.textContent = added ? `Synced! Added ${added} assignment${added>1?'s':''} from Canvas.` : 'Synced — no new assignments found.';
     syncStatus.className = 'settings-status';
     render();
-  } catch (e) {
-    syncStatus.textContent = 'Sync failed: ' + e.message;
-    syncStatus.className = 'settings-status err';
-  }
+  } catch (e) { syncStatus.textContent = 'Sync failed: ' + e.message; syncStatus.className = 'settings-status err'; }
 });
 
 document.getElementById('forgetBtn').addEventListener('click', () => {
-  localStorage.removeItem(TOKEN_KEY);
-  tokenInput.value = '';
-  syncStatus.textContent = 'Token cleared.';
-  syncStatus.className = 'settings-status';
+  localStorage.removeItem(TOKEN_KEY); tokenInput.value = '';
+  syncStatus.textContent = 'Token cleared.'; syncStatus.className = 'settings-status';
 });
 
 /* ── Init ───────────────────────────────────────────────────── */
