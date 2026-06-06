@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Canvas Planner · BCC</title>
+  <title>Study Planner · BCC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet" />
@@ -14,9 +14,8 @@
       --sage:   #7A9E87;
       --cream:  #FDF8F5;
       --white:  #FFFFFF;
-      --shadow: 0 2px 12px rgba(0,0,0,0.06);
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
       --r-card:   14px;
-      --r-input:   8px;
       --r-assign: 10px;
       --r-pill:   20px;
 
@@ -26,909 +25,1027 @@
 
       --overdue: #C0392B;
       --soon:    #D68910;
-      --upcoming:#2D5A3D;
+      --ok:      #2D5A3D;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'DM Sans', sans-serif;
       font-weight: 400;
       background: var(--cream);
       color: #2A2A2A;
       min-height: 100vh;
+      padding-bottom: 60px;
     }
 
-    /* ── Header ──────────────────────────────────────────────────────────── */
+    /* ── Header ─────────────────────────────────────────── */
     header {
       background: var(--green);
-      padding: 24px 32px 22px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+      padding: 22px 24px 18px;
     }
-
-    header h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 500;
-      font-size: 2rem;
-      color: var(--white);
-      letter-spacing: 0.02em;
-      line-height: 1;
-    }
-
-    .header-sub {
-      font-size: 0.72rem;
-      font-weight: 300;
-      color: var(--pink);
-      margin-top: 5px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .header-right { text-align: right; }
-
-    .week-label {
-      font-size: 0.7rem;
-      color: rgba(255,255,255,0.5);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 3px;
-    }
-
-    .week-value {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.05rem;
-      color: var(--white);
-    }
-
-    /* ── Layout ──────────────────────────────────────────────────────────── */
-    .container {
-      max-width: 760px;
-      margin: 0 auto;
-      padding: 28px 16px 56px;
-    }
-
-    /* ── Token card ──────────────────────────────────────────────────────── */
-    .token-card {
-      background: var(--white);
-      border-radius: var(--r-card);
-      box-shadow: var(--shadow);
-      padding: 22px 24px;
-      margin-bottom: 18px;
-    }
-
-    .field-label {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 500;
-      color: var(--sage);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .token-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    input[type="password"] {
-      flex: 1;
-      padding: 10px 14px;
-      border: 1.5px solid #E4DDD7;
-      border-radius: var(--r-input);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      background: var(--cream);
-      color: #2A2A2A;
-      outline: none;
-      transition: border-color 0.18s;
-    }
-
-    input[type="password"]:focus { border-color: var(--sage); }
-    input[type="password"]::placeholder { color: #C0B8B2; }
-
-    .btn-primary {
-      background: var(--green);
-      color: var(--white);
-      border: none;
-      padding: 10px 22px;
-      border-radius: var(--r-input);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.875rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.18s, opacity 0.18s;
-      white-space: nowrap;
-    }
-
-    .btn-primary:hover:not(:disabled) { background: #3a7351; }
-    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .token-hint {
-      margin-top: 9px;
-      font-size: 0.72rem;
-      font-weight: 300;
-      color: #B8B0AA;
-      line-height: 1.5;
-    }
-
-    /* ── Setup notice (shown when PROXY_URL not configured) ─────────────── */
-    .setup-notice {
-      background: #FFF8EC;
-      border: 1.5px solid #F5DFA0;
-      border-radius: var(--r-input);
-      padding: 14px 18px;
-      margin-bottom: 18px;
-      font-size: 0.82rem;
-      color: #7A5C10;
-      line-height: 1.6;
-    }
-
-    .setup-notice strong { font-weight: 500; }
-
-    /* ── Error banner ────────────────────────────────────────────────────── */
-    .error-banner {
-      background: #FDEAEA;
-      border: 1.5px solid #F1BEBE;
-      border-radius: var(--r-input);
-      padding: 12px 16px;
-      margin-bottom: 16px;
-      font-size: 0.82rem;
-      color: #922B21;
-      line-height: 1.5;
-      display: none;
-    }
-
-    /* ── Results section ─────────────────────────────────────────────────── */
-    .results-section { display: none; }
-
-    .results-top {
+    .header-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
-
-    .results-title {
+    .header-title h1 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.35rem;
+      font-size: 1.75rem;
       font-weight: 500;
-      color: var(--green);
+      color: var(--white);
       line-height: 1;
     }
-
-    .accent-bar {
-      height: 2px;
-      width: 36px;
-      background: linear-gradient(to right, var(--pink), transparent);
-      border-radius: 2px;
-      margin-top: 5px;
+    .header-title p {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.65);
+      margin-top: 4px;
     }
-
-    .btn-refresh {
-      background: none;
-      border: 1.5px solid var(--sage);
-      color: var(--sage);
-      padding: 7px 16px;
-      border-radius: var(--r-input);
+    .share-week-btn {
+      background: var(--pink);
+      color: var(--green);
+      border: none;
+      border-radius: var(--r-pill);
+      padding: 8px 16px;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.15s;
+      white-space: nowrap;
     }
+    .share-week-btn:active { opacity: 0.8; }
 
-    .btn-refresh:hover:not(:disabled) { background: var(--sage); color: var(--white); }
-    .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* ── Summary pills ───────────────────────────────────────────────────── */
-    .summary-row {
+    /* Summary pills */
+    .summary-pills {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
       margin-bottom: 14px;
     }
-
     .pill {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 13px;
+      padding: 4px 12px;
       border-radius: var(--r-pill);
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       font-weight: 500;
+      background: rgba(255,255,255,0.15);
+      color: var(--white);
     }
-
-    .pill-total   { background: var(--green); color: var(--white); }
-    .pill-overdue { background: #FDEAEA;      color: var(--overdue); }
-    .pill-soon    { background: #FEF5E3;      color: var(--soon); }
-
+    .pill.overdue { background: rgba(192,57,43,0.75); }
+    .pill.soon    { background: rgba(214,137,16,0.75); }
+    .pill.ok      { background: rgba(122,158,135,0.5); }
     .pill-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
       background: currentColor;
-      flex-shrink: 0;
+      opacity: 0.85;
     }
 
-    /* ── Filter row ──────────────────────────────────────────────────────── */
-    .filter-row {
+    /* View tabs */
+    .view-tabs {
       display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
+      gap: 4px;
     }
-
-    .filter-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 20px;
-      border: 1.5px solid #E4DDD7;
-      background: var(--white);
+    .tab-btn {
+      flex: 1;
+      padding: 8px 6px;
+      background: rgba(255,255,255,0.12);
+      border: none;
+      border-radius: 8px;
       font-family: 'DM Sans', sans-serif;
-      font-size: 0.78rem;
-      font-weight: 400;
-      color: #6B6560;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.7);
       cursor: pointer;
       transition: all 0.15s;
     }
-
-    .filter-btn:hover { border-color: var(--sage); color: var(--green); }
-
-    .filter-btn.active {
-      background: var(--green);
-      border-color: var(--green);
-      color: var(--white);
+    .tab-btn.active {
+      background: var(--white);
+      color: var(--green);
+      font-weight: 500;
     }
+    .tab-btn:active { opacity: 0.8; }
 
-    .filter-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
+    /* ── Main container ──────────────────────────────────── */
+    main { padding: 16px 16px 0; }
+
+    /* Course filter */
+    .course-filter {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
+    .filter-btn {
+      padding: 5px 14px;
+      border-radius: var(--r-pill);
+      border: 1.5px solid #ddd;
+      background: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.15s;
+    }
+    .filter-btn.active-all  { background: var(--green); color: var(--white); border-color: var(--green); }
+    .filter-btn.active-sci  { background: var(--sci112); color: var(--white); border-color: var(--sci112); }
+    .filter-btn.active-h1   { background: var(--hst111); color: var(--white); border-color: var(--hst111); }
+    .filter-btn.active-h2   { background: var(--hst112); color: var(--white); border-color: var(--hst112); }
 
-    /* ── Course section ──────────────────────────────────────────────────── */
-    .course-section { margin-bottom: 30px; }
-
-    .course-header {
+    /* Week nav (This Week view) */
+    .week-nav {
       display: flex;
       align-items: center;
-      gap: 9px;
-      margin-bottom: 11px;
+      justify-content: space-between;
+      margin-bottom: 16px;
     }
-
-    .course-dot {
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .course-name {
+    .week-nav-label {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.1rem;
       font-weight: 500;
       color: var(--green);
     }
+    .week-nav-btns { display: flex; gap: 8px; align-items: center; }
+    .week-arrow-btn {
+      background: var(--white);
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--green);
+    }
+    .week-arrow-btn:active { background: #eee; }
+    .today-btn {
+      background: var(--green);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      padding: 0 12px;
+      height: 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .today-btn:active { opacity: 0.8; }
 
-    .course-remaining {
-      font-size: 0.73rem;
-      color: var(--sage);
-      font-weight: 300;
-      margin-left: 2px;
+    /* Day group */
+    .day-group { margin-bottom: 20px; }
+    .day-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .day-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--green);
+      white-space: nowrap;
+    }
+    .day-name.today-label { color: var(--overdue); font-weight: 600; }
+    .day-date {
+      font-size: 0.72rem;
+      color: #888;
+    }
+    .day-divider {
+      flex: 1;
+      height: 1px;
+      background: #e0dcd7;
     }
 
-    /* ── Assignment card ─────────────────────────────────────────────────── */
-    .a-card {
+    /* Due group (Upcoming view) */
+    .due-group { margin-bottom: 24px; }
+    .due-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--green);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #e0dcd7;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #aaa;
+      font-size: 0.88rem;
+    }
+    .empty-state .emoji { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+    /* ── Assignment card ─────────────────────────────────── */
+    .assign-card {
       background: var(--white);
       border-radius: var(--r-assign);
       box-shadow: var(--shadow);
-      padding: 13px 16px;
-      margin-bottom: 9px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
       display: flex;
       align-items: flex-start;
       gap: 12px;
-      border-left: 3px solid transparent;
-      transition: opacity 0.2s;
+      position: relative;
+      border-left: 4px solid transparent;
     }
+    .assign-card.sci { border-left-color: var(--sci112); }
+    .assign-card.h1  { border-left-color: var(--hst111); }
+    .assign-card.h2  { border-left-color: var(--hst112); }
+    .assign-card.done { opacity: 0.45; }
 
-    .a-card.s-overdue  { border-left-color: #E74C3C; }
-    .a-card.s-soon     { border-left-color: #F39C12; }
-    .a-card.s-upcoming { border-left-color: var(--sage); }
-
-    .a-card.is-checked { opacity: 0.42; }
-    .a-card.is-checked .a-title { text-decoration: line-through; color: #AAA; }
-
-    .cb-wrap {
-      padding-top: 1px;
-      flex-shrink: 0;
-    }
-
-    .cb-wrap input[type="checkbox"] {
+    .assign-check {
       appearance: none;
       -webkit-appearance: none;
-      width: 18px; height: 18px;
-      border: 2px solid #CEC6C0;
-      border-radius: 4px;
+      width: 20px; height: 20px;
+      min-width: 20px;
+      border-radius: 50%;
+      border: 2px solid #ccc;
       cursor: pointer;
-      transition: background 0.15s, border-color 0.15s;
+      margin-top: 1px;
       position: relative;
-      display: block;
-      flex-shrink: 0;
+      transition: all 0.15s;
     }
-
-    .cb-wrap input[type="checkbox"]:checked {
-      background: var(--sage);
-      border-color: var(--sage);
-    }
-
-    .cb-wrap input[type="checkbox"]:checked::after {
+    .assign-card.sci .assign-check { border-color: var(--sci112); }
+    .assign-card.h1  .assign-check { border-color: var(--hst111); }
+    .assign-card.h2  .assign-check { border-color: var(--hst112); }
+    .assign-check:checked { background: currentColor; border-color: currentColor; }
+    .assign-card.sci .assign-check:checked { background: var(--sci112); border-color: var(--sci112); }
+    .assign-card.h1  .assign-check:checked { background: var(--hst111); border-color: var(--hst111); }
+    .assign-card.h2  .assign-check:checked { background: var(--hst112); border-color: var(--hst112); }
+    .assign-check:checked::after {
       content: '';
       position: absolute;
-      left: 4px;
-      top: 1px;
-      width: 5px;
-      height: 9px;
-      border: 2px solid var(--white);
+      top: 3px; left: 6px;
+      width: 5px; height: 9px;
+      border: 2px solid #fff;
       border-top: none;
       border-left: none;
       transform: rotate(45deg);
     }
 
-    .a-body { flex: 1; min-width: 0; }
-
-    .a-title {
-      font-size: 0.875rem;
+    .assign-body { flex: 1; min-width: 0; }
+    .assign-course-tag {
+      display: inline-block;
+      font-size: 0.65rem;
       font-weight: 500;
-      color: #2A2A2A;
-      line-height: 1.4;
-      margin-bottom: 5px;
-      word-break: break-word;
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--white);
+      margin-bottom: 4px;
     }
+    .sci .assign-course-tag  { background: var(--sci112); }
+    .h1  .assign-course-tag  { background: var(--hst111); }
+    .h2  .assign-course-tag  { background: var(--hst112); }
 
-    .a-meta {
+    .assign-title {
+      font-size: 0.88rem;
+      font-weight: 400;
+      line-height: 1.35;
+      color: #2A2A2A;
+    }
+    .assign-meta {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      margin-top: 5px;
       flex-wrap: wrap;
     }
-
-    .a-date {
-      font-size: 0.74rem;
-      font-weight: 300;
-      color: #9A9289;
+    .due-label {
+      font-size: 0.7rem;
+      color: #999;
     }
+    .due-label.overdue { color: var(--overdue); font-weight: 500; }
+    .due-label.soon    { color: var(--soon); font-weight: 500; }
 
-    .status-tag {
-      font-size: 0.67rem;
+    .remind-btn {
+      margin-left: auto;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1.5px solid var(--sage);
+      background: transparent;
+      color: var(--sage);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.7rem;
       font-weight: 500;
-      padding: 2px 8px;
-      border-radius: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
     }
+    .remind-btn:active { background: var(--sage); color: var(--white); }
 
-    .tag-overdue  { background: #FDEAEA; color: var(--overdue); }
-    .tag-soon     { background: #FEF5E3; color: var(--soon); }
-    .tag-upcoming { background: #EBF4EF; color: var(--upcoming); }
-
-    .a-pts {
-      font-size: 0.72rem;
-      font-weight: 300;
-      color: #B8B0AA;
+    /* ── Canvas settings ─────────────────────────────────── */
+    .settings-section {
+      margin-top: 24px;
     }
-
-    /* ── Empty / loading states ──────────────────────────────────────────── */
-    .state-card {
-      background: var(--white);
-      border-radius: var(--r-card);
-      box-shadow: var(--shadow);
-      padding: 40px 24px;
-      text-align: center;
-    }
-
-    .state-heading {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: var(--green);
-      margin-bottom: 6px;
-    }
-
-    .state-body {
+    .settings-toggle {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-top: 1px solid #e0dcd7;
+      padding: 14px 0 4px;
+      font-family: 'DM Sans', sans-serif;
       font-size: 0.82rem;
-      font-weight: 300;
-      color: #B0A8A2;
-      line-height: 1.5;
+      color: #888;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-
-    .no-assignments {
+    .settings-toggle .chevron { transition: transform 0.2s; }
+    .settings-toggle.open .chevron { transform: rotate(180deg); }
+    .settings-body {
+      display: none;
+      padding: 14px 0 0;
+    }
+    .settings-body.open { display: block; }
+    .settings-body label {
+      display: block;
       font-size: 0.78rem;
-      font-weight: 300;
-      color: #C0B8B2;
-      font-style: italic;
-      padding: 4px 0 4px 4px;
+      color: #555;
+      margin-bottom: 5px;
     }
-
-    /* ── Spinner ─────────────────────────────────────────────────────────── */
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .spinner {
-      display: inline-block;
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: var(--white);
-      border-radius: 50%;
-      animation: spin 0.65s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
+    .settings-body input[type="password"],
+    .settings-body input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      background: var(--white);
+      margin-bottom: 10px;
     }
-
-    /* ── Responsive ──────────────────────────────────────────────────────── */
-    @media (max-width: 560px) {
-      header { padding: 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
-      .header-right { text-align: left; }
-      .container { padding: 18px 12px 48px; }
-      .token-row { flex-direction: column; }
-      .btn-primary { width: 100%; text-align: center; }
+    .settings-body input:focus { outline: none; border-color: var(--sage); }
+    .settings-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 9px 18px;
+      background: var(--green);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
     }
+    .btn-primary:active { opacity: 0.85; }
+    .btn-ghost {
+      padding: 9px 14px;
+      background: transparent;
+      color: #999;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .settings-status {
+      font-size: 0.78rem;
+      color: var(--sage);
+      margin-top: 8px;
+      min-height: 18px;
+    }
+    .settings-status.err { color: var(--overdue); }
+
+    /* ── Toast ───────────────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #2A2A2A;
+      color: var(--white);
+      padding: 10px 20px;
+      border-radius: var(--r-pill);
+      font-size: 0.82rem;
+      font-weight: 400;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      white-space: nowrap;
+      max-width: 90vw;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   </style>
 </head>
 <body>
 
+<!-- ── Header ──────────────────────────────────────────────── -->
 <header>
-  <div>
-    <h1>Canvas Planner</h1>
-    <div class="header-sub">BCC · Summer 2026</div>
+  <div class="header-top">
+    <div class="header-title">
+      <h1>Study Planner</h1>
+      <p id="headerSub">BCC Summer 2026</p>
+    </div>
+    <button class="share-week-btn" id="shareWeekBtn">+ Remind this week</button>
   </div>
-  <div class="header-right">
-    <div class="week-label">Week of</div>
-    <div class="week-value" id="weekValue"></div>
+
+  <div class="summary-pills" id="summaryPills"></div>
+
+  <div class="view-tabs">
+    <button class="tab-btn active" data-view="week">This Week</button>
+    <button class="tab-btn" data-view="today">Today</button>
+    <button class="tab-btn" data-view="upcoming">Upcoming</button>
   </div>
 </header>
 
-<div class="container">
+<!-- ── Main ────────────────────────────────────────────────── -->
+<main>
 
-  <!-- Setup notice — hidden once PROXY_URL is configured -->
-  <div class="setup-notice" id="setupNotice" style="display:none">
-    <strong>Setup needed:</strong> Open this file, find <code>PROXY_URL</code> near the top of the
-    &lt;script&gt;, and replace <code>'YOUR_CLOUDFLARE_WORKER_URL'</code> with your deployed worker
-    URL. See <code>cloudflare-worker.js</code> for deploy instructions.
+  <!-- Course filter -->
+  <div class="course-filter">
+    <button class="filter-btn active-all" data-course="all">All</button>
+    <button class="filter-btn" data-course="SCI-112">SCI-112</button>
+    <button class="filter-btn" data-course="HST-111">HST-111</button>
+    <button class="filter-btn" data-course="HST-112">HST-112</button>
   </div>
 
-  <!-- Token input -->
-  <div class="token-card">
-    <label class="field-label" for="tokenInput">Canvas Access Token</label>
-    <div class="token-row">
-      <input type="password" id="tokenInput"
-             placeholder="Paste your Canvas access token here…"
-             autocomplete="off" spellcheck="false" />
-      <button class="btn-primary" id="loadBtn" onclick="loadAssignments()">Load</button>
-    </div>
-    <div class="token-hint">
-      Token is saved on this device for convenience.
-      Generate one in Canvas → Account → Settings → New Access Token.
-      <a href="#" onclick="forgetToken(); return false;" style="color:var(--sage);margin-left:6px;">Forget token</a>
+  <!-- Week nav (shown in "week" view only) -->
+  <div class="week-nav" id="weekNav">
+    <span class="week-nav-label" id="weekNavLabel"></span>
+    <div class="week-nav-btns">
+      <button class="week-arrow-btn" id="prevWeekBtn">&#8249;</button>
+      <button class="today-btn" id="thisWeekBtn">Today</button>
+      <button class="week-arrow-btn" id="nextWeekBtn">&#8250;</button>
     </div>
   </div>
 
-  <!-- Error banner -->
-  <div class="error-banner" id="errorBanner"></div>
+  <!-- Task list -->
+  <div id="taskList"></div>
 
-  <!-- Results -->
-  <div class="results-section" id="resultsSection">
-    <div class="results-top">
-      <div>
-        <div class="results-title">Your Week</div>
-        <div class="accent-bar"></div>
+  <!-- Canvas sync settings (collapsible) -->
+  <div class="settings-section">
+    <button class="settings-toggle" id="settingsToggle">
+      <span>⚙ Canvas sync settings</span>
+      <span class="chevron">▾</span>
+    </button>
+    <div class="settings-body" id="settingsBody">
+      <label for="tokenInput">Canvas access token</label>
+      <input type="password" id="tokenInput" placeholder="Paste token here…" autocomplete="off" />
+      <div class="settings-actions">
+        <button class="btn-primary" id="syncBtn">Sync from Canvas</button>
+        <button class="btn-ghost" id="forgetBtn">Forget token</button>
       </div>
-      <button class="btn-refresh" id="refreshBtn" onclick="doRefresh()">↻ Refresh</button>
+      <div class="settings-status" id="syncStatus"></div>
     </div>
-
-    <div class="summary-row" id="summaryRow"></div>
-    <div class="filter-row" id="filterRow"></div>
-    <div id="assignmentList"></div>
   </div>
 
-  <!-- All-clear empty state -->
-  <div class="state-card" id="allClearState" style="display:none">
-    <div class="state-heading">All clear</div>
-    <div class="state-body">No assignments due in the next 14 days.</div>
-  </div>
+</main>
 
-</div>
+<div id="toast"></div>
 
 <script>
-// ─── CONFIG ────────────────────────────────────────────────────────────────────
-// After deploying cloudflare-worker.js, replace the string below with your worker URL.
-// Example: 'https://canvas-proxy.yourname.workers.dev'
-const PROXY_URL = 'https://canvas-proxy.shaina-4f5.workers.dev';
+'use strict';
 
-const COURSE_STYLES = {
-  'SCI-112': { label: 'SCI-112 · Ecology',         color: '#4A90D9', key: 'sci112' },
-  'HST-111': { label: 'HST-111 · The West & World I',  color: '#9B59B6', key: 'hst111' },
-  'HST-112': { label: 'HST-112 · The West & World II', color: '#C9975A', key: 'hst112' },
-};
+/* ── Constants ──────────────────────────────────────────────── */
+const PROXY_URL   = 'https://canvas-proxy.shaina-4f5.workers.dev';
+const TOKEN_KEY   = 'canvas_token_v1';
+const CHECKS_KEY  = 'canvas_checked_v1';
 
-const FILTERS = [
-  { key: 'all',    label: 'All',     color: null },
-  { key: 'sci112', label: 'SCI-112', color: '#4A90D9' },
-  { key: 'hst111', label: 'HST-111', color: '#9B59B6' },
-  { key: 'hst112', label: 'HST-112', color: '#C9975A' },
+/* ── Static task data ───────────────────────────────────────── */
+// [id, course, title, workDate (YYYY-MM-DD), dueDate (YYYY-MM-DD)]
+const RAW = [
+  // HST-112 (26 tasks — weekly Read+Post cycle)
+  ['h2-1a', 'HST-112', 'Read: Transoceanic Encounters · Go through PowerPoints',             '2026-06-05', '2026-06-08'],
+  ['h2-1b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 1',                              '2026-06-08', '2026-06-08'],
+  ['h2-2a', 'HST-112', 'Read: Transformation of Europe · New Worlds · PowerPoints',          '2026-06-12', '2026-06-15'],
+  ['h2-2b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 2',                              '2026-06-15', '2026-06-15'],
+  ['h2-3a', 'HST-112', 'Read: Africa & Atlantic World · East Asia · PowerPoints',            '2026-06-19', '2026-06-22'],
+  ['h2-3b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 3',                              '2026-06-22', '2026-06-22'],
+  ['h2-4a', 'HST-112', 'Read: Islamic Empires · National States · PowerPoints',              '2026-06-26', '2026-06-29'],
+  ['h2-4b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 4',                              '2026-06-29', '2026-06-29'],
+  ['h2-5a', 'HST-112', 'Read: Industrial Society · Americas Independence · PowerPoints',     '2026-07-03', '2026-07-06'],
+  ['h2-5b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 5',                              '2026-07-06', '2026-07-06'],
+  ['h2-6a', 'HST-112', 'Read: Societies at Crossroads · Building Global Empires · PowerPoints','2026-07-10','2026-07-13'],
+  ['h2-6b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 6',                              '2026-07-13', '2026-07-13'],
+  ['h2-7a', 'HST-112', 'Read: The Great War · Age of Anxiety · PowerPoints',                 '2026-07-17', '2026-07-20'],
+  ['h2-7b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 7',                              '2026-07-20', '2026-07-20'],
+  ['h2-8a', 'HST-112', 'Read: Nationalism + Political Identities · PowerPoints',             '2026-07-24', '2026-07-27'],
+  ['h2-8b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 8',                              '2026-07-27', '2026-07-27'],
+  ['h2-9a', 'HST-112', 'Read: New Conflagrations: World War II · PowerPoints',               '2026-07-31', '2026-08-03'],
+  ['h2-9b', 'HST-112', 'Submit Post Alert + Peer Reply · Wk 9',                              '2026-08-03', '2026-08-03'],
+  ['h2-10a','HST-112', 'Read: Bipolar World + End of Empire · PowerPoints',                  '2026-08-07', '2026-08-10'],
+  ['h2-10b','HST-112', 'Submit Post Alert + Peer Reply · Wk 10',                             '2026-08-10', '2026-08-10'],
+  ['h2-11a','HST-112', 'Read: A World without Borders · PowerPoints',                        '2026-08-12', '2026-08-15'],
+  ['h2-11b','HST-112', 'Submit Post Alert + Peer Reply · Wk 11',                             '2026-08-15', '2026-08-15'],
+  ['h2-12a','HST-112', 'Read: Recent Past (American Yawp) · PowerPoints',                   '2026-08-18', '2026-08-21'],
+  ['h2-12b','HST-112', 'Submit Post Alert + Peer Reply · Wk 12',                             '2026-08-21', '2026-08-21'],
+  ['h2-fp', 'HST-112', 'Work on Final Project',                                              '2026-08-12', '2026-08-19'],
+  ['h2-fps','HST-112', 'Submit Final Project',                                               '2026-08-19', '2026-08-19'],
+
+  // HST-111 (15 tasks)
+  ['h1-0',  'HST-111', 'Complete Intro Assignment + Critical Analysis Guide',                '2026-06-02', '2026-06-03'],
+  ['h1-1a', 'HST-111', 'Post Ch. 1 Prehistory — Initial Discussion',                        '2026-06-11', '2026-06-11'],
+  ['h1-1b', 'HST-111', 'Post Ch. 1 Prehistory — Reply Discussion',                          '2026-06-13', '2026-06-13'],
+  ['h1-2d', 'HST-111', 'Draft Ch. 2 Critical Analysis (library)',                            '2026-06-14', '2026-06-16'],
+  ['h1-2s', 'HST-111', 'Polish + Submit Ch. 2 Critical Analysis',                           '2026-06-16', '2026-06-16'],
+  ['h1-4d', 'HST-111', 'Draft Ch. 4 Critical Analysis (library)',                            '2026-06-21', '2026-06-23'],
+  ['h1-4s', 'HST-111', 'Polish + Submit Ch. 4 Critical Analysis',                           '2026-06-23', '2026-06-23'],
+  ['h1-5d', 'HST-111', 'Draft Ch. 5 Critical Analysis (library)',                            '2026-06-28', '2026-06-30'],
+  ['h1-5s', 'HST-111', 'Polish + Submit Ch. 5 Critical Analysis',                           '2026-06-30', '2026-06-30'],
+  ['h1-7a', 'HST-111', 'Post Ch. 7 Imperial Anchors — Initial Discussion',                  '2026-07-08', '2026-07-08'],
+  ['h1-7b', 'HST-111', 'Post Ch. 7 Imperial Anchors — Reply Discussion',                    '2026-07-10', '2026-07-11'],
+  ['h1-8d', 'HST-111', 'Draft Ch. 8 Critical Analysis (library)',                            '2026-07-19', '2026-07-21'],
+  ['h1-8s', 'HST-111', 'Polish + Submit Ch. 8 Critical Analysis',                           '2026-07-21', '2026-07-21'],
+  ['h1-fa', 'HST-111', 'Begin Final Assignment',                                             '2026-07-28', '2026-08-20'],
+  ['h1-fs', 'HST-111', 'Submit Final Assignment',                                            '2026-08-20', '2026-08-20'],
+
+  // SCI-112 (40 tasks)
+  ['s-1l',  'SCI-112', 'Wk 1: Lectures + Videos — Ecology Intro / Biotic vs. Abiotic',      '2026-06-01', '2026-06-14'],
+  ['s-1b',  'SCI-112', 'Wk 1: Lab Assignment',                                              '2026-06-03', '2026-06-14'],
+  ['s-1r',  'SCI-112', 'Wk 1: Review Sheet',                                                '2026-06-04', '2026-06-14'],
+  ['s-2l',  'SCI-112', 'Wk 2: Lectures + Videos — Biomes',                                  '2026-06-08', '2026-06-14'],
+  ['s-2b',  'SCI-112', 'Wk 2: Lab Assignment',                                              '2026-06-10', '2026-06-14'],
+  ['s-2r',  'SCI-112', 'Wk 2: Review Sheet + Submit Unit 1',                                '2026-06-13', '2026-06-14'],
+  ['s-3l',  'SCI-112', 'Wk 3: Lectures + Videos — Matter, Energy + Ecosystems',             '2026-06-15', '2026-06-28'],
+  ['s-3b',  'SCI-112', 'Wk 3: Lab Assignment',                                              '2026-06-17', '2026-06-28'],
+  ['s-3r',  'SCI-112', 'Wk 3: Review Sheet',                                                '2026-06-18', '2026-06-28'],
+  ['s-4l',  'SCI-112', 'Wk 4: Lectures + Videos — Population Genetics + Natural Selection', '2026-06-22', '2026-06-28'],
+  ['s-4b',  'SCI-112', 'Wk 4: Lab Assignment',                                              '2026-06-24', '2026-06-28'],
+  ['s-4q',  'SCI-112', 'Quiz Weeks 1–3 + Submit Unit 2',                                    '2026-06-27', '2026-06-28'],
+  ['s-5l',  'SCI-112', 'Wk 5: Lectures + Videos — Biodiversity',                            '2026-06-29', '2026-07-12'],
+  ['s-5b',  'SCI-112', 'Wk 5: Lab Assignment',                                              '2026-07-01', '2026-07-12'],
+  ['s-5r',  'SCI-112', 'Wk 5: Review Sheet · Start Article Search',                         '2026-07-02', '2026-07-12'],
+  ['s-6l',  'SCI-112', 'Wk 6: Lectures + Videos — Community Ecology',                       '2026-07-06', '2026-07-12'],
+  ['s-6b',  'SCI-112', 'Wk 6: Lab Assignment',                                              '2026-07-08', '2026-07-12'],
+  ['s-6r',  'SCI-112', 'Wk 6: Review Sheet + Submit Unit 3',                                '2026-07-11', '2026-07-12'],
+  ['s-ex1p','SCI-112', 'Prepare for Exam 1 (Weeks 1–6)',                                     '2026-07-16', '2026-07-19'],
+  ['s-ex1s','SCI-112', 'Take + Submit Exam 1',                                               '2026-07-19', '2026-07-19'],
+  ['s-7l',  'SCI-112', 'Wk 7: Lectures + Videos — Population Ecology + Life Histories',     '2026-07-13', '2026-07-26'],
+  ['s-7b',  'SCI-112', 'Wk 7: Lab Assignment',                                              '2026-07-15', '2026-07-26'],
+  ['s-7r',  'SCI-112', 'Wk 7: Review Sheet · Work on Article Review',                       '2026-07-16', '2026-07-26'],
+  ['s-8l',  'SCI-112', 'Wk 8: Lectures + Videos — Human Population',                        '2026-07-20', '2026-07-26'],
+  ['s-8b',  'SCI-112', 'Wk 8: Lab Assignment',                                              '2026-07-22', '2026-07-26'],
+  ['s-8r',  'SCI-112', 'Article Review Due + Submit Unit 4',                                 '2026-07-25', '2026-07-26'],
+  ['s-9l',  'SCI-112', 'Wk 9: Lectures + Videos — Conservation Biology',                    '2026-07-27', '2026-08-09'],
+  ['s-9b',  'SCI-112', 'Wk 9: Lab Assignment',                                              '2026-07-29', '2026-08-09'],
+  ['s-9r',  'SCI-112', 'Wk 9: Review Sheet',                                                '2026-07-30', '2026-08-09'],
+  ['s-10l', 'SCI-112', 'Wk 10: Lectures + Videos — Soil + Agriculture',                     '2026-08-03', '2026-08-09'],
+  ['s-10b', 'SCI-112', 'Wk 10: Lab Assignment',                                             '2026-08-05', '2026-08-09'],
+  ['s-10r', 'SCI-112', 'Wk 10: Review Sheet + Submit Unit 5',                               '2026-08-08', '2026-08-09'],
+  ['s-11l', 'SCI-112', 'Wk 11: Lectures + Videos — Fresh Water + Oceans',                   '2026-08-10', '2026-08-22'],
+  ['s-11b', 'SCI-112', 'Wk 11: Lab Assignment',                                             '2026-08-12', '2026-08-22'],
+  ['s-11r', 'SCI-112', 'Wk 11: Review Sheet · Begin Final Exam Prep',                       '2026-08-13', '2026-08-22'],
+  ['s-12l', 'SCI-112', 'Wk 12: Lectures + Videos — Climate + Climate Change',               '2026-08-17', '2026-08-22'],
+  ['s-12b', 'SCI-112', 'Wk 12: Lab Assignment',                                             '2026-08-19', '2026-08-22'],
+  ['s-ex2p','SCI-112', 'Prepare for Final Exam (Weeks 7–12)',                                '2026-08-20', '2026-08-22'],
+  ['s-ex2s','SCI-112', 'Take + Submit Final Exam + Unit 6',                                  '2026-08-22', '2026-08-22'],
 ];
 
-const CHECKS_KEY = 'canvas_checked_v1';
-const TOKEN_KEY  = 'canvas_token_v1';
+/* ── Task objects ───────────────────────────────────────────── */
+const TASKS = RAW.map(([id, course, title, workDate, dueDate]) => ({
+  id, course, title,
+  workDate: parseDate(workDate),
+  dueDate:  parseDate(dueDate),
+}));
 
-// ─── STATE ─────────────────────────────────────────────────────────────────────
-let allAssignments = [];
-let checkedIds     = new Set(JSON.parse(localStorage.getItem(CHECKS_KEY) || '[]'));
-let activeFilter   = 'all';
+/* ── Helpers ────────────────────────────────────────────────── */
+function parseDate(s) {
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
 
-// ─── BOOT ──────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  setWeekLabel();
+function toYMD(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
 
-  if (PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL') {
-    document.getElementById('setupNotice').style.display = 'block';
+function today() {
+  const n = new Date();
+  return new Date(n.getFullYear(), n.getMonth(), n.getDate());
+}
+
+function addDays(d, n) {
+  const r = new Date(d);
+  r.setDate(r.getDate() + n);
+  return r;
+}
+
+function mondayOf(d) {
+  const copy = new Date(d);
+  const dow = copy.getDay(); // 0=Sun
+  const diff = dow === 0 ? -6 : 1 - dow;
+  copy.setDate(copy.getDate() + diff);
+  return copy;
+}
+
+function formatShortDate(d) {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatDayHeading(d) {
+  return d.toLocaleDateString('en-US', { weekday: 'long' });
+}
+
+function urgencyLabel(dueDate, todayDate) {
+  const diff = Math.round((dueDate - todayDate) / 86400000);
+  if (diff < 0)  return { cls: 'overdue', text: `Overdue (due ${formatShortDate(dueDate)})` };
+  if (diff === 0) return { cls: 'soon',   text: 'Due today' };
+  if (diff <= 3)  return { cls: 'soon',   text: `Due ${formatShortDate(dueDate)}` };
+  return { cls: '', text: `Due ${formatShortDate(dueDate)}` };
+}
+
+function courseClass(course) {
+  if (course === 'SCI-112') return 'sci';
+  if (course === 'HST-111') return 'h1';
+  if (course === 'HST-112') return 'h2';
+  return '';
+}
+
+/* ── Persistence ────────────────────────────────────────────── */
+let checked = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}');
+function saveChecks() { localStorage.setItem(CHECKS_KEY, JSON.stringify(checked)); }
+
+/* ── State ──────────────────────────────────────────────────── */
+let activeView   = 'week';
+let activeCourse = 'all';
+let weekOffset   = 0;  // 0 = current week, -1 = last week, +1 = next week
+
+/* ── Toast ──────────────────────────────────────────────────── */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+/* ── Share / remind ─────────────────────────────────────────── */
+async function shareTask(task) {
+  const text = `${task.course}: ${task.title}\nDue: ${formatShortDate(task.dueDate)}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: task.course, text });
+      showToast('Sent to share sheet!');
+    } catch (e) {
+      if (e.name !== 'AbortError') fallbackCopy(text);
+    }
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+async function shareWeek(tasks) {
+  if (!tasks.length) { showToast('No tasks to share this week.'); return; }
+  const lines = tasks.map(t => `• ${t.course}: ${t.title} (due ${formatShortDate(t.dueDate)})`);
+  const text = `This week's tasks:\n${lines.join('\n')}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: "This week's tasks", text });
+      showToast('Sent to share sheet!');
+    } catch (e) {
+      if (e.name !== 'AbortError') fallbackCopy(text);
+    }
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Copied to clipboard!');
+  }).catch(() => showToast('Could not share — copy manually.'));
+}
+
+/* ── Filtering ──────────────────────────────────────────────── */
+function filteredTasks() {
+  if (activeCourse === 'all') return TASKS;
+  return TASKS.filter(t => t.course === activeCourse);
+}
+
+/* ── Summary pills ──────────────────────────────────────────── */
+function renderSummary() {
+  const td = today();
+  const tasks = filteredTasks().filter(t => !checked[t.id]);
+  const overdue = tasks.filter(t => t.dueDate < td).length;
+  const soon    = tasks.filter(t => { const d = Math.round((t.dueDate - td)/86400000); return d >= 0 && d <= 3; }).length;
+  const pending = tasks.length;
+  const pEl = document.getElementById('summaryPills');
+  pEl.innerHTML = '';
+  const add = (cls, label) => {
+    const p = document.createElement('span');
+    p.className = `pill ${cls}`;
+    p.innerHTML = `<span class="pill-dot"></span>${label}`;
+    pEl.appendChild(p);
+  };
+  if (overdue) add('overdue', `${overdue} overdue`);
+  if (soon)    add('soon',    `${soon} due soon`);
+  add('ok', `${pending} pending`);
+}
+
+/* ── Render: task card ──────────────────────────────────────── */
+function renderCard(task) {
+  const td     = today();
+  const urg    = urgencyLabel(task.dueDate, td);
+  const cls    = courseClass(task.course);
+  const isDone = !!checked[task.id];
+
+  const card = document.createElement('div');
+  card.className = `assign-card ${cls}${isDone ? ' done' : ''}`;
+  card.dataset.id = task.id;
+
+  const chk = document.createElement('input');
+  chk.type = 'checkbox';
+  chk.className = 'assign-check';
+  chk.checked = isDone;
+  chk.addEventListener('change', () => {
+    checked[task.id] = chk.checked ? 1 : 0;
+    saveChecks();
+    card.classList.toggle('done', chk.checked);
+    renderSummary();
+  });
+
+  const body = document.createElement('div');
+  body.className = 'assign-body';
+
+  const tag = document.createElement('span');
+  tag.className = 'assign-course-tag';
+  tag.textContent = task.course;
+
+  const title = document.createElement('div');
+  title.className = 'assign-title';
+  title.textContent = task.title;
+
+  const meta = document.createElement('div');
+  meta.className = 'assign-meta';
+
+  const dueSpan = document.createElement('span');
+  dueSpan.className = `due-label ${urg.cls}`;
+  dueSpan.textContent = urg.text;
+
+  const remBtn = document.createElement('button');
+  remBtn.className = 'remind-btn';
+  remBtn.textContent = '+ Remind';
+  remBtn.addEventListener('click', () => shareTask(task));
+
+  meta.appendChild(dueSpan);
+  meta.appendChild(remBtn);
+
+  body.appendChild(tag);
+  body.appendChild(title);
+  body.appendChild(meta);
+
+  card.appendChild(chk);
+  card.appendChild(body);
+  return card;
+}
+
+/* ── Render: This Week view ─────────────────────────────────── */
+function renderWeek() {
+  document.getElementById('weekNav').style.display = 'flex';
+  const monday = addDays(mondayOf(today()), weekOffset * 7);
+  const sunday = addDays(monday, 6);
+  const td = today();
+
+  const label = `${formatShortDate(monday)} – ${formatShortDate(sunday)}`;
+  document.getElementById('weekNavLabel').textContent = label;
+
+  const tasks = filteredTasks().filter(t => {
+    return t.workDate >= monday && t.workDate <= sunday;
+  });
+
+  // update share-week button to include these tasks
+  document.getElementById('shareWeekBtn')._weekTasks = tasks;
+
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+
+  if (!tasks.length) {
+    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>No tasks this week.</div>';
+    return;
   }
 
-  const saved = localStorage.getItem(TOKEN_KEY);
-  if (saved) {
-    document.getElementById('tokenInput').value = saved;
-    loadAssignments();
+  // Group by workDate
+  const groups = {};
+  tasks.forEach(t => {
+    const k = toYMD(t.workDate);
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(t);
+  });
+
+  Object.keys(groups).sort().forEach(dateKey => {
+    const groupTasks = groups[dateKey];
+    const d = parseDate(dateKey);
+    const isToday = toYMD(d) === toYMD(td);
+
+    const grp = document.createElement('div');
+    grp.className = 'day-group';
+
+    const heading = document.createElement('div');
+    heading.className = 'day-heading';
+
+    const dayName = document.createElement('span');
+    dayName.className = `day-name${isToday ? ' today-label' : ''}`;
+    dayName.textContent = isToday ? 'Today' : formatDayHeading(d);
+
+    const dateSpan = document.createElement('span');
+    dateSpan.className = 'day-date';
+    dateSpan.textContent = formatShortDate(d);
+
+    const divider = document.createElement('div');
+    divider.className = 'day-divider';
+
+    heading.appendChild(dayName);
+    heading.appendChild(dateSpan);
+    heading.appendChild(divider);
+    grp.appendChild(heading);
+
+    groupTasks.forEach(t => grp.appendChild(renderCard(t)));
+    list.appendChild(grp);
+  });
+}
+
+/* ── Render: Today view ─────────────────────────────────────── */
+function renderToday() {
+  document.getElementById('weekNav').style.display = 'none';
+  const td = today();
+  const tdKey = toYMD(td);
+  const tasks = filteredTasks().filter(t => toYMD(t.workDate) === tdKey);
+
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+
+  if (!tasks.length) {
+    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing scheduled for today.</div>';
+    return;
   }
 
-  document.getElementById('tokenInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') loadAssignments();
+  tasks.forEach(t => list.appendChild(renderCard(t)));
+}
+
+/* ── Render: Upcoming view ──────────────────────────────────── */
+function renderUpcoming() {
+  document.getElementById('weekNav').style.display = 'none';
+  const td = today();
+  const end = addDays(td, 21);
+  const tasks = filteredTasks().filter(t => t.dueDate >= td && t.dueDate <= end);
+
+  const list = document.getElementById('taskList');
+  list.innerHTML = '';
+
+  if (!tasks.length) {
+    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing due in the next 21 days.</div>';
+    return;
+  }
+
+  // Group by dueDate
+  const groups = {};
+  tasks.forEach(t => {
+    const k = toYMD(t.dueDate);
+    if (!groups[k]) groups[k] = [];
+    groups[k].push(t);
+  });
+
+  Object.keys(groups).sort().forEach(dateKey => {
+    const d = parseDate(dateKey);
+    const grp = document.createElement('div');
+    grp.className = 'due-group';
+
+    const heading = document.createElement('div');
+    heading.className = 'due-heading';
+    const isToday = dateKey === toYMD(td);
+    heading.textContent = isToday
+      ? `Due today — ${formatShortDate(d)}`
+      : `Due ${formatDayHeading(d)}, ${formatShortDate(d)}`;
+
+    grp.appendChild(heading);
+    groups[dateKey].forEach(t => grp.appendChild(renderCard(t)));
+    list.appendChild(grp);
+  });
+}
+
+/* ── Main render dispatcher ─────────────────────────────────── */
+function render() {
+  renderSummary();
+  if (activeView === 'week')     renderWeek();
+  else if (activeView === 'today')    renderToday();
+  else if (activeView === 'upcoming') renderUpcoming();
+}
+
+/* ── Tab buttons ────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeView = btn.dataset.view;
+    render();
   });
 });
 
-function setWeekLabel() {
-  const now  = new Date();
-  const end  = new Date(now);
-  end.setDate(end.getDate() + 6);
-  const fmt  = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  document.getElementById('weekValue').textContent = `${fmt(now)} – ${fmt(end)}`;
-}
-
-// ─── LOAD ──────────────────────────────────────────────────────────────────────
-async function loadAssignments() {
-  const token = document.getElementById('tokenInput').value.trim();
-  if (!token) { showError('Paste your Canvas access token above, then click Load.'); return; }
-
-  if (PROXY_URL === 'YOUR_CLOUDFLARE_WORKER_URL') {
-    showError(
-      'PROXY_URL is not configured. Open this file, find the PROXY_URL constant in the ' +
-      '<script> block, and replace it with your Cloudflare Worker URL. ' +
-      'See cloudflare-worker.js for setup instructions.'
-    );
-    return;
-  }
-
-  setLoading(true);
-  clearError();
-
-  try {
-    // Fetch active enrolled courses
-    const courses = await fetchAllPages('/api/v1/courses?enrollment_type[]=student&per_page=50', token);
-
-    // Build a lookup: canvas course id → { id, code }
-    const courseById = {};
-    for (const c of courses) {
-      if (!c.id) continue;
-      courseById[c.id] = { id: c.id, code: normalizeCode(c.course_code || c.name || '') };
-    }
-
-    // Define time window
-    const now      = new Date();
-    const pastEdge = new Date(now); pastEdge.setDate(pastEdge.getDate() - 7);
-    const futureEdge = new Date(now); futureEdge.setDate(futureEdge.getDate() + 14);
-
-    // Fetch all assignments concurrently
-    const promises = Object.values(courseById).map(async course => {
-      try {
-        const params = `?per_page=50&order_by=due_at&include[]=submission`;
-        const assigns = await fetchAllPages(`/api/v1/courses/${course.id}/assignments${params}`, token);
-        return assigns
-          .filter(a => {
-            if (!a.due_at) return false;
-            const due = new Date(a.due_at);
-            return due >= pastEdge && due <= futureEdge;
-          })
-          .map(a => ({
-            id:         String(a.id),
-            title:      a.name || 'Untitled',
-            dueAt:      new Date(a.due_at),
-            courseId:   course.id,
-            courseCode: course.code,
-            points:     a.points_possible,
-            submitted:  !!(a.submission && a.submission.submitted_at),
-          }));
-      } catch (_) {
-        return [];
-      }
+/* ── Course filter buttons ──────────────────────────────────── */
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => {
+      b.className = 'filter-btn';
     });
-
-    const nested = await Promise.all(promises);
-    allAssignments = nested.flat().sort((a, b) => a.dueAt - b.dueAt);
-
-    localStorage.setItem(TOKEN_KEY, token);
+    const course = btn.dataset.course;
+    activeCourse = course;
+    if (course === 'all')     btn.classList.add('active-all');
+    if (course === 'SCI-112') btn.classList.add('active-sci');
+    if (course === 'HST-111') btn.classList.add('active-h1');
+    if (course === 'HST-112') btn.classList.add('active-h2');
     render();
-    setLoading(false);
-    document.getElementById('resultsSection').style.display = 'block';
+  });
+});
 
-  } catch (err) {
-    setLoading(false);
-    showError(friendlyError(err));
-  }
-}
+/* ── Week nav ───────────────────────────────────────────────── */
+document.getElementById('prevWeekBtn').addEventListener('click', () => { weekOffset--; render(); });
+document.getElementById('nextWeekBtn').addEventListener('click', () => { weekOffset++; render(); });
+document.getElementById('thisWeekBtn').addEventListener('click', () => { weekOffset = 0; render(); });
 
-// ─── API HELPERS ───────────────────────────────────────────────────────────────
-async function fetchAllPages(endpoint, token) {
-  const results = [];
-  let url = proxyBase() + endpoint;
+/* ── Share week button ──────────────────────────────────────── */
+document.getElementById('shareWeekBtn').addEventListener('click', () => {
+  const tasks = document.getElementById('shareWeekBtn')._weekTasks || [];
+  shareWeek(tasks.filter(t => !checked[t.id]));
+});
 
-  while (url) {
-    const res = await fetch(url, { headers: { 'X-Canvas-Token': token } });
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      throw new Error(`Canvas API ${res.status}: ${body.slice(0, 120)}`);
-    }
+/* ── Settings toggle ────────────────────────────────────────── */
+document.getElementById('settingsToggle').addEventListener('click', () => {
+  const toggle = document.getElementById('settingsToggle');
+  const body   = document.getElementById('settingsBody');
+  const open   = body.classList.toggle('open');
+  toggle.classList.toggle('open', open);
+});
+
+/* ── Canvas sync ────────────────────────────────────────────── */
+const tokenInput = document.getElementById('tokenInput');
+const syncStatus = document.getElementById('syncStatus');
+
+// Auto-fill token from localStorage
+const savedToken = localStorage.getItem(TOKEN_KEY);
+if (savedToken) tokenInput.value = savedToken;
+
+async function fetchAllPages(url, token) {
+  let results = [];
+  let next = url;
+  while (next) {
+    const res = await fetch(PROXY_URL + new URL(next).pathname + new URL(next).search, {
+      headers: { 'X-Canvas-Token': token }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    results.push(...(Array.isArray(data) ? data : [data]));
-
-    // Worker rewrites pagination URLs to point through itself — follow directly
-    const link  = res.headers.get('Link') || '';
-    const match = link.match(/<([^>]+)>;\s*rel="next"/);
-    url = match ? match[1] : null;
+    results = results.concat(data);
+    const link = res.headers.get('Link') || '';
+    const m = link.match(/<([^>]+)>;\s*rel="next"/);
+    next = m ? m[1] : null;
   }
-
   return results;
 }
 
-function proxyBase() {
-  return PROXY_URL.replace(/\/$/, '');
-}
-
-// ─── NORMALIZATION ─────────────────────────────────────────────────────────────
-function normalizeCode(raw) {
-  // Canvas course_code can be "SCI-112-01", "SCI112", "SCI-112 Ecology", etc.
-  const m = raw.replace(/\s.*/, '').match(/^([A-Z]+)-?(\d{3})/i);
-  return m ? `${m[1].toUpperCase()}-${m[2]}` : raw.toUpperCase().slice(0, 10);
-}
-
-function courseStyle(code) {
-  if (COURSE_STYLES[code]) return COURSE_STYLES[code];
-  // Partial match — in case normalisation yields slight variants
-  for (const [key, val] of Object.entries(COURSE_STYLES)) {
-    if (code && code.startsWith(key.slice(0, 6))) return val;
+document.getElementById('syncBtn').addEventListener('click', async () => {
+  const token = tokenInput.value.trim();
+  if (!token) { syncStatus.textContent = 'Paste your Canvas token first.'; syncStatus.className = 'settings-status err'; return; }
+  syncStatus.textContent = 'Syncing…';
+  syncStatus.className = 'settings-status';
+  try {
+    const courses = await fetchAllPages(
+      'https://bristolcc.instructure.com/api/v1/courses?enrollment_type[]=student&per_page=50',
+      token
+    );
+    const targetCodes = ['SCI-112','HST-111','HST-112'];
+    const relevant = courses.filter(c => targetCodes.some(code => c.course_code && c.course_code.includes(code)));
+    let added = 0;
+    for (const course of relevant) {
+      const assignments = await fetchAllPages(
+        `https://bristolcc.instructure.com/api/v1/courses/${course.id}/assignments?per_page=50`,
+        token
+      );
+      assignments.forEach(a => {
+        if (!a.due_at) return;
+        const due = new Date(a.due_at);
+        const id = `canvas-${a.id}`;
+        if (TASKS.find(t => t.id === id)) return;
+        const courseCode = targetCodes.find(code => (course.course_code || '').includes(code)) || course.course_code;
+        TASKS.push({ id, course: courseCode, title: a.name, workDate: due, dueDate: due });
+        added++;
+      });
+    }
+    localStorage.setItem(TOKEN_KEY, token);
+    syncStatus.textContent = added ? `Synced! Added ${added} assignment${added>1?'s':''} from Canvas.` : 'Synced — no new assignments found.';
+    syncStatus.className = 'settings-status';
+    render();
+  } catch (e) {
+    syncStatus.textContent = 'Sync failed: ' + e.message;
+    syncStatus.className = 'settings-status err';
   }
-  return { label: code || 'Other', color: '#999999', key: 'other' };
-}
+});
 
-function assignmentStatus(a) {
-  const diffMs   = a.dueAt - new Date();
-  const diffDays = diffMs / 86400000;
-  if (diffMs < 0)     return 'overdue';
-  if (diffDays <= 2)  return 'soon';
-  return 'upcoming';
-}
-
-// ─── RENDER ────────────────────────────────────────────────────────────────────
-function render() {
-  const visible = activeFilter === 'all'
-    ? allAssignments
-    : allAssignments.filter(a => courseStyle(a.courseCode).key === activeFilter);
-
-  renderSummary(visible);
-  renderFilters();
-  renderList(visible);
-
-  const isEmpty = allAssignments.length === 0;
-  document.getElementById('allClearState').style.display  = isEmpty ? 'block' : 'none';
-  document.getElementById('resultsSection').style.display = isEmpty ? 'none'  : 'block';
-}
-
-function renderSummary(visible) {
-  const pending = visible.filter(a => !checkedIds.has(a.id));
-  const overdue = pending.filter(a => assignmentStatus(a) === 'overdue').length;
-  const soon    = pending.filter(a => assignmentStatus(a) === 'soon').length;
-
-  document.getElementById('summaryRow').innerHTML = [
-    `<span class="pill pill-total">${pending.length} pending</span>`,
-    overdue > 0 ? `<span class="pill pill-overdue"><span class="pill-dot"></span>${overdue} overdue</span>` : '',
-    soon    > 0 ? `<span class="pill pill-soon"><span class="pill-dot"></span>${soon} due soon</span>` : '',
-  ].join('');
-}
-
-function renderFilters() {
-  document.getElementById('filterRow').innerHTML = FILTERS.map(f => `
-    <button class="filter-btn ${activeFilter === f.key ? 'active' : ''}"
-            onclick="setFilter('${f.key}')">
-      ${f.color ? `<span class="filter-dot" style="background:${f.color}"></span>` : ''}
-      ${esc(f.label)}
-    </button>
-  `).join('');
-}
-
-function renderList(visible) {
-  const el = document.getElementById('assignmentList');
-
-  // Group by course code
-  const groups = {};
-  for (const a of visible) {
-    const code = a.courseCode || 'Other';
-    (groups[code] = groups[code] || []).push(a);
-  }
-
-  if (!Object.keys(groups).length) {
-    el.innerHTML = `<div class="state-card"><div class="state-body">No assignments match this filter.</div></div>`;
-    return;
-  }
-
-  const courseOrder = Object.keys(COURSE_STYLES);
-  const sorted = Object.keys(groups).sort((a, b) => {
-    const ai = courseOrder.indexOf(a);
-    const bi = courseOrder.indexOf(b);
-    if (ai < 0 && bi < 0) return a.localeCompare(b);
-    if (ai < 0) return  1;
-    if (bi < 0) return -1;
-    return ai - bi;
-  });
-
-  el.innerHTML = sorted.map(code => {
-    const style    = courseStyle(code);
-    const items    = groups[code];
-    const pending  = items.filter(a => !checkedIds.has(a.id)).length;
-    const cards    = items.map(a => cardHTML(a)).join('');
-
-    return `
-      <div class="course-section">
-        <div class="course-header">
-          <span class="course-dot" style="background:${style.color}"></span>
-          <span class="course-name">${esc(style.label)}</span>
-          <span class="course-remaining">${pending} remaining</span>
-        </div>
-        ${items.length ? cards : '<div class="no-assignments">Nothing due this window.</div>'}
-      </div>
-    `;
-  }).join('');
-}
-
-function cardHTML(a) {
-  const status  = assignmentStatus(a);
-  const checked = checkedIds.has(a.id);
-
-  const tagClass   = { overdue: 'tag-overdue', soon: 'tag-soon', upcoming: 'tag-upcoming' }[status];
-  const tagLabel   = { overdue: 'Overdue',     soon: 'Due Soon', upcoming: 'Upcoming'     }[status];
-  const statusCls  = `s-${status}`;
-
-  const dateStr = a.dueAt.toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric',
-    hour: 'numeric', minute: '2-digit',
-  });
-
-  const ptsHTML = a.points != null ? `<span class="a-pts">${a.points} pts</span>` : '';
-
-  return `
-    <div class="a-card ${statusCls} ${checked ? 'is-checked' : ''}" id="card-${esc(a.id)}">
-      <div class="cb-wrap">
-        <input type="checkbox" ${checked ? 'checked' : ''}
-               onchange="toggleCheck('${esc(a.id)}')"
-               aria-label="${esc(a.title)}" />
-      </div>
-      <div class="a-body">
-        <div class="a-title">${esc(a.title)}</div>
-        <div class="a-meta">
-          <span class="a-date">${esc(dateStr)}</span>
-          <span class="status-tag ${tagClass}">${tagLabel}</span>
-          ${ptsHTML}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// ─── ACTIONS ───────────────────────────────────────────────────────────────────
-function setFilter(key) {
-  activeFilter = key;
-  render();
-}
-
-function toggleCheck(id) {
-  if (checkedIds.has(id)) {
-    checkedIds.delete(id);
-  } else {
-    checkedIds.add(id);
-  }
-  localStorage.setItem(CHECKS_KEY, JSON.stringify([...checkedIds]));
-
-  const card = document.getElementById(`card-${id}`);
-  if (card) card.classList.toggle('is-checked', checkedIds.has(id));
-
-  const visible = activeFilter === 'all'
-    ? allAssignments
-    : allAssignments.filter(a => courseStyle(a.courseCode).key === activeFilter);
-  renderSummary(visible);
-
-  // Update remaining count for this card's course
-  const courseCode = allAssignments.find(a => a.id === id)?.courseCode;
-  if (courseCode) {
-    document.querySelectorAll('.course-section').forEach(section => {
-      const dot = section.querySelector('.course-dot');
-      if (!dot) return;
-      const nameEl = section.querySelector('.course-name');
-      const style  = Object.values(COURSE_STYLES).find(s => nameEl?.textContent.includes(s.label.split('·')[0].trim()));
-      if (!style) return;
-      const sectionItems = allAssignments.filter(a => courseStyle(a.courseCode).key === style.key);
-      const rem = sectionItems.filter(a => !checkedIds.has(a.id)).length;
-      const remEl = section.querySelector('.course-remaining');
-      if (remEl) remEl.textContent = `${rem} remaining`;
-    });
-  }
-}
-
-async function doRefresh() {
-  const btn = document.getElementById('refreshBtn');
-  btn.disabled  = true;
-  btn.textContent = '↻ Refreshing…';
-  await loadAssignments();
-  btn.disabled  = false;
-  btn.textContent = '↻ Refresh';
-}
-
-// ─── UI HELPERS ────────────────────────────────────────────────────────────────
-function setLoading(on) {
-  const btn = document.getElementById('loadBtn');
-  btn.disabled = on;
-  btn.innerHTML = on ? '<span class="spinner"></span>Loading…' : 'Load';
-}
-
-function showError(msg) {
-  const el = document.getElementById('errorBanner');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-function clearError() {
-  const el = document.getElementById('errorBanner');
-  el.style.display = 'none';
-  el.textContent = '';
-}
-
-function forgetToken() {
+document.getElementById('forgetBtn').addEventListener('click', () => {
   localStorage.removeItem(TOKEN_KEY);
-  document.getElementById('tokenInput').value = '';
-  document.getElementById('resultsSection').style.display = 'none';
-  document.getElementById('allClearState').style.display = 'none';
-  clearError();
-}
+  tokenInput.value = '';
+  syncStatus.textContent = 'Token cleared.';
+  syncStatus.className = 'settings-status';
+});
 
-function friendlyError(err) {
-  const msg = String(err.message || err);
-  if (msg.includes('Failed to fetch') || msg.includes('NetworkError') || msg.includes('TypeError')) {
-    return 'Could not reach the proxy. Verify your Cloudflare Worker is deployed and PROXY_URL is correct in this file.';
-  }
-  if (msg.includes('401') || msg.includes('403')) {
-    return 'Invalid or expired token. Generate a fresh one in Canvas → Account → Settings → New Access Token.';
-  }
-  if (msg.includes('404')) {
-    return 'Endpoint not found (404). Make sure your Cloudflare Worker is routing to bristolcc.instructure.com correctly.';
-  }
-  return msg;
-}
-
-function esc(str) {
-  return String(str)
-    .replace(/&/g,  '&amp;')
-    .replace(/</g,  '&lt;')
-    .replace(/>/g,  '&gt;')
-    .replace(/"/g,  '&quot;')
-    .replace(/'/g,  '&#39;');
-}
+/* ── Init ───────────────────────────────────────────────────── */
+render();
 </script>
 </body>
 </html>
