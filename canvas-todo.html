@@ -580,7 +580,7 @@ function generateRecommendations(pendingTasks, freeBlocks) {
   if (!freeBlocks.length || !pendingTasks.length) return [];
 
   const td = today();
-  // Prioritize: overdue > due today > due this week, then by workDate
+  // Task-first: sort by urgency so most overdue always gets scheduled first
   const sorted = [...pendingTasks].sort((a,b) => {
     const da = Math.round((a.workDate-td)/86400000);
     const db = Math.round((b.workDate-td)/86400000);
@@ -588,36 +588,39 @@ function generateRecommendations(pendingTasks, freeBlocks) {
   });
 
   const recs = [];
-  const usedTaskIds = new Set();
+  const usedBlockIndices = new Set();
 
-  for (const block of freeBlocks) {
-    const blockHour = block.start.getHours();
-    const isMorning = blockHour < 12;
-    const isEvening = blockHour >= 17;
+  for (const task of sorted) {
+    if (recs.length >= 5) break;
+    const writing = isWritingTask(task);
+    const mins = estimateMinutes(task);
+    const daysUntil = Math.round((task.workDate - td) / 86400000);
 
-    // Find best matching task for this block
-    let match = null;
-    for (const task of sorted) {
-      if (usedTaskIds.has(task.id)) continue;
-      const mins = estimateMinutes(task);
-      if (mins > block.minutes + 15) continue; // doesn't fit
-      const writing = isWritingTask(task);
-      // Prefer writing tasks in morning, passive in evening
-      if (isMorning && writing) { match = task; break; }
-      if (isEvening && !writing) { match = task; break; }
-      if (!match) match = task; // fallback: first task that fits
+    // Find best block for this task — prefer time-matched, fall back to any
+    let bestBlock = null, bestIdx = -1;
+    for (let i = 0; i < freeBlocks.length; i++) {
+      if (usedBlockIndices.has(i)) continue;
+      const b = freeBlocks[i];
+      if (mins > b.minutes + 15) continue;
+      const bh = b.start.getHours();
+      const timeFit = (writing && bh < 12) || (!writing && bh >= 17);
+      if (timeFit && bestIdx === -1) { bestBlock = b; bestIdx = i; }
+      if (bestIdx === -1) { bestBlock = b; bestIdx = i; } // fallback: any block that fits
     }
 
-    if (!match) continue;
-    usedTaskIds.add(match.id);
+    if (!bestBlock) continue;
+    usedBlockIndices.add(bestIdx);
 
+    const bh = bestBlock.start.getHours();
     let why = '';
-    if (isMorning && isWritingTask(match)) why = 'Writing task — best done in your peak morning window';
-    else if (isEvening && !isWritingTask(match)) why = 'Passive task — good for evening brain';
-    else if (match.workDate <= td) why = 'This one is past its do-date — highest priority';
-    else why = `Fits your ${block.minutes >= 60 ? Math.round(block.minutes/60)+'h' : block.minutes+'min'} window`;
+    if (daysUntil < 0)  why = 'Past its do-date — top priority';
+    else if (daysUntil === 0) why = 'Due today';
+    else if (daysUntil <= 2) why = 'Due very soon';
+    else if (writing && bh < 12) why = 'Writing task — best in your morning peak window';
+    else if (!writing && bh >= 17) why = 'Passive task — good for evening brain';
+    else why = `${Math.round(bestBlock.minutes)}min window available`;
 
-    recs.push({ task: match, block, suggestedTime: formatTime(block.start), why });
+    recs.push({ task, block: bestBlock, suggestedTime: formatTime(bestBlock.start), why });
   }
 
   return recs;
