@@ -643,12 +643,12 @@ function formatDayHeading(d) {
   return d.toLocaleDateString('en-US', { weekday: 'long' });
 }
 
-function urgencyLabel(dueDate, todayDate) {
-  const diff = Math.round((dueDate - todayDate) / 86400000);
-  if (diff < 0)  return { cls: 'overdue', text: `Overdue (due ${formatShortDate(dueDate)})` };
-  if (diff === 0) return { cls: 'soon',   text: 'Due today' };
-  if (diff <= 3)  return { cls: 'soon',   text: `Due ${formatShortDate(dueDate)}` };
-  return { cls: '', text: `Due ${formatShortDate(dueDate)}` };
+function urgencyLabel(workDate, todayDate) {
+  const diff = Math.round((workDate - todayDate) / 86400000);
+  if (diff < 0)  return { cls: 'overdue', text: `Do by ${formatShortDate(workDate)} (past)` };
+  if (diff === 0) return { cls: 'soon',   text: 'Do today' };
+  if (diff <= 3)  return { cls: 'soon',   text: `Do by ${formatShortDate(workDate)}` };
+  return { cls: '', text: `Do by ${formatShortDate(workDate)}` };
 }
 
 function courseClass(course) {
@@ -679,7 +679,11 @@ function showToast(msg) {
 
 /* ── Share / remind ─────────────────────────────────────────── */
 async function shareTask(task) {
-  const text = `[${task.course}] ${task.title}\nDue: ${formatShortDate(task.dueDate)}`;
+  const sameDates = toYMD(task.workDate) === toYMD(task.dueDate);
+  const dateNote = sameDates
+    ? `Do by: ${formatShortDate(task.workDate)}`
+    : `Do by: ${formatShortDate(task.workDate)} · Submits: ${formatShortDate(task.dueDate)}`;
+  const text = `[${task.course}] ${task.title}\n${dateNote}`;
   if (navigator.share) {
     try {
       await navigator.share({ title: `[${task.course}] ${task.title}`, text });
@@ -694,7 +698,7 @@ async function shareTask(task) {
 
 function shareWeek(tasks) {
   if (!tasks.length) { showToast('No tasks to copy this week.'); return; }
-  const lines = tasks.map(t => `• [${t.course}] ${t.title} — due ${formatShortDate(t.dueDate)}`);
+  const lines = tasks.map(t => `• [${t.course}] ${t.title} — do by ${formatShortDate(t.workDate)}`);
   const text = `This week's tasks:\n${lines.join('\n')}`;
   navigator.clipboard.writeText(text).then(() => {
     showToast('Week copied to clipboard!');
@@ -717,8 +721,8 @@ function filteredTasks() {
 function renderSummary() {
   const td = today();
   const tasks = filteredTasks().filter(t => !checked[t.id]);
-  const overdue = tasks.filter(t => t.dueDate < td).length;
-  const soon    = tasks.filter(t => { const d = Math.round((t.dueDate - td)/86400000); return d >= 0 && d <= 3; }).length;
+  const overdue = tasks.filter(t => t.workDate < td).length;
+  const soon    = tasks.filter(t => { const d = Math.round((t.workDate - td)/86400000); return d >= 0 && d <= 3; }).length;
   const pending = tasks.length;
   const pEl = document.getElementById('summaryPills');
   pEl.innerHTML = '';
@@ -736,7 +740,7 @@ function renderSummary() {
 /* ── Render: task card ──────────────────────────────────────── */
 function renderCard(task) {
   const td     = today();
-  const urg    = urgencyLabel(task.dueDate, td);
+  const urg    = urgencyLabel(task.workDate, td);
   const cls    = courseClass(task.course);
   const isDone = !!checked[task.id];
 
@@ -769,16 +773,26 @@ function renderCard(task) {
   const meta = document.createElement('div');
   meta.className = 'assign-meta';
 
-  const dueSpan = document.createElement('span');
-  dueSpan.className = `due-label ${urg.cls}`;
-  dueSpan.textContent = urg.text;
+  const doSpan = document.createElement('span');
+  doSpan.className = `due-label ${urg.cls}`;
+  doSpan.textContent = urg.text;
+
+  meta.appendChild(doSpan);
+
+  // Show teacher due date as secondary note only when it differs from workDate
+  if (toYMD(task.dueDate) !== toYMD(task.workDate)) {
+    const submitSpan = document.createElement('span');
+    submitSpan.className = 'due-label';
+    submitSpan.style.color = '#bbb';
+    submitSpan.textContent = `submits ${formatShortDate(task.dueDate)}`;
+    meta.appendChild(submitSpan);
+  }
 
   const remBtn = document.createElement('button');
   remBtn.className = 'remind-btn';
   remBtn.textContent = '+ Remind';
   remBtn.addEventListener('click', () => shareTask(task));
 
-  meta.appendChild(dueSpan);
   meta.appendChild(remBtn);
 
   body.appendChild(tag);
@@ -878,20 +892,20 @@ function renderUpcoming() {
   document.getElementById('weekNav').style.display = 'none';
   const td = today();
   const end = addDays(td, 21);
-  const tasks = filteredTasks().filter(t => t.dueDate >= td && t.dueDate <= end);
+  const tasks = filteredTasks().filter(t => t.workDate >= td && t.workDate <= end);
 
   const list = document.getElementById('taskList');
   list.innerHTML = '';
 
   if (!tasks.length) {
-    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing due in the next 21 days.</div>';
+    list.innerHTML = '<div class="empty-state"><span class="emoji">🌿</span>Nothing to do in the next 21 days.</div>';
     return;
   }
 
-  // Group by dueDate
+  // Group by workDate
   const groups = {};
   tasks.forEach(t => {
-    const k = toYMD(t.dueDate);
+    const k = toYMD(t.workDate);
     if (!groups[k]) groups[k] = [];
     groups[k].push(t);
   });
@@ -905,8 +919,8 @@ function renderUpcoming() {
     heading.className = 'due-heading';
     const isToday = dateKey === toYMD(td);
     heading.textContent = isToday
-      ? `Due today — ${formatShortDate(d)}`
-      : `Due ${formatDayHeading(d)}, ${formatShortDate(d)}`;
+      ? `Do today — ${formatShortDate(d)}`
+      : `Do ${formatDayHeading(d)}, ${formatShortDate(d)}`;
 
     grp.appendChild(heading);
     groups[dateKey].forEach(t => grp.appendChild(renderCard(t)));
