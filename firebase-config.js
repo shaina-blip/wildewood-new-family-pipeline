@@ -21,4 +21,4 @@ const NOTIFICATION_EMAIL = "shay@wildewoodeducation.com";
 
 // Full URL to the parent-facing survey folder (including trailing slash)
 // After deploying to GitHub Pages this will be:
-const SURVEY_BASE_URL = "https://shaina-blip.github.io/schoolwork/survey/";
+const SURVEY_BASE_URL = "https://shaina-blip.github.io/wildewood-new-family-pipeline/survey/";
