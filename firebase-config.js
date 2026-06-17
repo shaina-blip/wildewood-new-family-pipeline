@@ -12,9 +12,9 @@ const firebaseConfig = {
 };
 
 // EmailJS — get from emailjs.com → Account → API Keys
-const EMAILJS_SERVICE_ID  = "YOUR_EMAILJS_SERVICE_ID";
-const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID";
-const EMAILJS_PUBLIC_KEY  = "YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID  = "service_l9mx95t";
+const EMAILJS_TEMPLATE_ID = "template_cj0dhqm";
+const EMAILJS_PUBLIC_KEY  = "qghGWe4KNOpRWqn86";
 
 // Email address that receives survey-completion notifications (Shay)
 const NOTIFICATION_EMAIL = "shay@wildewoodeducation.com";
