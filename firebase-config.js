@@ -3,12 +3,12 @@
 // Get these from: Firebase Console → Project Settings → Your apps → Web app
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCO_fe-_iK3EY9TClPtf52yYA-NvmSEcqY",
+  authDomain: "weo-new-family-pipeline.firebaseapp.com",
+  projectId: "weo-new-family-pipeline",
+  storageBucket: "weo-new-family-pipeline.firebasestorage.app",
+  messagingSenderId: "635022856627",
+  appId: "1:635022856627:web:8dcbc387e0fb4dc52e3bc6"
 };
 
 // EmailJS — get from emailjs.com → Account → API Keys
