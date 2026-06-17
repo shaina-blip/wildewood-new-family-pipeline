@@ -1,0 +1,354 @@
+/* survey.css — Wildewood Education Parent Survey */
+
+:root {
+  --green:      #2D6A4F;
+  --green-light:#40916C;
+  --sage:       #74C69D;
+  --coral:      #F4845F;
+  --teal:       #52B2BF;
+
+  --bg:         #F5F0EB;
+  --card:       #FFFFFF;
+  --border:     #E8E0D8;
+  --text:       #1A2420;
+  --text-muted: #7A7068;
+
+  --radius:     14px;
+  --radius-sm:  8px;
+  --shadow:     0 2px 12px rgba(0,0,0,.07);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Shell ─────────────────────────────────────────── */
+.survey-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Header ────────────────────────────────────────── */
+.survey-header {
+  background: var(--green);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.weo-logo { display: flex; align-items: center; gap: .65rem; }
+
+.weo-logo-mark {
+  font-family: 'Gelasio', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .06em;
+}
+
+.weo-logo-name {
+  font-size: .85rem;
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+
+/* ─── Progress Bar ──────────────────────────────────── */
+.progress-bar-wrap {
+  background: var(--card);
+  padding: .6rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
+}
+
+.progress-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--sage));
+  border-radius: 3px;
+  transition: width .4s ease;
+}
+
+.progress-label {
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ─── Main ──────────────────────────────────────────── */
+.survey-main {
+  flex: 1;
+  padding: 1.5rem 1rem 3rem;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ─── Section ───────────────────────────────────────── */
+.survey-section { display: flex; flex-direction: column; gap: 1rem; }
+
+.section-hero { text-align: center; padding: .5rem 0 .25rem; }
+
+.section-title {
+  font-family: 'Gelasio', serif;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--green);
+  line-height: 1.2;
+  margin-bottom: .5rem;
+}
+
+.section-intro {
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: .4rem;
+}
+
+.section-body {
+  font-size: .95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ─── Card ──────────────────────────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.q-card { }
+
+.q-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: .85rem;
+  line-height: 1.4;
+}
+
+.field-label {
+  display: block;
+  font-size: .82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--green);
+  margin-bottom: .75rem;
+}
+
+.field-hint {
+  display: block;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-top: .2rem;
+}
+
+/* ─── Choice groups ─────────────────────────────────── */
+.choice-group {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.choice-group.stacked { flex-direction: column; }
+
+.choice-item { position: relative; cursor: pointer; }
+.choice-item input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+
+.choice-body {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .75rem 1rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: .95rem;
+  color: var(--text);
+  transition: all .15s;
+  background: #fff;
+  line-height: 1.35;
+}
+
+.choice-item input:checked + .choice-body {
+  border-color: var(--green);
+  background: #EBF5EF;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.choice-body:hover { border-color: var(--green-light); }
+
+.choice-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+/* ─── Day/Time chips ────────────────────────────────── */
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.day-chip, .time-chip {
+  padding: .55rem 1.1rem;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: #fff;
+  font-family: inherit;
+  font-size: .9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.day-chip:hover, .time-chip:hover {
+  border-color: var(--green-light);
+  color: var(--green);
+}
+
+.day-chip.selected, .time-chip.selected {
+  border-color: var(--green);
+  background: var(--green);
+  color: #fff;
+}
+
+/* ─── Textarea / Input ──────────────────────────────── */
+textarea, input[type="text"] {
+  width: 100%;
+  padding: .7rem .9rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: .95rem;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+  resize: vertical;
+  transition: border-color .15s;
+}
+
+textarea:focus, input[type="text"]:focus { border-color: var(--green); }
+
+/* ─── Navigation buttons ────────────────────────────── */
+.section-nav {
+  display: flex;
+  gap: .75rem;
+  justify-content: flex-end;
+  margin-top: .5rem;
+}
+
+.section-nav.stacked-nav {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.btn-next {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: .9rem 1.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+
+.btn-next:hover  { background: var(--green-light); }
+.btn-next:active { transform: scale(.97); }
+.btn-next:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-back {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .9rem 1.2rem;
+  font-family: inherit;
+  font-size: .95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+}
+
+.btn-back:hover { border-color: var(--text-muted); color: var(--text); }
+
+/* ─── Summary card ──────────────────────────────────── */
+.summary-card {
+  font-size: .97rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.summary-card p { margin-bottom: .6rem; }
+.summary-card strong { color: var(--green); }
+
+/* ─── Thank you ─────────────────────────────────────── */
+.thankyou-hero {
+  text-align: center;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.thankyou-icon { font-size: 3rem; }
+
+.thankyou-badge {
+  background: #EBF5EF;
+  border: 1.5px solid var(--sage);
+  border-radius: var(--radius);
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  color: var(--green);
+  margin-top: .5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+}
+
+/* ─── Footer ────────────────────────────────────────── */
+.survey-footer {
+  text-align: center;
+  padding: 1.25rem 1rem;
+  font-size: .78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: var(--card);
+}
+
+/* ─── Responsive ────────────────────────────────────── */
+@media (max-width: 480px) {
+  .section-title { font-size: 1.45rem; }
+  .survey-main   { padding: 1rem .75rem 2.5rem; }
+  .card          { padding: 1rem; }
+  .btn-next, .btn-back { padding: .8rem 1.1rem; font-size: .95rem; }
+}

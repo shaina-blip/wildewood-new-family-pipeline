@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WEO Pipeline — Internal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<!-- ─── PIN GATE ─────────────────────────────────────────── -->
+<div id="pin-gate" class="pin-gate">
+  <div class="pin-card">
+    <div class="pin-logo">
+      <div class="pin-logo-mark">WEO</div>
+      <div class="pin-logo-sub">Wildewood Education</div>
+    </div>
+    <h2 class="pin-title">New Family Pipeline</h2>
+    <p class="pin-hint">Team access only — enter your PIN</p>
+    <input type="password" id="pin-input" class="pin-input" placeholder="Enter PIN" maxlength="12" autocomplete="off">
+    <button id="pin-submit" class="btn btn-primary btn-lg">Unlock</button>
+    <p id="pin-error" class="pin-error" hidden>Incorrect PIN — try again.</p>
+  </div>
+</div>
+
+<!-- ─── MAIN APP ──────────────────────────────────────────── -->
+<div id="main-app" hidden>
+
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="header-logo-mark">WEO</span>
+      <span class="header-title">New Family Pipeline</span>
+    </div>
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="consult">📋 New Consult</button>
+      <button class="tab-btn" data-tab="pipeline">📊 Pipeline Board</button>
+    </nav>
+    <div class="header-meta">
+      <span id="header-month" class="header-month"></span>
+    </div>
+  </header>
+
+  <!-- ─── TAB: NEW CONSULT ──────────────────────────────── -->
+  <div id="tab-consult" class="tab-content">
+    <div class="form-container">
+      <div class="form-header">
+        <h2>New Consult Entry</h2>
+        <p class="form-subtitle">Fill out during or right after the consult call.</p>
+      </div>
+
+      <form id="consult-form" novalidate>
+
+        <!-- Contact Info -->
+        <fieldset class="form-section">
+          <legend>Contact Information</legend>
+          <div class="form-grid">
+            <div class="form-group required">
+              <label for="parentName">Parent / Guardian Name</label>
+              <input type="text" id="parentName" name="parentName" autocomplete="off" required>
+            </div>
+            <div class="form-group required">
+              <label for="studentName">Student Name</label>
+              <input type="text" id="studentName" name="studentName" autocomplete="off" required>
+            </div>
+            <div class="form-group">
+              <label for="grade">Grade</label>
+              <input type="text" id="grade" name="grade" placeholder="e.g. 3rd, 9th">
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+              <label for="referralSource">Referral Source</label>
+              <input type="text" id="referralSource" name="referralSource" placeholder="e.g. Google, Friend, Flyer">
+            </div>
+            <div class="form-group">
+              <label for="referredBy">Referred By</label>
+              <input type="text" id="referredBy" name="referredBy" placeholder="Name, if referred by someone">
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Student Info -->
+        <fieldset class="form-section">
+          <legend>Student Information</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="district">School District</label>
+              <input type="text" id="district" name="district">
+            </div>
+            <div class="form-group required">
+              <label for="location">Center Choice</label>
+              <select id="location" name="location" required>
+                <option value="">Select location…</option>
+                <option value="Norwood">Norwood</option>
+                <option value="Medfield">Medfield</option>
+                <option value="Virtual">Virtual</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label for="need">Learning Need</label>
+              <textarea id="need" name="need" rows="2" placeholder="Describe the student's primary learning need…"></textarea>
+            </div>
+            <div class="form-group full-width">
+              <div class="iep-toggle-row">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="iepAccommodations" name="iepAccommodations">
+                  <span>IEP / Accommodations on file</span>
+                </label>
+              </div>
+              <textarea id="iepNotes" name="iepNotes" rows="2" placeholder="IEP notes, accommodations to know about…" class="iep-notes-field" hidden></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Programs -->
+        <fieldset class="form-section">
+          <legend>Programs Discussed</legend>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <div class="chip-group" id="programs-chips">
+                <label class="chip-toggle"><input type="checkbox" name="programs" value="Roots"><span>Roots</span></label>
+                <label class="chip-toggle"><input type="checkbox" name="programs" value="Bridge"><span>Bridge</span></label>
+                <label class="chip-toggle"><input type="checkbox" name="programs" value="Launch"><span>Launch</span></label>
+                <label class="chip-toggle"><input type="checkbox" name="programs" value="Gleamworks"><span>Gleamworks</span></label>
+                <label class="chip-toggle"><input type="checkbox" name="programs" value="Teams"><span>Teams</span></label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="program">Primary Program (enrollment)</label>
+              <select id="program" name="program">
+                <option value="">Select one…</option>
+                <option value="Roots">Roots</option>
+                <option value="Bridge">Bridge</option>
+                <option value="Launch">Launch</option>
+                <option value="Gleamworks">Gleamworks</option>
+                <option value="Teams">Teams</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Key Factors -->
+        <fieldset class="form-section">
+          <legend>Key Factors <span class="legend-hint">(rank 1–3, 1 = most important)</span></legend>
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label for="kf-tutor">Tutor Preference</label>
+              <select id="kf-tutor" name="kf-tutor">
+                <option value="">—</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="kf-schedule">Schedule Flexibility</label>
+              <select id="kf-schedule" name="kf-schedule">
+                <option value="">—</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="kf-budget">Budget</label>
+              <select id="kf-budget" name="kf-budget">
+                <option value="">—</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Scheduling -->
+        <fieldset class="form-section">
+          <legend>Scheduling Capture</legend>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Preferred Communication</label>
+              <div class="radio-group">
+                <label class="radio-opt"><input type="radio" name="preferredComm" value="Text"><span>Text</span></label>
+                <label class="radio-opt"><input type="radio" name="preferredComm" value="Email"><span>Email</span></label>
+                <label class="radio-opt"><input type="radio" name="preferredComm" value="Phone"><span>Phone Call</span></label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="sessionFrequency">Session Frequency</label>
+              <select id="sessionFrequency" name="sessionFrequency">
+                <option value="TBD">TBD</option>
+                <option value="1x/week">1× / week</option>
+                <option value="2x/week">2× / week</option>
+                <option value="Intensive">Intensive (3+)</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label for="schedulingConstraints">Scheduling Constraints</label>
+              <textarea id="schedulingConstraints" name="schedulingConstraints" rows="2" placeholder="Any days/times that won't work, upcoming travel, etc."></textarea>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Consult Assessment -->
+        <fieldset class="form-section">
+          <legend>Consult Assessment</legend>
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>Lead Warmth</label>
+              <div class="pepper-row" id="pepper-row">
+                <button type="button" class="pepper-btn" data-value="1" title="Warm">🌶️</button>
+                <button type="button" class="pepper-btn" data-value="2" title="Hot">🌶️🌶️</button>
+                <button type="button" class="pepper-btn" data-value="3" title="Very Hot">🌶️🌶️🌶️</button>
+              </div>
+              <input type="hidden" id="leadWarmth" name="leadWarmth" value="">
+            </div>
+
+            <div class="form-group">
+              <label for="decisionStatus">Decision Status</label>
+              <select id="decisionStatus" name="decisionStatus">
+                <option value="">Select status…</option>
+                <option value="Decided to move forward">Decided to move forward on the call</option>
+                <option value="Still thinking">Still thinking</option>
+                <option value="Want a trial session">Want a trial session</option>
+                <option value="Want to see the space">Want to see the space</option>
+                <option value="Will revisit later">Will revisit later</option>
+                <option value="Never connected">Never connected</option>
+                <option value="Not moving forward">Not moving forward</option>
+                <option value="Gone Rogue">Gone Rogue</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Likelihood of Registration</label>
+              <div class="radio-group">
+                <label class="radio-opt"><input type="radio" name="likelihoodOfReg" value="High"><span>High</span></label>
+                <label class="radio-opt"><input type="radio" name="likelihoodOfReg" value="50/50"><span>50/50</span></label>
+                <label class="radio-opt"><input type="radio" name="likelihoodOfReg" value="Low"><span>Low</span></label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="likelihoodReason">Likelihood Reason</label>
+              <input type="text" id="likelihoodReason" name="likelihoodReason" placeholder="Why this likelihood?">
+            </div>
+
+            <div class="form-group">
+              <label for="currentOwner">Current Owner</label>
+              <select id="currentOwner" name="currentOwner">
+                <option value="">Select owner…</option>
+                <option value="Shaina">Shaina</option>
+                <option value="Josh">Josh</option>
+                <option value="Tara">Tara</option>
+                <option value="Quinn">Quinn</option>
+                <option value="Joelle">Joelle</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="notes">Notes</label>
+              <textarea id="notes" name="notes" rows="3" placeholder="Anything else worth noting from the call…"></textarea>
+            </div>
+
+          </div>
+        </fieldset>
+
+        <!-- Next Step -->
+        <fieldset class="form-section">
+          <legend>Next Step</legend>
+          <div class="form-group">
+            <label>How will scheduling info be collected?</label>
+            <div class="radio-group vertical">
+              <label class="radio-opt">
+                <input type="radio" name="preferredContact" value="survey" checked>
+                <span>Send the scheduling survey link</span>
+              </label>
+              <label class="radio-opt">
+                <input type="radio" name="preferredContact" value="call-scheduled">
+                <span>Call already scheduled / they'll call us</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="submit" id="save-btn" class="btn btn-primary btn-lg">
+            Save &amp; Add to Pipeline
+          </button>
+          <button type="button" id="copy-survey-btn" class="btn btn-secondary btn-lg" disabled>
+            📋 Copy Survey Link
+          </button>
+        </div>
+
+        <div id="form-success" class="form-success" hidden>
+          ✅ <span id="success-message">Family added to pipeline!</span>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── TAB: PIPELINE BOARD ───────────────────────────── -->
+  <div id="tab-pipeline" class="tab-content" hidden>
+
+    <div class="board-controls">
+      <div class="board-filters">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 Search by name…">
+        <select id="filter-owner" class="filter-select">
+          <option value="">All Owners</option>
+          <option value="Shaina">Shaina</option>
+          <option value="Josh">Josh</option>
+          <option value="Tara">Tara</option>
+          <option value="Quinn">Quinn</option>
+          <option value="Joelle">Joelle</option>
+        </select>
+        <select id="filter-program" class="filter-select">
+          <option value="">All Programs</option>
+          <option value="Roots">Roots</option>
+          <option value="Bridge">Bridge</option>
+          <option value="Launch">Launch</option>
+          <option value="Gleamworks">Gleamworks</option>
+          <option value="Teams">Teams</option>
+        </select>
+        <select id="filter-location" class="filter-select">
+          <option value="">All Locations</option>
+          <option value="Norwood">Norwood</option>
+          <option value="Medfield">Medfield</option>
+          <option value="Virtual">Virtual</option>
+        </select>
+        <select id="filter-status" class="filter-select">
+          <option value="active">Active</option>
+          <option value="all">All Statuses</option>
+          <option value="cold">Cold</option>
+          <option value="closed">Closed</option>
+          <option value="gone-rogue">Gone Rogue</option>
+        </select>
+      </div>
+      <div class="month-tabs-row" id="month-tabs"></div>
+    </div>
+
+    <div class="board-layout">
+      <div class="board-main">
+        <div class="kanban-board" id="kanban-board">
+          <div class="board-loading">Loading families…</div>
+        </div>
+      </div>
+
+      <aside class="sidebar" id="attention-sidebar">
+        <div class="sidebar-header" id="sidebar-toggle">
+          <span>🔔 Needs Attention</span>
+          <span id="attention-count" class="count-badge" hidden>0</span>
+          <span class="sidebar-chevron">‹</span>
+        </div>
+        <div class="sidebar-body" id="sidebar-body">
+          <p class="sidebar-empty">All clear! 🎉</p>
+        </div>
+      </aside>
+    </div>
+
+  </div>
+
+</div><!-- #main-app -->
+
+<!-- ─── CARD MODAL ────────────────────────────────────────── -->
+<div id="card-modal" class="modal-overlay" hidden>
+  <div class="modal-panel">
+    <button id="modal-close" class="modal-close" aria-label="Close">×</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!-- Config then app -->
+<script src="firebase-config.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
