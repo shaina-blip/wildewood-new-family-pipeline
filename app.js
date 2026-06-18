@@ -135,6 +135,42 @@ function initConsultForm() {
     updateNextStepDisplay(this.value);
   });
 
+  // Dynamic additional students
+  document.getElementById('add-student-btn').addEventListener('click', () => {
+    const container = document.getElementById('additional-students');
+    const idx = container.children.length;
+    const slot = document.createElement('div');
+    slot.className = 'student-slot';
+    slot.innerHTML = `
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Student ${idx + 2} Name</label>
+          <input type="text" class="add-student-name" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Grade</label>
+          <input type="text" class="add-student-grade" placeholder="e.g. 3rd">
+        </div>
+        <div class="form-group">
+          <label>Program</label>
+          <select class="add-student-program">
+            <option value="">Select…</option>
+            <option value="Roots">Roots</option>
+            <option value="Bridge">Bridge</option>
+            <option value="Launch">Launch</option>
+            <option value="Gleamworks">Gleamworks</option>
+            <option value="Teams">Teams</option>
+          </select>
+        </div>
+        <div class="form-group student-slot-remove">
+          <button type="button" class="btn-remove-student">× Remove</button>
+        </div>
+      </div>
+    `;
+    slot.querySelector('.btn-remove-student').addEventListener('click', () => slot.remove());
+    container.appendChild(slot);
+  });
+
   // Form submit
   document.getElementById('consult-form').addEventListener('submit', handleFormSubmit);
 
@@ -217,6 +253,11 @@ async function handleFormSubmit(e) {
 
   const now      = firebase.firestore.Timestamp.now();
   const programs = Array.from(document.querySelectorAll('input[name="programs"]:checked')).map(cb => cb.value);
+  const additionalStudents = Array.from(document.querySelectorAll('#additional-students .student-slot')).map(slot => ({
+    name:    slot.querySelector('.add-student-name')?.value?.trim()   || '',
+    grade:   slot.querySelector('.add-student-grade')?.value?.trim()  || '',
+    program: slot.querySelector('.add-student-program')?.value        || '',
+  })).filter(s => s.name);
 
   const data = {
     parentName:            v('parentName'),
@@ -233,6 +274,7 @@ async function handleFormSubmit(e) {
     iepNotes:              v('iepNotes'),
     programsDiscussed:     programs,
     program:               v('program'),
+    additionalStudents:    additionalStudents,
     keyFactors: {
       tutorPreference:     intOrNull('kf-tutor'),
       scheduleFlexibility: intOrNull('kf-schedule'),
@@ -330,6 +372,7 @@ async function handleFormSubmit(e) {
     document.querySelectorAll('.pepper-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('leadWarmth').value = '';
     document.getElementById('iepNotes').hidden  = true;
+    document.getElementById('additional-students').innerHTML = '';
     // Restore nextstep to default state after reset
     updateNextStepDisplay('');
     document.getElementById('copy-survey-btn').disabled = true;
@@ -449,6 +492,8 @@ function getFlags(f) {
   const now   = Date.now();
   const days  = ts => ts ? (now - ts.toMillis()) / 86400000 : 0;
 
+  if (f.pendingMatch) flags.push({ label: 'Needs review', days: null, level: 'error' });
+
   if (f.surveyLinkCopied && !f.surveyComplete && f.preferredContact !== 'call-scheduled' && days(f.surveyLinkCopiedAt) >= 2)
     flags.push({ label: 'Survey not returned', days: Math.floor(days(f.surveyLinkCopiedAt)), level: 'warning' });
 
@@ -498,17 +543,38 @@ function renderCard(f) {
   const warmth      = f.leadWarmth ? '🌶️'.repeat(f.leadWarmth) : '';
   const initials    = f.currentOwner ? f.currentOwner.slice(0, 2).toUpperCase() : '';
   const ownerClass  = f.currentOwner ? `owner-${f.currentOwner.toLowerCase()}` : '';
-  const progClass   = f.program ? `badge-program-${f.program.toLowerCase()}` : '';
   const callBooked  = f.preferredContact === 'call-scheduled' && getStage(f) === 3;
 
   const statusBadge = getCardStatusBadge(f);
   const cardClass   = getCardClass(f);
 
-  return `<div class="family-card ${cardClass}" data-id="${f.id}">
+  const allStudents = [
+    { name: f.studentName, grade: f.grade, program: f.program },
+    ...(f.additionalStudents || [])
+  ];
+  const isMulti = allStudents.length > 1;
+
+  let namesHtml;
+  if (isMulti) {
+    namesHtml = allStudents.map(s => {
+      const pc = s.program ? `badge-program-${s.program.toLowerCase()}` : '';
+      return `<div class="card-student-row">
+        <span class="card-student">${esc(s.name)}</span>
+        ${s.grade ? `<span class="card-grade">${esc(s.grade)}</span>` : ''}
+        ${s.program ? `<span class="badge ${pc}">${esc(s.program)}</span>` : ''}
+      </div>`;
+    }).join('');
+  } else {
+    namesHtml = `<span class="card-parent">${esc(f.parentName)}</span>
+        <span class="card-student">${esc(f.studentName)}</span>`;
+  }
+
+  const progClass = f.program ? `badge-program-${f.program.toLowerCase()}` : '';
+
+  return `<div class="family-card ${cardClass}${isMulti ? ' card-multi-student' : ''}" data-id="${f.id}">
     <div class="card-top">
       <div class="card-names">
-        <span class="card-parent">${esc(f.parentName)}</span>
-        <span class="card-student">${esc(f.studentName)}</span>
+        ${isMulti ? `<span class="card-parent">${esc(f.parentName)}</span>` + namesHtml : namesHtml}
       </div>
       <div class="card-indicators">
         ${flags.length ? '<span class="flag-bell">🔔</span>' : ''}
@@ -516,7 +582,7 @@ function renderCard(f) {
       </div>
     </div>
     <div class="card-badges">
-      ${f.program   ? `<span class="badge ${progClass}">${esc(f.program)}</span>` : ''}
+      ${!isMulti && f.program   ? `<span class="badge ${progClass}">${esc(f.program)}</span>` : ''}
       ${f.location  ? `<span class="badge badge-location">${esc(f.location)}</span>` : ''}
       ${callBooked  ? '<span class="badge badge-call-booked">Call Booked</span>' : ''}
       ${statusBadge}
@@ -526,6 +592,7 @@ function renderCard(f) {
 }
 
 function getCardClass(f) {
+  if (f.pendingMatch)                                                        return 'card-status-pending';
   if (f.status === 'gone-rogue' || f.decisionStatus === 'Gone Rogue')      return 'card-status-gone-rogue';
   if (f.status === 'closed'     || f.decisionStatus === 'Not moving forward') return 'card-status-closed';
   if (f.status === 'cold')                                                  return 'card-status-cold';
@@ -534,6 +601,7 @@ function getCardClass(f) {
 }
 
 function getCardStatusBadge(f) {
+  if (f.pendingMatch)                                                           return '<span class="badge badge-status-pending">Needs Review</span>';
   if (f.status === 'gone-rogue' || f.decisionStatus === 'Gone Rogue')         return '<span class="badge badge-status-gone-rogue">Gone Rogue</span>';
   if (f.status === 'closed'     || f.decisionStatus === 'Not moving forward')  return '<span class="badge badge-status-closed">Closed</span>';
   if (f.status === 'cold')                                                     return '<span class="badge badge-status-cold">Cold</span>';
@@ -869,7 +937,10 @@ function buildModalHTML(f) {
       <div class="info-grid">
         ${row('Phone',          f.phone)}
         ${row('Email',          f.email)}
-        ${row('Program',        f.program)}
+        ${row('Student',        f.studentName + (f.grade ? ' (' + f.grade + ')' : '') + (f.program ? ' — ' + f.program : ''))}
+        ${(f.additionalStudents || []).map((s, i) =>
+          row(`Student ${i + 2}`, s.name + (s.grade ? ' (' + s.grade + ')' : '') + (s.program ? ' — ' + s.program : ''))
+        ).join('')}
         ${row('Location',       f.location)}
         ${row('Consult Date',   fmtDate(f.consultDate))}
         ${row('Lead Warmth',    warmth)}

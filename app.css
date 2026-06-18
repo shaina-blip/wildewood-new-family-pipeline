@@ -1104,6 +1104,20 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
 
 .cal-empty { color: var(--text-muted); font-size: .9rem; text-align: center; padding: 2rem; }
 
+/* ─── MULTI-STUDENT CARDS ───────────────────────────────── */
+.card-multi-student .card-names { gap: 0; }
+.card-student-row { display: flex; align-items: center; gap: .4rem; padding: .3rem 0; border-top: 1px solid var(--border); margin-top: .2rem; }
+.card-student-row:first-of-type { border-top: none; margin-top: 0; }
+.card-grade { font-size: .78rem; color: var(--text-muted); font-weight: 400; }
+.btn-add-student { background: none; border: 1.5px dashed var(--border); border-radius: var(--radius-sm); padding: .4rem .9rem; font-size: .82rem; color: var(--text-muted); cursor: pointer; font-family: inherit; margin-top: .25rem; transition: all .15s; }
+.btn-add-student:hover { border-color: var(--green); color: var(--green); }
+.btn-remove-student { background: none; border: none; color: var(--error); font-size: .8rem; cursor: pointer; font-family: inherit; padding: .3rem 0; }
+.student-slot-remove { display: flex; align-items: flex-end; }
+
+/* ─── PENDING MATCH CARDS ───────────────────────────────── */
+.family-card.card-status-pending { border-left-color: var(--amber); }
+.badge-status-pending { background: #FEF3C7; color: #92400E; }
+
 /* ─── RESPONSIVE ───────────────────────────────────────── */
 @media (max-width: 640px) {
   .form-grid { grid-template-columns: 1fr; }

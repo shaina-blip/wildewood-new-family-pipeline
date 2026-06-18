@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   db = firebase.firestore();
   emailjs.init(EMAILJS_PUBLIC_KEY);
 
+  if (!familyId) {
+    document.getElementById('s1-identity').hidden = false;
+    parentName = ''; // will be collected from form
+  }
+
   // Inject names
   document.querySelectorAll('.parent-name').forEach(el  => { el.textContent = parentName; });
   document.querySelectorAll('.student-name').forEach(el => { el.textContent = studentName; });
@@ -232,6 +237,39 @@ async function submitSurvey() {
   try {
     if (familyId) {
       await db.collection('families').doc(familyId).update(update);
+    } else {
+      // Generic link: try to match by email
+      const emailInput = (document.getElementById('s1-email')?.value || '').trim().toLowerCase();
+      const nameInput  = (document.getElementById('s1-parent-name')?.value || '').trim();
+      parentName = nameInput || parentName;
+
+      let matched = false;
+      if (emailInput) {
+        const snap = await db.collection('families')
+          .where('email', '==', emailInput)
+          .where('surveyComplete', '==', false)
+          .limit(1)
+          .get();
+        if (!snap.empty) {
+          await snap.docs[0].ref.update(update);
+          matched = true;
+        }
+      }
+
+      if (!matched) {
+        await db.collection('families').add({
+          ...update,
+          parentName:   nameInput  || 'Unknown',
+          studentName:  studentName || '',
+          email:        emailInput  || '',
+          pendingMatch: true,
+          surveyComplete: true,
+          createdAt:    firebase.firestore.Timestamp.now(),
+          consultDate:  firebase.firestore.Timestamp.now(),
+          status:       'active',
+          monthTab:     '',
+        });
+      }
     }
     await sendEmail(update);
     showSection(6);
