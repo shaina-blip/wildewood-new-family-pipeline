@@ -42,6 +42,17 @@
         </p>
       </div>
 
+      <!-- Identity — shown only when using generic link (no ?id in URL) -->
+      <div id="s1-identity" class="card" hidden>
+        <label class="field-label">First, let's find your record
+          <span class="field-hint">We just need your name and email to pull up your family's info.</span>
+        </label>
+        <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:.5rem;">
+          <input type="text" id="s1-parent-name" placeholder="Your name (e.g. Sarah Smith)">
+          <input type="email" id="s1-email" placeholder="Email address">
+        </div>
+      </div>
+
       <!-- First: meeting vs. survey -->
       <div class="card">
         <label class="field-label">How would you like to share your availability?</label>
