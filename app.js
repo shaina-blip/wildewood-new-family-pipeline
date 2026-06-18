@@ -28,73 +28,72 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTabNav();
   setupModal();
   setupSidebar();
-
-  if (sessionStorage.getItem('weo_auth') === 'true') {
-    unlockApp();
-  } else {
-    setupPinGate();
-  }
+  setupAuthGate();
 });
 
-// ─── PIN Auth ────────────────────────────────────────────
-function setupPinGate() {
-  const input  = document.getElementById('pin-input');
-  const btn    = document.getElementById('pin-submit');
-  btn.addEventListener('click', handlePinSubmit);
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') handlePinSubmit(); });
-  setTimeout(() => input.focus(), 100);
+// ─── Auth (Google Sign-In) ────────────────────────────────
+function setupAuthGate() {
+  firebase.auth().onAuthStateChanged(user => {
+    if (user && isAuthorized(user)) {
+      unlockApp(user);
+    } else {
+      if (user) {
+        firebase.auth().signOut();
+        showAuthError('This tool is for @wildewoodeducation.com accounts only.');
+      }
+      showAuthGate();
+    }
+  });
+
+  document.getElementById('google-signin-btn').addEventListener('click', handleSignIn);
+  document.getElementById('signout-btn').addEventListener('click', () => firebase.auth().signOut());
 }
 
-async function handlePinSubmit() {
-  const input = document.getElementById('pin-input');
-  const error = document.getElementById('pin-error');
-  const btn   = document.getElementById('pin-submit');
-  const pin   = input.value.trim();
-  if (!pin) return;
-
+async function handleSignIn() {
+  const btn   = document.getElementById('google-signin-btn');
+  const errEl = document.getElementById('auth-error');
   btn.disabled  = true;
-  btn.textContent = 'Checking…';
-  error.hidden  = true;
+  errEl.hidden  = true;
 
   try {
-    const doc = await db.collection('config').doc('auth').get();
-    if (!doc.exists) {
-      showPinError('PIN not set up yet — see README.');
-      return;
-    }
-    const hash = await sha256(pin);
-    if (hash === doc.data().pinHash) {
-      sessionStorage.setItem('weo_auth', 'true');
-      unlockApp();
-    } else {
-      showPinError('Incorrect PIN — try again.');
-      input.value = '';
-      input.focus();
-    }
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ hd: 'wildewoodeducation.com' });
+    await firebase.auth().signInWithPopup(provider);
   } catch (err) {
-    showPinError('Connection error. Check Firebase config.');
-    console.error(err);
-  } finally {
-    btn.disabled    = false;
-    btn.textContent = 'Unlock';
+    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+      showAuthError('Sign-in failed — make sure popups are allowed and try again.');
+      console.error(err);
+    }
+    btn.disabled = false;
   }
 }
 
-function showPinError(msg) {
-  const el = document.getElementById('pin-error');
+function isAuthorized(user) {
+  return user?.email?.endsWith('@wildewoodeducation.com') ?? false;
+}
+
+function showAuthGate() {
+  document.getElementById('pin-gate').hidden  = false;
+  document.getElementById('main-app').hidden  = true;
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
   el.textContent = msg;
   el.hidden = false;
 }
 
-function unlockApp() {
-  document.getElementById('pin-gate').hidden   = true;
-  document.getElementById('main-app').hidden   = false;
-  initPipelineBoard();
-}
+function unlockApp(user) {
+  document.getElementById('pin-gate').hidden  = true;
+  document.getElementById('main-app').hidden  = false;
 
-async function sha256(msg) {
-  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  if (user) {
+    const firstName = user.displayName?.split(' ')[0] || user.email.split('@')[0];
+    const nameEl = document.getElementById('header-user-name');
+    if (nameEl) nameEl.textContent = firstName;
+  }
+
+  initPipelineBoard();
 }
 
 // ─── Tab Navigation ──────────────────────────────────────
@@ -344,6 +343,9 @@ function getFlags(f) {
   if (f.firstSessionDate && !f.firstSessionFollowUp && days(f.firstSessionDate) >= 0)
     flags.push({ label: 'Follow-up needed', days: Math.floor(days(f.firstSessionDate)), level: 'error' });
 
+  if (f.scheduleConfirmed && !f.firstSessionDate)
+    flags.push({ label: 'No session date set', days: null, level: 'error' });
+
   if (f.decisionStatus === 'Still thinking' && days(f.consultDate) >= 7)
     flags.push({ label: 'Check in', days: Math.floor(days(f.consultDate)), level: 'warning' });
 
@@ -377,11 +379,12 @@ function renderBoard(families) {
 }
 
 function renderCard(f) {
-  const flags      = getFlags(f);
-  const warmth     = f.leadWarmth ? '🌶️'.repeat(f.leadWarmth) : '';
-  const initials   = f.currentOwner ? f.currentOwner.slice(0, 2).toUpperCase() : '';
-  const progClass  = f.program ? `badge-program-${f.program.toLowerCase()}` : '';
-  const callBooked = f.preferredContact === 'call-scheduled' && getStage(f) === 3;
+  const flags       = getFlags(f);
+  const warmth      = f.leadWarmth ? '🌶️'.repeat(f.leadWarmth) : '';
+  const initials    = f.currentOwner ? f.currentOwner.slice(0, 2).toUpperCase() : '';
+  const ownerClass  = f.currentOwner ? `owner-${f.currentOwner.toLowerCase()}` : '';
+  const progClass   = f.program ? `badge-program-${f.program.toLowerCase()}` : '';
+  const callBooked  = f.preferredContact === 'call-scheduled' && getStage(f) === 3;
 
   const statusBadge = getCardStatusBadge(f);
   const cardClass   = getCardClass(f);
@@ -394,7 +397,7 @@ function renderCard(f) {
       </div>
       <div class="card-indicators">
         ${flags.length ? '<span class="flag-bell">🔔</span>' : ''}
-        ${initials ? `<span class="owner-circle">${initials}</span>` : ''}
+        ${initials ? `<span class="owner-circle ${ownerClass}">${initials}</span>` : ''}
       </div>
     </div>
     <div class="card-badges">
@@ -444,7 +447,7 @@ function updateAttentionSidebar(families) {
       <div class="sidebar-item-name">${esc(f.parentName)}</div>
       <div class="sidebar-item-student">${esc(f.studentName)}</div>
       <div class="sidebar-item-flags">
-        ${flags.map(fl => `<span class="flag-tag flag-${fl.level}">${fl.label} · ${fl.days}d</span>`).join('')}
+        ${flags.map(fl => `<span class="flag-tag flag-${fl.level}">${fl.label}${fl.days != null ? ` · ${fl.days}d` : ''}</span>`).join('')}
       </div>
     </div>`).join('');
 
@@ -515,7 +518,7 @@ function buildModalHTML(f) {
     </label>`).join('');
 
   const flagsHtml = flags.length
-    ? `<div class="modal-flags">${flags.map(fl => `<span class="flag-badge flag-${fl.level}">${fl.label} · ${fl.days}d</span>`).join('')}</div>`
+    ? `<div class="modal-flags">${flags.map(fl => `<span class="flag-badge flag-${fl.level}">${fl.label}${fl.days != null ? ` · ${fl.days}d` : ''}</span>`).join('')}</div>`
     : '';
 
   const surveyHtml = f.surveyComplete ? `
