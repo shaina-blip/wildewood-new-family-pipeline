@@ -238,7 +238,7 @@ html, body {
 }
 
 /* ─── Textarea / Input ──────────────────────────────── */
-textarea, input[type="text"] {
+textarea, input[type="text"], input[type="email"] {
   width: 100%;
   padding: .7rem .9rem;
   border: 1.5px solid var(--border);
@@ -252,7 +252,7 @@ textarea, input[type="text"] {
   transition: border-color .15s;
 }
 
-textarea:focus, input[type="text"]:focus { border-color: var(--green); }
+textarea:focus, input[type="text"]:focus, input[type="email"]:focus { border-color: var(--green); }
 
 /* ─── Navigation buttons ────────────────────────────── */
 .section-nav {
