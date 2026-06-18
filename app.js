@@ -603,7 +603,9 @@ function buildModalHTML(f) {
     </div>
 
     <div class="modal-section">
-      <button class="btn btn-secondary" onclick="copyModalSurveyLink('${f.id}', '${esc(f.parentName)}', '${esc(f.studentName)}')">
+      <button class="btn btn-secondary"
+              data-fid="${f.id}" data-parent="${esc(f.parentName)}" data-student="${esc(f.studentName)}"
+              onclick="copyModalSurveyLink(this.dataset.fid,this.dataset.parent,this.dataset.student)">
         📋 Copy Survey Link
       </button>
     </div>`;
