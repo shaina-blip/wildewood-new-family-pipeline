@@ -14,7 +14,7 @@ const firebaseConfig = {
 // EmailJS — get from emailjs.com → Account → API Keys
 const EMAILJS_SERVICE_ID  = "service_l9mx95t";
 const EMAILJS_TEMPLATE_ID = "template_cj0dhqm";         // survey completion → Shay
-const EMAILJS_ASSIGNMENT_TEMPLATE_ID = "";               // owner assignment notification — add template ID here
+const EMAILJS_ASSIGNMENT_TEMPLATE_ID = "template_vz9rnq1"; // owner assignment notification
 const EMAILJS_PUBLIC_KEY  = "qghGWe4KNOpRWqn86";
 
 // Email address that receives survey-completion notifications (Shay)
