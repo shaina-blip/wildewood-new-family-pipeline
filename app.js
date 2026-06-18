@@ -147,6 +147,7 @@ const DECISION_OWNER = {
   'Want to see the space':   'Shaina',
   'Need a proposal':         'Tara',
   'Need a family meeting':   'Tara',
+  'Scheduled':               'Josh',
 };
 
 const SURVEY_READY = new Set(['Decided to move forward', 'Want a trial session', 'Want to see the space']);
@@ -159,14 +160,27 @@ function isReadyForSurvey(f) {
   return SURVEY_READY.has(f.decisionStatus) || f.preferredContact === 'survey' || f.preferredContact === 'call-scheduled';
 }
 
+const CLOSED_STATUSES = new Set(['Not moving forward', 'Gone Rogue']);
+
 function updateNextStepDisplay(decision) {
-  const ready = SURVEY_READY.has(decision);
-  document.getElementById('nextstep-survey').hidden  = !ready;
-  document.getElementById('nextstep-reminder').hidden = ready;
-  if (ready) {
-    // ensure survey radio is checked so preferredContact is valid
+  const els = {
+    survey:   document.getElementById('nextstep-survey'),
+    session:  document.getElementById('nextstep-session'),
+    reminder: document.getElementById('nextstep-reminder'),
+    closed:   document.getElementById('nextstep-closed'),
+  };
+  Object.values(els).forEach(el => { if (el) el.hidden = true; });
+
+  if (!decision || SURVEY_READY.has(decision)) {
+    els.survey.hidden = false;
     const surveyRadio = document.querySelector('input[name="preferredContact"][value="survey"]');
     if (surveyRadio && !document.querySelector('input[name="preferredContact"]:checked')) surveyRadio.checked = true;
+  } else if (decision === 'Scheduled') {
+    els.session.hidden = false;
+  } else if (CLOSED_STATUSES.has(decision)) {
+    els.closed.hidden = false;
+  } else {
+    els.reminder.hidden = false;
   }
 }
 
@@ -225,26 +239,44 @@ async function handleFormSubmit(e) {
     invoiceSentAt:             null,
     invoicePaid:               false,
     invoiceAmount:             null,
-    firstSessionDate:          null,
     firstSessionFollowUp:      false,
 
-    // Calendar actions — pre-filled from reminder section for non-ready families
-    nextActionDate:            (() => {
+    // First session date — set directly when Scheduled
+    firstSessionDate: (() => {
+      const d = document.getElementById('firstSessionDateInput')?.value;
+      return d && v('decisionStatus') === 'Scheduled'
+        ? firebase.firestore.Timestamp.fromDate(new Date(d + 'T12:00:00'))
+        : null;
+    })(),
+
+    // Calendar actions
+    nextActionDate: (() => {
+      if (v('decisionStatus') === 'Scheduled') {
+        const d = document.getElementById('firstSessionDateInput')?.value;
+        return d ? firebase.firestore.Timestamp.fromDate(addBusinessDays(new Date(d + 'T12:00:00'), 2)) : null;
+      }
       const d = document.getElementById('reminderDate')?.value;
-      return d && !SURVEY_READY.has(v('decisionStatus'))
+      return d && !SURVEY_READY.has(v('decisionStatus')) && !CLOSED_STATUSES.has(v('decisionStatus'))
         ? firebase.firestore.Timestamp.fromDate(new Date(d + 'T09:00:00'))
         : null;
     })(),
-    nextActionNote:            (!SURVEY_READY.has(v('decisionStatus'))
-      ? (document.getElementById('reminderNote')?.value || '').trim()
-      : ''),
+    nextActionNote: (() => {
+      if (v('decisionStatus') === 'Scheduled') {
+        return document.getElementById('firstSessionDateInput')?.value
+          ? 'Follow up: check in after first session' : '';
+      }
+      return !SURVEY_READY.has(v('decisionStatus')) && !CLOSED_STATUSES.has(v('decisionStatus'))
+        ? (document.getElementById('reminderNote')?.value || '').trim() : '';
+    })(),
 
     // Metadata
     consultDate: now,
     createdAt:   now,
     updatedAt:   now,
     monthTab:    currentMonth,
-    status:      'active'
+    status:      CLOSED_STATUSES.has(v('decisionStatus'))
+                   ? (v('decisionStatus') === 'Gone Rogue' ? 'gone-rogue' : 'closed')
+                   : 'active'
   };
 
   if (!data.parentName || !data.studentName) {
@@ -270,9 +302,8 @@ async function handleFormSubmit(e) {
     document.querySelectorAll('.pepper-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('leadWarmth').value = '';
     document.getElementById('iepNotes').hidden  = true;
-    // Restore nextstep to default (survey visible) after reset clears decisionStatus
-    document.getElementById('nextstep-survey').hidden  = false;
-    document.getElementById('nextstep-reminder').hidden = true;
+    // Restore nextstep to default state after reset
+    updateNextStepDisplay('');
     document.getElementById('copy-survey-btn').disabled = true;
     lastSavedFamilyId = ref.id; // keep for copy button even after reset
     document.getElementById('copy-survey-btn').disabled = false;

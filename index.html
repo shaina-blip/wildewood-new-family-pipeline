@@ -305,6 +305,13 @@
             </div>
           </div>
 
+          <!-- Session date — shown when Scheduled -->
+          <div id="nextstep-session" class="form-group" hidden>
+            <label>First session date</label>
+            <p class="field-hint">Josh will automatically get a follow-up reminder 2 business days after this.</p>
+            <input type="date" id="firstSessionDateInput" name="firstSessionDateInput">
+          </div>
+
           <!-- Reminder flow — shown when family is not yet ready -->
           <div id="nextstep-reminder" class="form-group" hidden>
             <label>Set a follow-up reminder</label>
@@ -313,6 +320,11 @@
               <input type="date" id="reminderDate" name="reminderDate">
               <input type="text" id="reminderNote" name="reminderNote" placeholder="Reminder note (e.g. Follow up on proposal)">
             </div>
+          </div>
+
+          <!-- Closed — shown for Not moving forward / Gone Rogue -->
+          <div id="nextstep-closed" class="form-group" hidden>
+            <p class="field-hint">No further action needed — this family will be marked as closed.</p>
           </div>
 
         </fieldset>
