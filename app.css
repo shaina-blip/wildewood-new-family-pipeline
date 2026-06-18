@@ -137,6 +137,8 @@ html, body {
 
 .btn-secondary  { background: var(--border); color: var(--text); }
 .btn-secondary:hover:not(:disabled) { background: #d4ddd6; }
+.btn-danger     { background: transparent; color: var(--error); border: 1.5px solid #FCA5A5; font-size: .88rem; }
+.btn-danger:hover { background: #FEE2E2; border-color: var(--error); }
 
 .btn-lg { padding: .75rem 1.5rem; font-size: 1rem; border-radius: var(--radius); }
 
@@ -808,6 +810,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
   border-top: 1px solid var(--border);
   padding-top: .75rem;
 }
+.modal-section-danger { margin-top: 1.5rem; }
 
 .modal-section h4 {
   font-size: .75rem;

@@ -1022,8 +1022,21 @@ function buildModalHTML(f) {
               onclick="copyModalSurveyLink(this.dataset.fid,this.dataset.parent,this.dataset.student)">
         📋 Copy Survey Link
       </button>
-    </div>` : ''}`;
+    </div>` : ''}
+
+    <div class="modal-section modal-section-danger">
+      <button class="btn btn-danger" onclick="deleteFamily('${f.id}', '${esc(f.parentName)}')">
+        🗑 Remove from pipeline
+      </button>
+    </div>`;
 }
+
+window.deleteFamily = function(id, name) {
+  if (!confirm(`Remove ${name} from the pipeline?\n\nThis cannot be undone.`)) return;
+  db.collection('families').doc(id).delete()
+    .then(() => { document.getElementById('card-modal').hidden = true; })
+    .catch(err => { console.error(err); alert('Could not delete — please try again.'); });
+};
 
 // Exposed globals called from inline onclick in modal HTML
 window.saveInvoiceAmount = function(id) {
