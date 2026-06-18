@@ -289,7 +289,9 @@
         <!-- Next Step -->
         <fieldset class="form-section">
           <legend>Next Step</legend>
-          <div class="form-group">
+
+          <!-- Survey flow — shown when family is ready to move forward -->
+          <div id="nextstep-survey" class="form-group">
             <label>How will scheduling info be collected?</label>
             <div class="radio-group vertical">
               <label class="radio-opt">
@@ -302,6 +304,17 @@
               </label>
             </div>
           </div>
+
+          <!-- Reminder flow — shown when family is not yet ready -->
+          <div id="nextstep-reminder" class="form-group" hidden>
+            <label>Set a follow-up reminder</label>
+            <p class="field-hint">They're not ready yet — pick a date to check back in. It'll show up in the Calendar view.</p>
+            <div class="reminder-row">
+              <input type="date" id="reminderDate" name="reminderDate">
+              <input type="text" id="reminderNote" name="reminderNote" placeholder="Reminder note (e.g. Follow up on proposal)">
+            </div>
+          </div>
+
         </fieldset>
 
         <!-- Actions -->

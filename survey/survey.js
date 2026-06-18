@@ -68,6 +68,15 @@ function showSection(n) {
 
 // ─── Section 1: Welcome ───────────────────────────────────
 function wireSection1() {
+  // Toggle meeting vs. survey path
+  document.querySelectorAll('input[name="s1-method"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const isMeeting = document.querySelector('input[name="s1-method"]:checked')?.value === 'meeting';
+      document.getElementById('s1-meeting-path').hidden = !isMeeting;
+      document.getElementById('s1-survey-path').hidden  = isMeeting;
+    });
+  });
+
   document.getElementById('s1-next').addEventListener('click', () => {
     surveyData.preferredComm = document.querySelector('input[name="s1-comm"]:checked')?.value || '';
     showSection(2);
