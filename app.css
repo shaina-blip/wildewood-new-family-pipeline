@@ -582,8 +582,8 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
 .family-card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
 
 .family-card.card-status-cold      { border-left-color: var(--amber); }
-.family-card.card-status-closed    { border-left-color: var(--error); opacity: .75; }
-.family-card.card-status-gone-rogue{ border-left-color: #9CA3AF; opacity: .75; }
+.family-card.card-status-closed    { border-left-color: #9CA3AF; opacity: .5; filter: grayscale(.4); }
+.family-card.card-status-gone-rogue{ border-left-color: #9CA3AF; opacity: .5; filter: grayscale(.4); }
 .family-card.card-status-thinking  { border-left-color: var(--amber); }
 
 .card-top {
