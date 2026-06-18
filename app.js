@@ -128,9 +128,10 @@ function initConsultForm() {
   const iepNotes = document.getElementById('iepNotes');
   iepCheck.addEventListener('change', () => { iepNotes.hidden = !iepCheck.checked; });
 
-  // Auto-assign owner from decision status
+  // Auto-assign owner + toggle next-step section from decision status
   document.getElementById('decisionStatus').addEventListener('change', function() {
     document.getElementById('currentOwner').value = ownerForDecision(this.value);
+    updateNextStepDisplay(this.value);
   });
 
   // Form submit
@@ -148,8 +149,25 @@ const DECISION_OWNER = {
   'Need a family meeting':   'Tara',
 };
 
+const SURVEY_READY = new Set(['Decided to move forward', 'Want a trial session', 'Want to see the space']);
+
 function ownerForDecision(decision) {
   return DECISION_OWNER[decision] || (decision ? 'Josh' : '');
+}
+
+function isReadyForSurvey(f) {
+  return SURVEY_READY.has(f.decisionStatus) || f.preferredContact === 'survey' || f.preferredContact === 'call-scheduled';
+}
+
+function updateNextStepDisplay(decision) {
+  const ready = SURVEY_READY.has(decision);
+  document.getElementById('nextstep-survey').hidden  = !ready;
+  document.getElementById('nextstep-reminder').hidden = ready;
+  if (ready) {
+    // ensure survey radio is checked so preferredContact is valid
+    const surveyRadio = document.querySelector('input[name="preferredContact"][value="survey"]');
+    if (surveyRadio && !document.querySelector('input[name="preferredContact"]:checked')) surveyRadio.checked = true;
+  }
 }
 
 async function handleFormSubmit(e) {
@@ -191,7 +209,9 @@ async function handleFormSubmit(e) {
     likelihoodReason:      v('likelihoodReason'),
     currentOwner:          v('currentOwner'),
     notes:                 v('notes'),
-    preferredContact:      radio('preferredContact') || 'survey',
+    preferredContact:      SURVEY_READY.has(v('decisionStatus'))
+                             ? (radio('preferredContact') || 'survey')
+                             : 'reminder',
 
     // Pipeline booleans (all start false)
     surveyLinkCopied:          false,
@@ -208,9 +228,16 @@ async function handleFormSubmit(e) {
     firstSessionDate:          null,
     firstSessionFollowUp:      false,
 
-    // Calendar actions
-    nextActionDate:            null,
-    nextActionNote:            '',
+    // Calendar actions — pre-filled from reminder section for non-ready families
+    nextActionDate:            (() => {
+      const d = document.getElementById('reminderDate')?.value;
+      return d && !SURVEY_READY.has(v('decisionStatus'))
+        ? firebase.firestore.Timestamp.fromDate(new Date(d + 'T09:00:00'))
+        : null;
+    })(),
+    nextActionNote:            (!SURVEY_READY.has(v('decisionStatus'))
+      ? (document.getElementById('reminderNote')?.value || '').trim()
+      : ''),
 
     // Metadata
     consultDate: now,
@@ -243,6 +270,9 @@ async function handleFormSubmit(e) {
     document.querySelectorAll('.pepper-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('leadWarmth').value = '';
     document.getElementById('iepNotes').hidden  = true;
+    // Restore nextstep to default (survey visible) after reset clears decisionStatus
+    document.getElementById('nextstep-survey').hidden  = false;
+    document.getElementById('nextstep-reminder').hidden = true;
     document.getElementById('copy-survey-btn').disabled = true;
     lastSavedFamilyId = ref.id; // keep for copy button even after reset
     document.getElementById('copy-survey-btn').disabled = false;
@@ -848,13 +878,14 @@ function buildModalHTML(f) {
       </div>
     </div>
 
+    ${isReadyForSurvey(f) ? `
     <div class="modal-section">
       <button class="btn btn-secondary"
               data-fid="${f.id}" data-parent="${esc(f.parentName)}" data-student="${esc(f.studentName)}"
               onclick="copyModalSurveyLink(this.dataset.fid,this.dataset.parent,this.dataset.student)">
         📋 Copy Survey Link
       </button>
-    </div>`;
+    </div>` : ''}`;
 }
 
 // Exposed globals called from inline onclick in modal HTML

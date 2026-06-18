@@ -15,8 +15,9 @@
   <!-- Header -->
   <header class="survey-header">
     <div class="weo-logo">
-      <span class="weo-logo-mark">WEO</span>
-      <span class="weo-logo-name">Wildewood Education</span>
+      <div class="survey-logo-wrap">
+        <img src="../logo.png" alt="Wildewood Education" class="survey-logo-img">
+      </div>
     </div>
   </header>
 
@@ -39,40 +40,78 @@
         <p class="section-intro">
           We're so excited to get <strong class="student-name">your student</strong> started at Wildewood.
         </p>
-        <p class="section-body">
-          This short survey helps us understand your schedule so we can put together a plan that works for your family. It takes about 3 minutes — promise.
-        </p>
       </div>
 
+      <!-- First: meeting vs. survey -->
       <div class="card">
-        <label class="field-label">How do you prefer we stay in touch?</label>
+        <label class="field-label">How would you like to share your availability?</label>
         <div class="choice-group stacked">
           <label class="choice-item">
-            <input type="radio" name="s1-comm" value="Text">
+            <input type="radio" name="s1-method" value="survey" checked>
             <span class="choice-body">
-              <span class="choice-icon">💬</span>
-              <span>Text</span>
+              <span class="choice-icon">📋</span>
+              <span>I'll fill out this quick survey — takes about 3 minutes</span>
             </span>
           </label>
           <label class="choice-item">
-            <input type="radio" name="s1-comm" value="Email">
+            <input type="radio" name="s1-method" value="meeting">
             <span class="choice-body">
-              <span class="choice-icon">✉️</span>
-              <span>Email</span>
-            </span>
-          </label>
-          <label class="choice-item">
-            <input type="radio" name="s1-comm" value="Phone">
-            <span class="choice-body">
-              <span class="choice-icon">📞</span>
-              <span>Phone Call</span>
+              <span class="choice-icon">📅</span>
+              <span>I'd prefer to book a quick meeting to talk it through</span>
             </span>
           </label>
         </div>
       </div>
 
-      <div class="section-nav">
-        <button class="btn-next" id="s1-next">Next →</button>
+      <!-- Meeting booking path -->
+      <div id="s1-meeting-path" hidden>
+        <div class="card" style="text-align: center; padding: 1.75rem 1.25rem;">
+          <p class="section-body" style="margin-bottom: 1.25rem;">
+            No problem! Find a time that works for you below.
+          </p>
+          <a href="https://calendar.app.google/w9AnxpKBFktTRNBg9"
+             target="_blank" rel="noopener"
+             class="btn-next" style="display: inline-block; text-decoration: none;">
+            📅 Book a time with Shaina →
+          </a>
+          <p class="section-body" style="margin-top: 1rem; font-size: .85rem;">
+            After booking, feel free to close this page — we'll take it from there!
+          </p>
+        </div>
+      </div>
+
+      <!-- Survey path: comm preference + Next -->
+      <div id="s1-survey-path">
+        <div class="card">
+          <label class="field-label">How do you prefer we stay in touch?</label>
+          <div class="choice-group stacked">
+            <label class="choice-item">
+              <input type="radio" name="s1-comm" value="Text">
+              <span class="choice-body">
+                <span class="choice-icon">💬</span>
+                <span>Text</span>
+              </span>
+            </label>
+            <label class="choice-item">
+              <input type="radio" name="s1-comm" value="Email">
+              <span class="choice-body">
+                <span class="choice-icon">✉️</span>
+                <span>Email</span>
+              </span>
+            </label>
+            <label class="choice-item">
+              <input type="radio" name="s1-comm" value="Phone">
+              <span class="choice-body">
+                <span class="choice-icon">📞</span>
+                <span>Phone Call</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <div class="section-nav">
+          <button class="btn-next" id="s1-next">Next →</button>
+        </div>
       </div>
     </div>
 

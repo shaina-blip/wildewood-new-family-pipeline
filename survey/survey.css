@@ -45,19 +45,18 @@ html, body {
 
 .weo-logo { display: flex; align-items: center; gap: .65rem; }
 
-.weo-logo-mark {
-  font-family: 'Gelasio', serif;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: .06em;
+.survey-logo-wrap {
+  background: #fff;
+  border-radius: 5px;
+  padding: 3px 10px;
+  display: flex;
+  align-items: center;
 }
 
-.weo-logo-name {
-  font-size: .85rem;
-  color: rgba(255,255,255,.85);
-  font-weight: 500;
-  letter-spacing: .02em;
+.survey-logo-img {
+  height: 26px;
+  width: auto;
+  display: block;
 }
 
 /* ─── Progress Bar ──────────────────────────────────── */
