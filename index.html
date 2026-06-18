@@ -3,25 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WEO Pipeline — Internal</title>
+  <title>New Family Pipeline — Wildewood Education</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
 
-<!-- ─── PIN GATE ─────────────────────────────────────────── -->
+<!-- ─── AUTH GATE ─────────────────────────────────────────── -->
 <div id="pin-gate" class="pin-gate">
   <div class="pin-card">
     <div class="pin-logo">
-      <div class="pin-logo-mark">WEO</div>
-      <div class="pin-logo-sub">Wildewood Education</div>
+      <img src="logo.png" alt="Wildewood Education" class="pin-logo-img">
     </div>
     <h2 class="pin-title">New Family Pipeline</h2>
-    <p class="pin-hint">Team access only — enter your PIN</p>
-    <input type="password" id="pin-input" class="pin-input" placeholder="Enter PIN" maxlength="12" autocomplete="off">
-    <button id="pin-submit" class="btn btn-primary btn-lg">Unlock</button>
-    <p id="pin-error" class="pin-error" hidden>Incorrect PIN — try again.</p>
+    <p class="pin-hint">Team access only — sign in with your Wildewood Google account</p>
+    <button id="google-signin-btn" class="btn-google-signin">
+      <svg viewBox="0 0 24 24" class="google-icon" aria-hidden="true">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Sign in with Google
+    </button>
+    <p id="auth-error" class="pin-error" hidden></p>
   </div>
 </div>
 
@@ -30,7 +36,9 @@
 
   <header class="app-header">
     <div class="header-brand">
-      <span class="header-logo-mark">WEO</span>
+      <div class="header-logo-wrap">
+        <img src="logo.png" alt="Wildewood Education" class="header-logo-img">
+      </div>
       <span class="header-title">New Family Pipeline</span>
     </div>
     <nav class="tab-nav">
@@ -39,6 +47,10 @@
     </nav>
     <div class="header-meta">
       <span id="header-month" class="header-month"></span>
+      <div class="header-user">
+        <span id="header-user-name" class="header-user-name"></span>
+        <button id="signout-btn" class="btn-signout">Sign out</button>
+      </div>
     </div>
   </header>
 
@@ -229,9 +241,12 @@
               <select id="decisionStatus" name="decisionStatus">
                 <option value="">Select status…</option>
                 <option value="Decided to move forward">Decided to move forward on the call</option>
-                <option value="Still thinking">Still thinking</option>
                 <option value="Want a trial session">Want a trial session</option>
                 <option value="Want to see the space">Want to see the space</option>
+                <option value="Need a proposal">Need a proposal</option>
+                <option value="Need a family meeting">Need a family meeting</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Still thinking">Still thinking</option>
                 <option value="Will revisit later">Will revisit later</option>
                 <option value="Never connected">Never connected</option>
                 <option value="Not moving forward">Not moving forward</option>
@@ -254,14 +269,12 @@
             </div>
 
             <div class="form-group">
-              <label for="currentOwner">Current Owner</label>
+              <label for="currentOwner">Current Owner <span class="legend-hint">(auto-assigns from decision)</span></label>
               <select id="currentOwner" name="currentOwner">
                 <option value="">Select owner…</option>
                 <option value="Shaina">Shaina</option>
                 <option value="Josh">Josh</option>
                 <option value="Tara">Tara</option>
-                <option value="Quinn">Quinn</option>
-                <option value="Joelle">Joelle</option>
               </select>
             </div>
 
@@ -320,8 +333,6 @@
           <option value="Shaina">Shaina</option>
           <option value="Josh">Josh</option>
           <option value="Tara">Tara</option>
-          <option value="Quinn">Quinn</option>
-          <option value="Joelle">Joelle</option>
         </select>
         <select id="filter-program" class="filter-select">
           <option value="">All Programs</option>
@@ -345,14 +356,25 @@
           <option value="gone-rogue">Gone Rogue</option>
         </select>
       </div>
-      <div class="month-tabs-row" id="month-tabs"></div>
+      <div class="board-controls-row2">
+        <div class="view-toggle">
+          <button class="view-btn active" data-view="pipeline">📊 Pipeline</button>
+          <button class="view-btn" data-view="owner">👥 By Owner</button>
+          <button class="view-btn" data-view="calendar">📅 Calendar</button>
+        </div>
+        <div class="month-tabs-row" id="month-tabs"></div>
+      </div>
     </div>
 
     <div class="board-layout">
       <div class="board-main">
-        <div class="kanban-board" id="kanban-board">
-          <div class="board-loading">Loading families…</div>
+        <div id="board-view-pipeline">
+          <div class="kanban-board" id="kanban-board">
+            <div class="board-loading">Loading families…</div>
+          </div>
         </div>
+        <div id="board-view-owner" hidden></div>
+        <div id="board-view-calendar" hidden></div>
       </div>
 
       <aside class="sidebar" id="attention-sidebar">
@@ -381,6 +403,7 @@
 
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
