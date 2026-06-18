@@ -241,9 +241,12 @@
               <select id="decisionStatus" name="decisionStatus">
                 <option value="">Select status…</option>
                 <option value="Decided to move forward">Decided to move forward on the call</option>
-                <option value="Still thinking">Still thinking</option>
                 <option value="Want a trial session">Want a trial session</option>
                 <option value="Want to see the space">Want to see the space</option>
+                <option value="Need a proposal">Need a proposal</option>
+                <option value="Need a family meeting">Need a family meeting</option>
+                <option value="Scheduled">Scheduled</option>
+                <option value="Still thinking">Still thinking</option>
                 <option value="Will revisit later">Will revisit later</option>
                 <option value="Never connected">Never connected</option>
                 <option value="Not moving forward">Not moving forward</option>
@@ -266,14 +269,12 @@
             </div>
 
             <div class="form-group">
-              <label for="currentOwner">Current Owner</label>
+              <label for="currentOwner">Current Owner <span class="legend-hint">(auto-assigns from decision)</span></label>
               <select id="currentOwner" name="currentOwner">
                 <option value="">Select owner…</option>
                 <option value="Shaina">Shaina</option>
                 <option value="Josh">Josh</option>
                 <option value="Tara">Tara</option>
-                <option value="Quinn">Quinn</option>
-                <option value="Joelle">Joelle</option>
               </select>
             </div>
 
@@ -332,8 +333,6 @@
           <option value="Shaina">Shaina</option>
           <option value="Josh">Josh</option>
           <option value="Tara">Tara</option>
-          <option value="Quinn">Quinn</option>
-          <option value="Joelle">Joelle</option>
         </select>
         <select id="filter-program" class="filter-select">
           <option value="">All Programs</option>
@@ -357,14 +356,25 @@
           <option value="gone-rogue">Gone Rogue</option>
         </select>
       </div>
-      <div class="month-tabs-row" id="month-tabs"></div>
+      <div class="board-controls-row2">
+        <div class="view-toggle">
+          <button class="view-btn active" data-view="pipeline">📊 Pipeline</button>
+          <button class="view-btn" data-view="owner">👥 By Owner</button>
+          <button class="view-btn" data-view="calendar">📅 Calendar</button>
+        </div>
+        <div class="month-tabs-row" id="month-tabs"></div>
+      </div>
     </div>
 
     <div class="board-layout">
       <div class="board-main">
-        <div class="kanban-board" id="kanban-board">
-          <div class="board-loading">Loading families…</div>
+        <div id="board-view-pipeline">
+          <div class="kanban-board" id="kanban-board">
+            <div class="board-loading">Loading families…</div>
+          </div>
         </div>
+        <div id="board-view-owner" hidden></div>
+        <div id="board-view-calendar" hidden></div>
       </div>
 
       <aside class="sidebar" id="attention-sidebar">

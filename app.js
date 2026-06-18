@@ -6,6 +6,8 @@ let allFamilies = [];
 let unsubscribeFamilies = null;
 let lastSavedFamilyId = null;
 let currentMonth = '';
+let activeView = 'pipeline';
+let calendarMonth = null;
 
 const STAGE_NAMES = {
   1: 'Consult Complete',
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTabNav();
   setupModal();
   setupSidebar();
+  setupViewToggle();
   setupAuthGate();
 });
 
@@ -125,11 +128,28 @@ function initConsultForm() {
   const iepNotes = document.getElementById('iepNotes');
   iepCheck.addEventListener('change', () => { iepNotes.hidden = !iepCheck.checked; });
 
+  // Auto-assign owner from decision status
+  document.getElementById('decisionStatus').addEventListener('change', function() {
+    document.getElementById('currentOwner').value = ownerForDecision(this.value);
+  });
+
   // Form submit
   document.getElementById('consult-form').addEventListener('submit', handleFormSubmit);
 
   // Copy survey link
   document.getElementById('copy-survey-btn').addEventListener('click', copySurveyLink);
+}
+
+const DECISION_OWNER = {
+  'Decided to move forward': 'Shaina',
+  'Want a trial session':    'Shaina',
+  'Want to see the space':   'Shaina',
+  'Need a proposal':         'Tara',
+  'Need a family meeting':   'Tara',
+};
+
+function ownerForDecision(decision) {
+  return DECISION_OWNER[decision] || (decision ? 'Josh' : '');
 }
 
 async function handleFormSubmit(e) {
@@ -187,6 +207,10 @@ async function handleFormSubmit(e) {
     invoiceAmount:             null,
     firstSessionDate:          null,
     firstSessionFollowUp:      false,
+
+    // Calendar actions
+    nextActionDate:            null,
+    nextActionNote:            '',
 
     // Metadata
     consultDate: now,
@@ -314,7 +338,9 @@ function renderFilteredBoard() {
     return true;
   });
 
-  renderBoard(filtered);
+  if (activeView === 'pipeline')  renderBoard(filtered);
+  else if (activeView === 'owner')    renderOwnerView(filtered);
+  else if (activeView === 'calendar') renderCalendarView(filtered);
   updateAttentionSidebar(allFamilies);
 }
 
@@ -465,6 +491,174 @@ function setupSidebar() {
   });
 }
 
+// ─── View Toggle ─────────────────────────────────────────
+function setupViewToggle() {
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeView = btn.dataset.view;
+      document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.getElementById('board-view-pipeline').hidden = activeView !== 'pipeline';
+      document.getElementById('board-view-owner').hidden    = activeView !== 'owner';
+      document.getElementById('board-view-calendar').hidden = activeView !== 'calendar';
+
+      document.getElementById('month-tabs').closest('.board-controls-row2')
+        .querySelector('.month-tabs-row').style.display = activeView === 'pipeline' ? '' : 'none';
+
+      renderFilteredBoard();
+    });
+  });
+}
+
+// ─── Owner View ───────────────────────────────────────────
+function renderOwnerView(families) {
+  const container = document.getElementById('board-view-owner');
+  const owners    = ['Shaina', 'Tara', 'Josh'];
+  const byOwner   = {};
+  owners.forEach(o => byOwner[o] = []);
+  byOwner['Unassigned'] = [];
+
+  families.forEach(f => {
+    const o = owners.includes(f.currentOwner) ? f.currentOwner : 'Unassigned';
+    byOwner[o].push(f);
+  });
+
+  owners.forEach(o => byOwner[o].sort((a, b) => getStage(a) - getStage(b)));
+  byOwner['Unassigned'].sort((a, b) => getStage(a) - getStage(b));
+
+  const allCols = [...owners, ...(byOwner['Unassigned'].length ? ['Unassigned'] : [])];
+
+  container.innerHTML = `<div class="owner-view">${
+    allCols.map(owner => `
+      <div class="owner-col">
+        <div class="owner-col-header owner-hdr-${owner.toLowerCase()}">
+          <span>${owner}</span>
+          <span class="col-count">${byOwner[owner].length}</span>
+        </div>
+        <div class="owner-col-cards">${byOwner[owner].map(renderCard).join('')}</div>
+      </div>`).join('')
+  }</div>`;
+
+  container.querySelectorAll('.family-card').forEach(card =>
+    card.addEventListener('click', () => openCardModal(card.dataset.id))
+  );
+}
+
+// ─── Calendar View ────────────────────────────────────────
+function renderCalendarView(families) {
+  if (!calendarMonth) {
+    calendarMonth = new Date();
+    calendarMonth.setDate(1);
+    calendarMonth.setHours(0, 0, 0, 0);
+  }
+  const container = document.getElementById('board-view-calendar');
+  container.innerHTML = buildCalendarHTML(families);
+
+  container.querySelector('#cal-prev').addEventListener('click', () => {
+    calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1);
+    renderCalendarView(families);
+  });
+  container.querySelector('#cal-next').addEventListener('click', () => {
+    calendarMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1);
+    renderCalendarView(families);
+  });
+  container.querySelectorAll('.cal-card').forEach(el =>
+    el.addEventListener('click', () => openCardModal(el.dataset.id))
+  );
+}
+
+function getCalendarActions(families) {
+  const actions = [];
+  families.forEach(f => {
+    if (f.nextActionDate) {
+      actions.push({
+        date: f.nextActionDate.toDate(),
+        label: f.nextActionNote || 'Action needed',
+        family: f,
+        type: 'manual'
+      });
+    }
+    if (f.firstSessionDate) {
+      actions.push({
+        date: f.firstSessionDate.toDate(),
+        label: 'First session',
+        family: f,
+        type: 'session'
+      });
+    }
+  });
+  return actions.sort((a, b) => a.date - b.date);
+}
+
+function buildCalendarHTML(families) {
+  const yr  = calendarMonth.getFullYear();
+  const mo  = calendarMonth.getMonth();
+  const monthLabel = calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+  const actions    = getCalendarActions(families);
+  const byDateKey  = {};
+  actions.forEach(a => {
+    const k = `${a.date.getFullYear()}-${a.date.getMonth()}-${a.date.getDate()}`;
+    if (!byDateKey[k]) byDateKey[k] = [];
+    byDateKey[k].push(a);
+  });
+
+  const firstWeekday = new Date(yr, mo, 1).getDay();
+  const daysInMonth  = new Date(yr, mo + 1, 0).getDate();
+  const today        = new Date();
+
+  let cells = '';
+  for (let i = 0; i < firstWeekday; i++) cells += '<div class="cal-cell cal-cell-empty"></div>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const k    = `${yr}-${mo}-${d}`;
+    const hits = byDateKey[k] || [];
+    const isToday = today.getFullYear() === yr && today.getMonth() === mo && today.getDate() === d;
+    cells += `<div class="cal-cell${isToday ? ' cal-today' : ''}${hits.length ? ' cal-has-items' : ''}">
+      <span class="cal-date-num">${d}</span>
+      ${hits.slice(0, 2).map(a => `
+        <div class="cal-dot cal-dot-${a.type}" data-id="${a.family.id}">
+          ${esc(a.family.parentName.split(' ')[0])}
+        </div>`).join('')}
+      ${hits.length > 2 ? `<div class="cal-dot-more">+${hits.length - 2}</div>` : ''}
+    </div>`;
+  }
+
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const overdue  = actions.filter(a => a.date < now);
+  const upcoming = actions.filter(a => a.date >= now);
+
+  const agendaSection = (list, title) => list.length ? `
+    <div class="cal-agenda-section">
+      <h4 class="cal-agenda-label">${title}</h4>
+      ${list.map(a => `
+        <div class="cal-agenda-item">
+          <div class="cal-agenda-date">${a.date.toLocaleDateString('en-US',{month:'short',day:'numeric'})}</div>
+          <div class="cal-agenda-info">
+            <span class="cal-agenda-name cal-card" data-id="${a.family.id}">${esc(a.family.parentName)}</span>
+            <span class="cal-agenda-note">${esc(a.label)}</span>
+          </div>
+          <span class="cal-stage-badge">Stage ${getStage(a.family)}</span>
+          ${a.type === 'manual' ? `<button class="btn-done-action" onclick="doneNextAction('${a.family.id}')">✓ Done</button>` : ''}
+        </div>`).join('')}
+    </div>` : '';
+
+  return `<div class="cal-view">
+    <div class="cal-header">
+      <button id="cal-prev" class="cal-nav">‹</button>
+      <span class="cal-month-label">${monthLabel}</span>
+      <button id="cal-next" class="cal-nav">›</button>
+    </div>
+    <div class="cal-weekdays">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-weekday">${d}</div>`).join('')}</div>
+    <div class="cal-grid">${cells}</div>
+    <div class="cal-agenda">
+      ${agendaSection(overdue, '⚠️ Overdue')}
+      ${agendaSection(upcoming, '📅 Upcoming')}
+      ${!overdue.length && !upcoming.length ? '<p class="cal-empty">No sessions or actions scheduled yet.</p>' : ''}
+    </div>
+  </div>`;
+}
+
 // ─── Card Modal ───────────────────────────────────────────
 function setupModal() {
   document.getElementById('modal-close').addEventListener('click', closeModal);
@@ -483,7 +677,7 @@ function openCardModal(id) {
   document.getElementById('modal-content').innerHTML = buildModalHTML(family);
   document.getElementById('card-modal').hidden = false;
 
-  // Wire toggles
+  // Wire pipeline toggles
   document.querySelectorAll('.pipeline-toggle').forEach(cb => {
     cb.addEventListener('change', e => {
       const field = e.target.dataset.field;
@@ -492,6 +686,26 @@ function openCardModal(id) {
       if (field === 'invoiceSent' && val) update.invoiceSentAt = firebase.firestore.Timestamp.now();
       db.collection('families').doc(id).update(update);
     });
+  });
+
+  // Wire inline decision-status select
+  const decSel = document.querySelector('.modal-decision-select');
+  if (decSel) decSel.addEventListener('change', function() {
+    const newDecision = this.value;
+    const newOwner    = ownerForDecision(newDecision);
+    const update = { decisionStatus: newDecision, updatedAt: firebase.firestore.Timestamp.now() };
+    if (newOwner) {
+      update.currentOwner = newOwner;
+      const ownerSel = document.querySelector('.modal-owner-select');
+      if (ownerSel) ownerSel.value = newOwner;
+    }
+    db.collection('families').doc(id).update(update);
+  });
+
+  // Wire inline owner select
+  const ownSel = document.querySelector('.modal-owner-select');
+  if (ownSel) ownSel.addEventListener('change', function() {
+    db.collection('families').doc(id).update({ currentOwner: this.value, updatedAt: firebase.firestore.Timestamp.now() });
   });
 }
 
@@ -563,9 +777,26 @@ function buildModalHTML(f) {
         ${row('Location',       f.location)}
         ${row('Consult Date',   fmtDate(f.consultDate))}
         ${row('Lead Warmth',    warmth)}
-        ${row('Decision',       f.decisionStatus)}
+        <span class="info-label">Decision</span>
+        <span class="info-value">
+          <select class="inline-select modal-decision-select" data-fid="${f.id}">
+            ${['','Decided to move forward','Want a trial session','Want to see the space',
+               'Need a proposal','Need a family meeting','Scheduled',
+               'Still thinking','Will revisit later','Never connected',
+               'Not moving forward','Gone Rogue'].map(opt =>
+              `<option value="${opt}" ${f.decisionStatus === opt ? 'selected' : ''}>${opt || '—'}</option>`
+            ).join('')}
+          </select>
+        </span>
         ${row('Likelihood',     f.likelihoodOfReg + (f.likelihoodReason ? ' — ' + f.likelihoodReason : ''))}
-        ${row('Owner',          f.currentOwner)}
+        <span class="info-label">Owner</span>
+        <span class="info-value">
+          <select class="inline-select modal-owner-select" data-fid="${f.id}">
+            ${['','Shaina','Tara','Josh'].map(opt =>
+              `<option value="${opt}" ${f.currentOwner === opt ? 'selected' : ''}>${opt || '—'}</option>`
+            ).join('')}
+          </select>
+        </span>
         ${row('Pref. Comm.',    f.preferredComm)}
         ${row('Frequency',      f.sessionFrequency)}
         ${f.schedulingConstraints ? row('Constraints', f.schedulingConstraints) : ''}
@@ -606,6 +837,18 @@ function buildModalHTML(f) {
     </div>
 
     <div class="modal-section">
+      <h4>📅 Next Action</h4>
+      <div class="next-action-row">
+        <input type="date" class="inline-input" id="modal-next-action-date"
+               value="${f.nextActionDate ? f.nextActionDate.toDate().toISOString().split('T')[0] : ''}">
+        <input type="text" class="inline-input next-action-note" id="modal-next-action-note"
+               value="${esc(f.nextActionNote || '')}" placeholder="Action note…">
+        <button class="btn-sm" onclick="saveNextAction('${f.id}')">Set</button>
+        ${f.nextActionDate ? `<button class="btn-sm btn-done-sm" onclick="doneNextAction('${f.id}')">✓ Done</button>` : ''}
+      </div>
+    </div>
+
+    <div class="modal-section">
       <button class="btn btn-secondary"
               data-fid="${f.id}" data-parent="${esc(f.parentName)}" data-student="${esc(f.studentName)}"
               onclick="copyModalSurveyLink(this.dataset.fid,this.dataset.parent,this.dataset.student)">
@@ -622,9 +865,33 @@ window.saveInvoiceAmount = function(id) {
 
 window.saveFirstSession = function(id) {
   const val = document.getElementById('modal-first-sess').value;
-  if (val) db.collection('families').doc(id).update({
-    firstSessionDate: firebase.firestore.Timestamp.fromDate(new Date(val + 'T12:00:00')),
-    updatedAt: firebase.firestore.Timestamp.now()
+  if (!val) return;
+  const sessionDate = new Date(val + 'T12:00:00');
+  const followUpDate = addBusinessDays(sessionDate, 2);
+  db.collection('families').doc(id).update({
+    firstSessionDate: firebase.firestore.Timestamp.fromDate(sessionDate),
+    nextActionDate:   firebase.firestore.Timestamp.fromDate(followUpDate),
+    nextActionNote:   'Follow up: check in after first session',
+    updatedAt:        firebase.firestore.Timestamp.now()
+  });
+};
+
+window.saveNextAction = function(id) {
+  const dateVal = document.getElementById('modal-next-action-date').value;
+  const note    = (document.getElementById('modal-next-action-note').value || '').trim();
+  if (!dateVal) return;
+  db.collection('families').doc(id).update({
+    nextActionDate: firebase.firestore.Timestamp.fromDate(new Date(dateVal + 'T09:00:00')),
+    nextActionNote: note,
+    updatedAt:      firebase.firestore.Timestamp.now()
+  });
+};
+
+window.doneNextAction = function(id) {
+  db.collection('families').doc(id).update({
+    nextActionDate: null,
+    nextActionNote: '',
+    updatedAt:      firebase.firestore.Timestamp.now()
   });
 };
 
@@ -688,4 +955,15 @@ function fmtDate(ts)  {
 }
 function row(label, val) {
   return val ? `<span class="info-label">${label}</span><span class="info-value">${esc(String(val))}</span>` : '';
+}
+
+function addBusinessDays(date, n) {
+  const d = new Date(date);
+  let added = 0;
+  while (added < n) {
+    d.setDate(d.getDate() + 1);
+    const day = d.getDay();
+    if (day !== 0 && day !== 6) added++;
+  }
+  return d;
 }
