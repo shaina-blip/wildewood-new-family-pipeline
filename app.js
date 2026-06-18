@@ -24,6 +24,7 @@ const STAGE_NAMES = {
 document.addEventListener('DOMContentLoaded', () => {
   firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
+  emailjs.init(EMAILJS_PUBLIC_KEY);
 
   setCurrentMonth();
   initConsultForm();
@@ -162,6 +163,29 @@ function isReadyForSurvey(f) {
 
 const CLOSED_STATUSES = new Set(['Not moving forward', 'Gone Rogue']);
 
+const OWNER_EMAILS = {
+  'Shaina': 'shaina@wildewoodeducation.com',
+  'Tara':   'tara@wildewoodeducation.com',
+  'Josh':   'josh@wildewoodeducation.com',
+};
+
+async function sendAssignmentEmail(ownerName, parentName, studentName, decisionStatus) {
+  const toEmail = OWNER_EMAILS[ownerName];
+  if (!toEmail || !EMAILJS_ASSIGNMENT_TEMPLATE_ID) return;
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_ASSIGNMENT_TEMPLATE_ID, {
+      to_email:        toEmail,
+      owner_name:      ownerName,
+      parent_name:     parentName,
+      student_name:    studentName,
+      decision_status: decisionStatus || '—',
+      pipeline_url:    'https://shaina-blip.github.io/wildewood-new-family-pipeline/',
+    });
+  } catch (err) {
+    console.warn('Assignment email failed (non-fatal):', err);
+  }
+}
+
 function updateNextStepDisplay(decision) {
   const els = {
     survey:   document.getElementById('nextstep-survey'),
@@ -289,6 +313,10 @@ async function handleFormSubmit(e) {
   try {
     const ref = await db.collection('families').add(data);
     lastSavedFamilyId = ref.id;
+
+    if (data.currentOwner) {
+      sendAssignmentEmail(data.currentOwner, data.parentName, data.studentName, data.decisionStatus);
+    }
 
     document.getElementById('copy-survey-btn').disabled = false;
 
@@ -761,12 +789,19 @@ function openCardModal(id) {
       if (ownerSel) ownerSel.value = newOwner;
     }
     db.collection('families').doc(id).update(update);
+    if (newOwner && newOwner !== family.currentOwner) {
+      sendAssignmentEmail(newOwner, family.parentName, family.studentName, newDecision);
+    }
   });
 
   // Wire inline owner select
   const ownSel = document.querySelector('.modal-owner-select');
   if (ownSel) ownSel.addEventListener('change', function() {
-    db.collection('families').doc(id).update({ currentOwner: this.value, updatedAt: firebase.firestore.Timestamp.now() });
+    const newOwner = this.value;
+    db.collection('families').doc(id).update({ currentOwner: newOwner, updatedAt: firebase.firestore.Timestamp.now() });
+    if (newOwner && newOwner !== family.currentOwner) {
+      sendAssignmentEmail(newOwner, family.parentName, family.studentName, family.decisionStatus);
+    }
   });
 }
 
