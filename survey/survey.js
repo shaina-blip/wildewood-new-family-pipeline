@@ -174,17 +174,19 @@ function buildSummary() {
     'On-demand':               'flexible on-demand scheduling'
   };
 
-  const program  = familyData.program  || 'your chosen program';
-  const location = familyData.location || 'your chosen location';
+  const program  = familyData.program  || '';
+  const location = familyData.location || '';
   const freq     = surveyData.sessionFrequency || 'TBD';
   const typeStr  = typeLabels[surveyData.schedulingType] || 'flexible scheduling';
   const daysStr  = surveyData.availableDays?.length  ? surveyData.availableDays.join(', ')  : 'any day';
   const timesStr = surveyData.preferredTimes?.length ? surveyData.preferredTimes.join(', ') : 'flexible times';
 
+  const programPart  = program  ? ` in the <strong>${esc(program)}</strong> program` : '';
+  const locationPart = location ? ` at <strong>${esc(location)}</strong>`            : '';
+
   const summaryEl = document.getElementById('summary-text');
   summaryEl.innerHTML = `
-    <p>You're looking for <strong>${freq}</strong> sessions for <strong>${esc(studentName)}</strong>
-    in the <strong>${esc(program)}</strong> program at <strong>${esc(location)}</strong>.</p>
+    <p>You're looking for <strong>${freq}</strong> sessions for <strong>${esc(studentName)}</strong>${programPart}${locationPart}.</p>
 
     <p>You prefer <strong>${typeStr}</strong> and are available <strong>${esc(daysStr)}</strong>,
     typically in the <strong>${esc(timesStr)}</strong>.</p>

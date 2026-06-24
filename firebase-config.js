@@ -18,7 +18,7 @@ const EMAILJS_ASSIGNMENT_TEMPLATE_ID = "template_vz9rnq1"; // owner assignment n
 const EMAILJS_PUBLIC_KEY  = "qghGWe4KNOpRWqn86";
 
 // Email address that receives survey-completion notifications (Shay)
-const NOTIFICATION_EMAIL = "shay@wildewoodeducation.com";
+const NOTIFICATION_EMAIL = "shaina@wildewoodeducation.com";
 
 // Full URL to the parent-facing survey folder (including trailing slash)
 // After deploying to GitHub Pages this will be:
