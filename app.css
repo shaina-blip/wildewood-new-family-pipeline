@@ -811,6 +811,10 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
   padding-top: .75rem;
 }
 .modal-section-danger { margin-top: 1.5rem; }
+.modal-section-merge { margin-top: 1.5rem; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: var(--radius); padding: 1rem; }
+.modal-section-merge h4 { margin-bottom: .25rem; }
+.merge-row { display: flex; gap: .5rem; align-items: center; }
+.btn-sm-merge { padding: .45rem 1rem; font-size: .9rem; white-space: nowrap; }
 
 .modal-section h4 {
   font-size: .75rem;

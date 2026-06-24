@@ -1,0 +1,13 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "families",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "email",         "order": "ASCENDING" },
+        { "fieldPath": "surveyComplete", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

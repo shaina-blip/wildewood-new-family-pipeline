@@ -834,6 +834,9 @@ function openCardModal(id) {
   document.getElementById('modal-content').innerHTML = buildModalHTML(family);
   document.getElementById('card-modal').hidden = false;
 
+  // Track owner locally so rapid decision→owner changes don't double-email
+  let modalOwner = family.currentOwner;
+
   // Wire pipeline toggles
   document.querySelectorAll('.pipeline-toggle').forEach(cb => {
     cb.addEventListener('change', e => {
@@ -857,8 +860,9 @@ function openCardModal(id) {
       if (ownerSel) ownerSel.value = newOwner;
     }
     db.collection('families').doc(id).update(update);
-    if (newOwner && newOwner !== family.currentOwner) {
+    if (newOwner && newOwner !== modalOwner) {
       sendAssignmentEmail(newOwner, family.parentName, family.studentName, newDecision);
+      modalOwner = newOwner;
     }
   });
 
@@ -867,8 +871,9 @@ function openCardModal(id) {
   if (ownSel) ownSel.addEventListener('change', function() {
     const newOwner = this.value;
     db.collection('families').doc(id).update({ currentOwner: newOwner, updatedAt: firebase.firestore.Timestamp.now() });
-    if (newOwner && newOwner !== family.currentOwner) {
+    if (newOwner && newOwner !== modalOwner) {
       sendAssignmentEmail(newOwner, family.parentName, family.studentName, family.decisionStatus);
+      modalOwner = newOwner;
     }
   });
 }
@@ -935,8 +940,12 @@ function buildModalHTML(f) {
     <div class="modal-section">
       <h4>Contact &amp; Consult</h4>
       <div class="info-grid">
-        ${row('Phone',          f.phone)}
-        ${row('Email',          f.email)}
+        <span class="info-label">Parent Name</span>
+        <span class="info-value"><input type="text" class="inline-input" id="modal-edit-parent" value="${esc(f.parentName || '')}"></span>
+        <span class="info-label">Phone</span>
+        <span class="info-value"><input type="text" class="inline-input" id="modal-edit-phone" value="${esc(f.phone || '')}"></span>
+        <span class="info-label">Email</span>
+        <span class="info-value"><input type="email" class="inline-input" id="modal-edit-email" value="${esc(f.email || '')}"></span>
         ${row('Student',        f.studentName + (f.grade ? ' (' + f.grade + ')' : '') + (f.program ? ' — ' + f.program : ''))}
         ${(f.additionalStudents || []).map((s, i) =>
           row(`Student ${i + 2}`, s.name + (s.grade ? ' (' + s.grade + ')' : '') + (s.program ? ' — ' + s.program : ''))
@@ -970,6 +979,7 @@ function buildModalHTML(f) {
         ${f.need  ? row('Need',  f.need)  : ''}
         ${f.notes ? row('Notes', f.notes) : ''}
       </div>
+      <button class="btn-sm" style="margin-top:.6rem" onclick="saveContactInfo('${f.id}')">Save contact info</button>
     </div>
 
     ${surveyHtml}
@@ -1024,6 +1034,23 @@ function buildModalHTML(f) {
       </button>
     </div>` : ''}
 
+    ${f.pendingMatch ? `
+    <div class="modal-section modal-section-merge">
+      <h4>🔗 Merge with Existing Family</h4>
+      <p class="field-hint" style="margin-bottom:.75rem;">This survey came in via the generic link. Pick the matching family below to copy the survey answers over — the duplicate will be deleted automatically.</p>
+      <div class="merge-row">
+        <select id="merge-target-select" class="inline-select" style="flex:1">
+          <option value="">— Select family to merge into —</option>
+          ${allFamilies
+            .filter(other => !other.pendingMatch && other.id !== f.id)
+            .sort((a, b) => (a.parentName || '').localeCompare(b.parentName || ''))
+            .map(other => `<option value="${other.id}">${esc(other.parentName)} / ${esc(other.studentName)}</option>`)
+            .join('')}
+        </select>
+        <button class="btn btn-primary btn-sm-merge" onclick="mergePendingFamily('${f.id}')">Merge →</button>
+      </div>
+    </div>` : ''}
+
     <div class="modal-section modal-section-danger">
       <button class="btn btn-danger" onclick="deleteFamily('${f.id}', '${esc(f.parentName)}')">
         🗑 Remove from pipeline
@@ -1038,7 +1065,52 @@ window.deleteFamily = function(id, name) {
     .catch(err => { console.error(err); alert('Could not delete — please try again.'); });
 };
 
+window.mergePendingFamily = async function(pendingId) {
+  const targetId = document.getElementById('merge-target-select')?.value;
+  if (!targetId) { alert('Please select a family to merge into.'); return; }
+
+  const pending = allFamilies.find(f => f.id === pendingId);
+  const target  = allFamilies.find(f => f.id === targetId);
+  if (!pending || !target) return;
+
+  if (!confirm(`Merge survey answers from "${pending.parentName || 'this record'}" into "${target.parentName}"?\n\nThe duplicate will be deleted.`)) return;
+
+  const surveyFields = {
+    surveyComplete:       true,
+    surveyCompletedAt:    pending.surveyCompletedAt    || firebase.firestore.Timestamp.now(),
+    schedulingType:       pending.schedulingType       || '',
+    availableDays:        pending.availableDays        || [],
+    preferredTimes:       pending.preferredTimes       || [],
+    hardConstraints:      pending.hardConstraints      || '',
+    scheduleKnownThrough: pending.scheduleKnownThrough || '',
+    sessionFrequency:     pending.sessionFrequency     || '',
+    surveyNotes:          pending.surveyNotes          || '',
+    preferredComm:        pending.preferredComm        || target.preferredComm || '',
+    updatedAt:            firebase.firestore.Timestamp.now(),
+  };
+
+  try {
+    await db.collection('families').doc(targetId).update(surveyFields);
+    await db.collection('families').doc(pendingId).delete();
+    document.getElementById('card-modal').hidden = true;
+    alert(`Done! Survey answers merged into ${target.parentName}.`);
+  } catch (err) {
+    console.error('Merge error:', err);
+    alert('Merge failed — please try again.');
+  }
+};
+
 // Exposed globals called from inline onclick in modal HTML
+window.saveContactInfo = function(id) {
+  const parentName = (document.getElementById('modal-edit-parent')?.value || '').trim();
+  const phone      = (document.getElementById('modal-edit-phone')?.value  || '').trim();
+  const email      = (document.getElementById('modal-edit-email')?.value  || '').trim();
+  if (!parentName) { alert('Parent name cannot be empty.'); return; }
+  db.collection('families').doc(id).update({ parentName, phone, email, updatedAt: firebase.firestore.Timestamp.now() })
+    .then(() => alert('Contact info saved!'))
+    .catch(err => { console.error(err); alert('Save failed — please try again.'); });
+};
+
 window.saveInvoiceAmount = function(id) {
   const amt = parseFloat(document.getElementById('modal-invoice-amt').value);
   if (!isNaN(amt)) db.collection('families').doc(id).update({ invoiceAmount: amt, updatedAt: firebase.firestore.Timestamp.now() });
