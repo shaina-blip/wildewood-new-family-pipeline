@@ -942,6 +942,8 @@ function buildModalHTML(f) {
       <div class="info-grid">
         <span class="info-label">Parent Name</span>
         <span class="info-value"><input type="text" class="inline-input" id="modal-edit-parent" value="${esc(f.parentName || '')}"></span>
+        <span class="info-label">Student Name</span>
+        <span class="info-value"><input type="text" class="inline-input" id="modal-edit-student" value="${esc(f.studentName || '')}"></span>
         <span class="info-label">Phone</span>
         <span class="info-value"><input type="text" class="inline-input" id="modal-edit-phone" value="${esc(f.phone || '')}"></span>
         <span class="info-label">Email</span>
@@ -1102,11 +1104,13 @@ window.mergePendingFamily = async function(pendingId) {
 
 // Exposed globals called from inline onclick in modal HTML
 window.saveContactInfo = function(id) {
-  const parentName = (document.getElementById('modal-edit-parent')?.value || '').trim();
-  const phone      = (document.getElementById('modal-edit-phone')?.value  || '').trim();
-  const email      = (document.getElementById('modal-edit-email')?.value  || '').trim();
-  if (!parentName) { alert('Parent name cannot be empty.'); return; }
-  db.collection('families').doc(id).update({ parentName, phone, email, updatedAt: firebase.firestore.Timestamp.now() })
+  const parentName  = (document.getElementById('modal-edit-parent')?.value  || '').trim();
+  const studentName = (document.getElementById('modal-edit-student')?.value || '').trim();
+  const phone       = (document.getElementById('modal-edit-phone')?.value   || '').trim();
+  const email       = (document.getElementById('modal-edit-email')?.value   || '').trim();
+  if (!parentName)  { alert('Parent name cannot be empty.'); return; }
+  if (!studentName) { alert('Student name cannot be empty.'); return; }
+  db.collection('families').doc(id).update({ parentName, studentName, phone, email, updatedAt: firebase.firestore.Timestamp.now() })
     .then(() => alert('Contact info saved!'))
     .catch(err => { console.error(err); alert('Save failed — please try again.'); });
 };
