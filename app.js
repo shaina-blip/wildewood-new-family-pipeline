@@ -184,7 +184,7 @@ const DECISION_OWNER = {
   'Want to see the space':   'Shaina',
   'Need a proposal':         'Tara',
   'Need a family meeting':   'Tara',
-  'Schedule Proposed':       'Josh',
+  'Schedule Proposed':       'Shaina',
   'Schedule Confirmed':      'Josh',
   'Scheduled':               'Josh',  // legacy
 };
@@ -237,7 +237,7 @@ function updateNextStepDisplay(decision) {
     els.survey.hidden = false;
     const surveyRadio = document.querySelector('input[name="preferredContact"][value="survey"]');
     if (surveyRadio && !document.querySelector('input[name="preferredContact"]:checked')) surveyRadio.checked = true;
-  } else if (decision === 'Schedule Proposed' || decision === 'Schedule Confirmed' || decision === 'Scheduled') {
+  } else if (decision === 'Schedule Confirmed' || decision === 'Scheduled') {
     els.session.hidden = false;
   } else if (CLOSED_STATUSES.has(decision)) {
     els.closed.hidden = false;
@@ -309,19 +309,19 @@ async function handleFormSubmit(e) {
     invoiceAmount:             null,
     firstSessionFollowUp:      false,
 
-    // First session date — set when schedule is proposed or confirmed
+    // First session date — only set when schedule is confirmed (Josh's territory)
     firstSessionDate: (() => {
       const d = document.getElementById('firstSessionDateInput')?.value;
-      const isScheduled = ['Schedule Proposed', 'Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
-      return d && isScheduled
+      const isConfirmed = ['Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
+      return d && isConfirmed
         ? firebase.firestore.Timestamp.fromDate(new Date(d + 'T12:00:00'))
         : null;
     })(),
 
     // Calendar actions
     nextActionDate: (() => {
-      const isScheduled = ['Schedule Proposed', 'Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
-      if (isScheduled) {
+      const isConfirmed = ['Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
+      if (isConfirmed) {
         const d = document.getElementById('firstSessionDateInput')?.value;
         return d ? firebase.firestore.Timestamp.fromDate(addBusinessDays(new Date(d + 'T12:00:00'), 2)) : null;
       }
@@ -331,8 +331,8 @@ async function handleFormSubmit(e) {
         : null;
     })(),
     nextActionNote: (() => {
-      const isScheduled = ['Schedule Proposed', 'Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
-      if (isScheduled) {
+      const isConfirmed = ['Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
+      if (isConfirmed) {
         return document.getElementById('firstSessionDateInput')?.value
           ? 'Follow up: check in after first session' : '';
       }
