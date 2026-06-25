@@ -184,7 +184,9 @@ const DECISION_OWNER = {
   'Want to see the space':   'Shaina',
   'Need a proposal':         'Tara',
   'Need a family meeting':   'Tara',
-  'Scheduled':               'Josh',
+  'Schedule Proposed':       'Josh',
+  'Schedule Confirmed':      'Josh',
+  'Scheduled':               'Josh',  // legacy
 };
 
 const SURVEY_READY = new Set(['Decided to move forward', 'Want a trial session', 'Want to see the space']);
@@ -235,7 +237,7 @@ function updateNextStepDisplay(decision) {
     els.survey.hidden = false;
     const surveyRadio = document.querySelector('input[name="preferredContact"][value="survey"]');
     if (surveyRadio && !document.querySelector('input[name="preferredContact"]:checked')) surveyRadio.checked = true;
-  } else if (decision === 'Scheduled') {
+  } else if (decision === 'Schedule Proposed' || decision === 'Schedule Confirmed' || decision === 'Scheduled') {
     els.session.hidden = false;
   } else if (CLOSED_STATUSES.has(decision)) {
     els.closed.hidden = false;
@@ -307,17 +309,19 @@ async function handleFormSubmit(e) {
     invoiceAmount:             null,
     firstSessionFollowUp:      false,
 
-    // First session date — set directly when Scheduled
+    // First session date — set when schedule is proposed or confirmed
     firstSessionDate: (() => {
       const d = document.getElementById('firstSessionDateInput')?.value;
-      return d && v('decisionStatus') === 'Scheduled'
+      const isScheduled = ['Schedule Proposed', 'Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
+      return d && isScheduled
         ? firebase.firestore.Timestamp.fromDate(new Date(d + 'T12:00:00'))
         : null;
     })(),
 
     // Calendar actions
     nextActionDate: (() => {
-      if (v('decisionStatus') === 'Scheduled') {
+      const isScheduled = ['Schedule Proposed', 'Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
+      if (isScheduled) {
         const d = document.getElementById('firstSessionDateInput')?.value;
         return d ? firebase.firestore.Timestamp.fromDate(addBusinessDays(new Date(d + 'T12:00:00'), 2)) : null;
       }
@@ -327,7 +331,8 @@ async function handleFormSubmit(e) {
         : null;
     })(),
     nextActionNote: (() => {
-      if (v('decisionStatus') === 'Scheduled') {
+      const isScheduled = ['Schedule Proposed', 'Schedule Confirmed', 'Scheduled'].includes(v('decisionStatus'));
+      if (isScheduled) {
         return document.getElementById('firstSessionDateInput')?.value
           ? 'Follow up: check in after first session' : '';
       }
@@ -477,14 +482,23 @@ function renderFilteredBoard() {
 }
 
 function getStage(f) {
-  if (f.firstSessionDate && f.firstSessionFollowUp) return 8;
-  if (f.invoicePaid)     return 7;
-  if (f.invoiceSent)     return 6;
-  if (f.scheduleConfirmed) return 5;
-  if (f.scheduleBuilt)   return 4;
-  if (f.surveyComplete || f.preferredContact === 'call-scheduled') return 3;
-  if (f.surveyLinkCopied) return 2;
-  return 1;
+  // Checklist-derived stage
+  let stage = 1;
+  if (f.firstSessionDate && f.firstSessionFollowUp) stage = 8;
+  else if (f.invoicePaid)        stage = 7;
+  else if (f.invoiceSent)        stage = 6;
+  else if (f.scheduleConfirmed)  stage = 5;
+  else if (f.scheduleBuilt)      stage = 4;
+  else if (f.surveyComplete || f.preferredContact === 'call-scheduled') stage = 3;
+  else if (f.surveyLinkCopied)   stage = 2;
+
+  // Decision status sets a minimum floor so the card lands in the right column
+  // even before checklist boxes are manually ticked
+  const d = f.decisionStatus;
+  if (d === 'Schedule Confirmed')                        stage = Math.max(stage, 5);
+  else if (d === 'Schedule Proposed' || d === 'Scheduled') stage = Math.max(stage, 4);
+
+  return stage;
 }
 
 function getFlags(f) {
@@ -959,7 +973,8 @@ function buildModalHTML(f) {
         <span class="info-value">
           <select class="inline-select modal-decision-select" data-fid="${f.id}">
             ${['','Decided to move forward','Want a trial session','Want to see the space',
-               'Need a proposal','Need a family meeting','Scheduled',
+               'Need a proposal','Need a family meeting',
+               'Schedule Proposed','Schedule Confirmed',
                'Still thinking','Will revisit later','Never connected',
                'Not moving forward','Gone Rogue'].map(opt =>
               `<option value="${opt}" ${f.decisionStatus === opt ? 'selected' : ''}>${opt || '—'}</option>`
