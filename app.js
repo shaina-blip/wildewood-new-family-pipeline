@@ -599,6 +599,7 @@ function renderCard(f) {
       ${!isMulti && f.program   ? `<span class="badge ${progClass}">${esc(f.program)}</span>` : ''}
       ${f.location  ? `<span class="badge badge-location">${esc(f.location)}</span>` : ''}
       ${callBooked  ? '<span class="badge badge-call-booked">Call Booked</span>' : ''}
+      ${f.sameTutorPref === 'Wants one consistent tutor' ? '<span class="badge badge-same-tutor">👤 Same Tutor</span>' : ''}
       ${statusBadge}
     </div>
     ${warmth ? `<div class="card-warmth">${warmth}</div>` : ''}
