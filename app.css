@@ -951,6 +951,23 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
 .view-btn:hover { background: var(--border); color: var(--text); }
 .view-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
 
+/* Carry-over button — sits at the far right of the controls row */
+.carry-over-btn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--green);
+  border-radius: var(--radius-sm);
+  color: var(--green);
+  font-family: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  padding: .3rem .8rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.carry-over-btn:hover { background: var(--green); color: #fff; }
+
 /* ─── INLINE MODAL SELECTS ──────────────────────────────── */
 .inline-select {
   border: 1px solid var(--border);

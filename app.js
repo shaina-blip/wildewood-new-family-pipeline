@@ -446,6 +446,9 @@ function setupBoardFilters() {
         el.addEventListener('change', renderFilteredBoard);
       }
     });
+
+  document.getElementById('carry-over-btn')
+    ?.addEventListener('click', () => window.carryOverLiveFamilies());
 }
 
 function renderFilteredBoard() {
@@ -1221,6 +1224,51 @@ function setCurrentMonth() {
   const el = document.getElementById('header-month');
   if (el) el.textContent = currentMonth;
 }
+
+// ─── Carry-over: roll live families into the current month ──
+// "Live" = still an open opportunity. Excludes closed/lost families and
+// those already fully onboarded (first session done + followed up).
+function isLiveForCarryover(f) {
+  if (f.status === 'closed' || f.status === 'gone-rogue') return false;
+  if (['Not moving forward', 'Gone Rogue', 'Never connected'].includes(f.decisionStatus)) return false;
+  if (f.firstSessionFollowUp) return false; // graduated out of the new-family pipeline
+  return true;
+}
+
+window.carryOverLiveFamilies = async function () {
+  const targets = allFamilies.filter(f =>
+    f.monthTab && f.monthTab !== currentMonth && isLiveForCarryover(f)
+  );
+
+  if (!targets.length) {
+    alert(`No live families from earlier months to carry into ${currentMonth}.`);
+    return;
+  }
+
+  const plural = targets.length === 1 ? 'y' : 'ies';
+  const names  = targets
+    .map(f => `• ${f.parentName || f.studentName || 'Unnamed'}  (${f.monthTab})`)
+    .join('\n');
+
+  if (!confirm(
+    `Move ${targets.length} live famil${plural} into ${currentMonth}?\n\n${names}\n\n` +
+    `They'll move out of their old month tab. Closed, lost, and already-onboarded ` +
+    `families stay where they are.`
+  )) return;
+
+  try {
+    const batch = db.batch();
+    const now   = firebase.firestore.Timestamp.now();
+    targets.forEach(f => {
+      batch.update(db.collection('families').doc(f.id), { monthTab: currentMonth, updatedAt: now });
+    });
+    await batch.commit();
+    alert(`Done! Carried ${targets.length} famil${plural} into ${currentMonth}.`);
+  } catch (err) {
+    console.error('Carry-over failed:', err);
+    alert('Something went wrong carrying families over. Please try again.');
+  }
+};
 
 // ─── Helpers ─────────────────────────────────────────────
 function v(id)        { return (document.getElementById(id)?.value || '').trim(); }
