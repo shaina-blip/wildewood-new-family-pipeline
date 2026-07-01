@@ -924,6 +924,12 @@ function buildModalHTML(f) {
       <div class="info-grid">
         <span class="info-label">Scheduling Type</span>
         <span class="info-value"><span class="badge badge-scheduling">${esc(f.schedulingType || '—')}</span></span>
+        <span class="info-label">Same Time Weekly</span>
+        <span class="info-value">${esc(f.sameTimePref) || '—'}</span>
+        <span class="info-label">Same Tutor</span>
+        <span class="info-value">${esc(f.sameTutorPref) || '—'}</span>
+        <span class="info-label">Plans Ahead</span>
+        <span class="info-value">${esc(f.planningPref) || '—'}</span>
         <span class="info-label">Available Days</span>
         <span class="info-value">${(f.availableDays || []).join(', ') || '—'}</span>
         <span class="info-label">Preferred Times</span>
@@ -1096,6 +1102,9 @@ window.mergePendingFamily = async function(pendingId) {
     surveyComplete:       true,
     surveyCompletedAt:    pending.surveyCompletedAt    || firebase.firestore.Timestamp.now(),
     schedulingType:       pending.schedulingType       || '',
+    sameTimePref:         pending.sameTimePref         || '',
+    sameTutorPref:        pending.sameTutorPref        || '',
+    planningPref:         pending.planningPref         || '',
     availableDays:        pending.availableDays        || [],
     preferredTimes:       pending.preferredTimes       || [],
     hardConstraints:      pending.hardConstraints      || '',

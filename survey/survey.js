@@ -222,8 +222,17 @@ async function submitSurvey() {
 
   const now = firebase.firestore.Timestamp.now();
 
+  // Readable labels for the three scheduling-style questions, so the
+  // pipeline card can show each preference plainly (not just the blended type).
+  const SAME_TIME_LABELS  = { 0: 'Very important', 1: 'Somewhat important', 2: 'Not important' };
+  const SAME_TUTOR_LABELS = { 0: 'Wants one consistent tutor', 1: 'Prefers one, but flexible', 2: 'Any tutor is fine' };
+  const PLANNING_LABELS   = { 0: 'Can commit to a recurring weekly slot', 1: 'Knows schedule 1–2 weeks ahead', 2: 'Books week to week' };
+
   const update = {
     schedulingType:      surveyData.schedulingType      || '',
+    sameTimePref:        SAME_TIME_LABELS[surveyData.q1]  || '',
+    sameTutorPref:       SAME_TUTOR_LABELS[surveyData.q2] || '',
+    planningPref:        PLANNING_LABELS[surveyData.q3]   || '',
     availableDays:       surveyData.availableDays        || [],
     preferredTimes:      surveyData.preferredTimes       || [],
     hardConstraints:     surveyData.hardConstraints      || '',
@@ -294,6 +303,9 @@ async function sendEmail(data) {
       program:              familyData.program   || 'TBD',
       location:             familyData.location  || 'TBD',
       scheduling_type:      data.schedulingType,
+      same_time_pref:       data.sameTimePref  || 'Not answered',
+      same_tutor_pref:      data.sameTutorPref || 'Not answered',
+      planning_pref:        data.planningPref  || 'Not answered',
       frequency:            data.sessionFrequency,
       available_days:       (data.availableDays  || []).join(', ') || 'None specified',
       preferred_times:      (data.preferredTimes || []).join(', ') || 'None specified',
