@@ -848,6 +848,27 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
 .modal-section-merge h4 { margin-bottom: .25rem; }
 .merge-row { display: flex; gap: .5rem; align-items: center; }
 .btn-sm-merge { padding: .45rem 1rem; font-size: .9rem; white-space: nowrap; }
+.merge-or {
+  text-align: center;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: .7rem 0;
+}
+.btn-create-card {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--green);
+  color: var(--green);
+  font-weight: 600;
+  padding: .5rem 1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.btn-create-card:hover { background: var(--green); color: #fff; }
 
 .modal-section h4 {
   font-size: .75rem;
