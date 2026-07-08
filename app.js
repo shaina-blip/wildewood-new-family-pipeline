@@ -460,6 +460,8 @@ function renderFilteredBoard() {
   const month    = document.querySelector('.month-tab.active')?.dataset.month || currentMonth;
 
   const filtered = allFamilies.filter(f => {
+    // Pending survey records always show — they need review regardless of month.
+    if (f.pendingMatch) return true;
     if (month && f.monthTab !== month) return false;
     if (search && !f.parentName?.toLowerCase().includes(search) && !f.studentName?.toLowerCase().includes(search)) return false;
     if (owner    && f.currentOwner !== owner)    return false;
@@ -1063,8 +1065,8 @@ function buildModalHTML(f) {
 
     ${f.pendingMatch ? `
     <div class="modal-section modal-section-merge">
-      <h4>🔗 Merge with Existing Family</h4>
-      <p class="field-hint" style="margin-bottom:.75rem;">This survey came in via the generic link. Pick the matching family below to copy the survey answers over — the duplicate will be deleted automatically.</p>
+      <h4>🔗 Match or Create Card</h4>
+      <p class="field-hint" style="margin-bottom:.75rem;">This survey came in via the generic link and isn't linked to a family yet. Either merge it into an existing family, or create it as its own new card. Edit the contact info above first if anything needs fixing.</p>
       <div class="merge-row">
         <select id="merge-target-select" class="inline-select" style="flex:1">
           <option value="">— Select family to merge into —</option>
@@ -1076,6 +1078,8 @@ function buildModalHTML(f) {
         </select>
         <button class="btn btn-primary btn-sm-merge" onclick="mergePendingFamily('${f.id}')">Merge →</button>
       </div>
+      <div class="merge-or">or</div>
+      <button class="btn btn-create-card" onclick="createCardFromPending('${f.id}')">➕ Create as new card</button>
     </div>` : ''}
 
     <div class="modal-section modal-section-danger">
@@ -1127,6 +1131,41 @@ window.mergePendingFamily = async function(pendingId) {
   } catch (err) {
     console.error('Merge error:', err);
     alert('Merge failed — please try again.');
+  }
+};
+
+// Promote a pending survey record into a normal pipeline card (no existing
+// family to merge into). Picks up any edits made in the contact fields above.
+window.createCardFromPending = async function(pendingId) {
+  const pending = allFamilies.find(f => f.id === pendingId);
+  if (!pending) return;
+
+  const parentName  = (document.getElementById('modal-edit-parent')?.value  || '').trim() || pending.parentName  || 'Unknown';
+  const studentName = (document.getElementById('modal-edit-student')?.value || '').trim() || pending.studentName || '';
+  const phone       = (document.getElementById('modal-edit-phone')?.value   || '').trim() || pending.phone       || '';
+  const email       = (document.getElementById('modal-edit-email')?.value   || '').trim() || pending.email       || '';
+
+  if (!confirm(
+    `Create a new pipeline card for "${parentName || studentName || 'this family'}"?\n\n` +
+    `It will move into ${currentMonth} as a regular card with the survey answers attached.`
+  )) return;
+
+  try {
+    await db.collection('families').doc(pendingId).update({
+      pendingMatch: false,
+      parentName,
+      studentName,
+      phone,
+      email,
+      monthTab:  currentMonth,
+      status:    'active',
+      updatedAt: firebase.firestore.Timestamp.now(),
+    });
+    document.getElementById('card-modal').hidden = true;
+    alert(`Done! New card created for ${parentName || studentName || 'the family'}.`);
+  } catch (err) {
+    console.error('Create-card error:', err);
+    alert('Could not create the card — please try again.');
   }
 };
 
