@@ -449,6 +449,24 @@ function setupBoardFilters() {
 
   document.getElementById('carry-over-btn')
     ?.addEventListener('click', () => window.carryOverLiveFamilies());
+
+  document.getElementById('copy-generic-survey-btn')
+    ?.addEventListener('click', copyGenericSurveyLink);
+}
+
+async function copyGenericSurveyLink() {
+  const btn = document.getElementById('copy-generic-survey-btn');
+  try {
+    await navigator.clipboard.writeText(SURVEY_BASE_URL);
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    }
+  } catch (err) {
+    console.error('Copy error:', err);
+    alert('Could not copy automatically. Here is the link:\n\n' + SURVEY_BASE_URL);
+  }
 }
 
 function renderFilteredBoard() {
@@ -974,11 +992,23 @@ function buildModalHTML(f) {
         <span class="info-value"><input type="text" class="inline-input" id="modal-edit-phone" value="${esc(f.phone || '')}"></span>
         <span class="info-label">Email</span>
         <span class="info-value"><input type="email" class="inline-input" id="modal-edit-email" value="${esc(f.email || '')}"></span>
-        ${row('Student',        f.studentName + (f.grade ? ' (' + f.grade + ')' : '') + (f.program ? ' — ' + f.program : ''))}
+        <span class="info-label">Program</span>
+        <span class="info-value">
+          <select class="inline-select" id="modal-edit-program">
+            ${['','Roots','Bridge','Launch','Gleamworks','Teams'].map(opt =>
+              `<option value="${opt}" ${f.program === opt ? 'selected' : ''}>${opt || '—'}</option>`).join('')}
+          </select>
+        </span>
+        <span class="info-label">Location</span>
+        <span class="info-value">
+          <select class="inline-select" id="modal-edit-location">
+            ${['','Norwood','Medfield','Virtual'].map(opt =>
+              `<option value="${opt}" ${f.location === opt ? 'selected' : ''}>${opt || '—'}</option>`).join('')}
+          </select>
+        </span>
         ${(f.additionalStudents || []).map((s, i) =>
           row(`Student ${i + 2}`, s.name + (s.grade ? ' (' + s.grade + ')' : '') + (s.program ? ' — ' + s.program : ''))
         ).join('')}
-        ${row('Location',       f.location)}
         ${row('Consult Date',   fmtDate(f.consultDate))}
         ${row('Lead Warmth',    warmth)}
         <span class="info-label">Decision</span>
@@ -1144,6 +1174,8 @@ window.createCardFromPending = async function(pendingId) {
   const studentName = (document.getElementById('modal-edit-student')?.value || '').trim() || pending.studentName || '';
   const phone       = (document.getElementById('modal-edit-phone')?.value   || '').trim() || pending.phone       || '';
   const email       = (document.getElementById('modal-edit-email')?.value   || '').trim() || pending.email       || '';
+  const program     = document.getElementById('modal-edit-program')?.value  || pending.program  || '';
+  const location    = document.getElementById('modal-edit-location')?.value || pending.location || '';
 
   if (!confirm(
     `Create a new pipeline card for "${parentName || studentName || 'this family'}"?\n\n` +
@@ -1157,6 +1189,8 @@ window.createCardFromPending = async function(pendingId) {
       studentName,
       phone,
       email,
+      program,
+      location,
       monthTab:  currentMonth,
       status:    'active',
       updatedAt: firebase.firestore.Timestamp.now(),
@@ -1175,9 +1209,11 @@ window.saveContactInfo = function(id) {
   const studentName = (document.getElementById('modal-edit-student')?.value || '').trim();
   const phone       = (document.getElementById('modal-edit-phone')?.value   || '').trim();
   const email       = (document.getElementById('modal-edit-email')?.value   || '').trim();
+  const program     = document.getElementById('modal-edit-program')?.value  || '';
+  const location    = document.getElementById('modal-edit-location')?.value || '';
   if (!parentName)  { alert('Parent name cannot be empty.'); return; }
   if (!studentName) { alert('Student name cannot be empty.'); return; }
-  db.collection('families').doc(id).update({ parentName, studentName, phone, email, updatedAt: firebase.firestore.Timestamp.now() })
+  db.collection('families').doc(id).update({ parentName, studentName, phone, email, program, location, updatedAt: firebase.firestore.Timestamp.now() })
     .then(() => alert('Contact info saved!'))
     .catch(err => { console.error(err); alert('Save failed — please try again.'); });
 };
