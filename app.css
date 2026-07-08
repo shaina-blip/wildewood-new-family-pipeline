@@ -972,9 +972,14 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); }
 .view-btn:hover { background: var(--border); color: var(--text); }
 .view-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
 
-/* Carry-over button — sits at the far right of the controls row */
-.carry-over-btn {
+/* Board action buttons — grouped at the far right of the controls row */
+.board-actions {
   margin-left: auto;
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+.carry-over-btn {
   background: transparent;
   border: 1px solid var(--green);
   border-radius: var(--radius-sm);
