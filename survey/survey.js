@@ -150,7 +150,7 @@ function classify(q1, q2, q3) {
   const flexCount = [q1, q2, q3].filter(v => v === 2).length;
   if (veryCount >= 2) return 'Structured';
   if (flexCount >= 2) return 'On-demand';
-  return 'Flexible-with-preferences';
+  return 'Flexible with preferences';
 }
 
 // ─── Section 3: Availability ──────────────────────────────
@@ -205,7 +205,7 @@ function wireSection4() {
 function buildSummary() {
   const typeLabels = {
     'Structured':              'consistent recurring sessions at the same time each week',
-    'Flexible-with-preferences': 'a flexible schedule while keeping some preferences',
+    'Flexible with preferences': 'a flexible schedule while keeping some preferences',
     'On-demand':               'flexible on-demand scheduling'
   };
 
@@ -261,7 +261,7 @@ async function submitSurvey() {
   // pipeline card can show each preference plainly (not just the blended type).
   const SAME_TIME_LABELS  = { 0: 'Very important', 1: 'Somewhat important', 2: 'Not important' };
   const SAME_TUTOR_LABELS = { 0: 'Wants one consistent tutor', 1: 'Prefers one, but flexible', 2: 'Any tutor is fine' };
-  const PLANNING_LABELS   = { 0: 'Can commit to a recurring weekly slot', 1: 'Knows schedule 1–2 weeks ahead', 2: 'Books week to week' };
+  const PLANNING_LABELS   = { 0: 'Can commit to a recurring weekly slot', 1: 'Knows schedule 1-2 weeks ahead', 2: 'Books week to week' };
 
   const update = {
     parentName:          surveyData.parentName        || parentName || '',
