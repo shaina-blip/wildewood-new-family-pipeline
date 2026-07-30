@@ -1,0 +1,3 @@
+name = "noto-lead-worker"
+main = "noto-lead-worker.js"
+compatibility_date = "2025-01-01"

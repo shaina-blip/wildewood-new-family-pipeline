@@ -287,10 +287,13 @@ async function submitSurvey() {
   // The email is the primary handoff (read it to create the Noto lead).
   // The database write is a non-fatal backup, so the survey still completes
   // even if Firebase is ever turned off after the pipeline retires.
+  // sendToNoto pushes the lead straight into Noto's API when configured.
   const emailOk = await sendEmail(update);
   const dbOk    = await saveToFirestore(update);
+  const notoOk  = await sendToNoto(update);
+  console.log('Submit results:', { emailOk, dbOk, notoOk });
 
-  if (emailOk || dbOk) {
+  if (emailOk || dbOk || notoOk) {
     showSection(6);
     document.getElementById('progress-bar').style.width = '100%';
     document.getElementById('progress-label').textContent = 'Complete!';
@@ -335,6 +338,44 @@ async function saveToFirestore(update) {
     return true;
   } catch (err) {
     console.warn('Firestore save failed (non-fatal):', err);
+    return false;
+  }
+}
+
+// Push the response straight into Noto via the noto-lead-worker Cloudflare
+// Worker. No-op until NOTO_WORKER_URL is configured. Returns true on success,
+// false on any failure (never throws — must not block the confirmation flow).
+async function sendToNoto(data) {
+  if (typeof NOTO_WORKER_URL === 'undefined' || !NOTO_WORKER_URL) return false;
+  try {
+    const res = await fetch(NOTO_WORKER_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        parentName:           data.parentName,
+        studentName:          data.studentName,
+        email:                data.email,
+        phone:                data.phone,
+        preferredComm:        data.preferredComm,
+        schedulingType:       data.schedulingType,
+        sameTimePref:         data.sameTimePref,
+        sameTutorPref:        data.sameTutorPref,
+        planningPref:         data.planningPref,
+        availableDays:        data.availableDays,
+        preferredTimes:       data.preferredTimes,
+        hardConstraints:      data.hardConstraints,
+        scheduleKnownThrough: data.scheduleKnownThrough,
+        sessionFrequency:     data.sessionFrequency,
+        surveyNotes:          data.surveyNotes,
+      }),
+    });
+    if (!res.ok) {
+      console.warn('Noto lead create failed:', res.status, await res.text().catch(() => ''));
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('Noto lead create failed (non-fatal):', err);
     return false;
   }
 }
