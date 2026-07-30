@@ -42,14 +42,15 @@
         </p>
       </div>
 
-      <!-- Identity — shown only when using generic link (no ?id in URL) -->
-      <div id="s1-identity" class="card" hidden>
-        <label class="field-label">First, let's find your record
-          <span class="field-hint">We just need your name and email to pull up your family's info.</span>
+      <!-- Identity — who's filling this out -->
+      <div id="s1-identity" class="card">
+        <label class="field-label">First, tell us about your family
+          <span class="field-hint">So we know who to build a schedule for.</span>
         </label>
         <div style="display:flex;flex-direction:column;gap:.75rem;margin-top:.5rem;">
-          <input type="text" id="s1-parent-name" placeholder="Your name (e.g. Sarah Smith)">
-          <input type="email" id="s1-email" placeholder="Email address">
+          <input type="text"  id="s1-parent-name"  placeholder="Your name (parent / guardian)">
+          <input type="email" id="s1-email"        placeholder="Email address">
+          <input type="text"  id="s1-student-name" placeholder="Student's name">
         </div>
       </div>
 
@@ -118,6 +119,12 @@
               </span>
             </label>
           </div>
+        </div>
+
+        <!-- Phone — revealed only when Text or Phone Call is chosen -->
+        <div class="card" id="s1-phone-card" hidden>
+          <label class="field-label" for="s1-phone">What's the best number to reach you?</label>
+          <input type="tel" id="s1-phone" placeholder="(555) 123-4567">
         </div>
 
         <div class="section-nav">
@@ -327,7 +334,7 @@
           We have everything we need. Our team will review your availability and reach out with a proposed schedule within <strong>1 business day</strong>.
         </p>
         <p class="section-body" style="margin-top: .75rem;">
-          If you have questions in the meantime, feel free to reply to the message Josh sent you.
+          If you have questions in the meantime, just reply to our email or text anytime — we're happy to help.
         </p>
         <div class="thankyou-badge">
           <span>🎉</span> Looking forward to working with <strong class="student-name">your student</strong>!
