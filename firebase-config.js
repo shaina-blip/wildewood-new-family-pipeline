@@ -17,8 +17,13 @@ const EMAILJS_TEMPLATE_ID = "template_cj0dhqm";         // survey completion →
 const EMAILJS_ASSIGNMENT_TEMPLATE_ID = "template_vz9rnq1"; // owner assignment notification
 const EMAILJS_PUBLIC_KEY  = "qghGWe4KNOpRWqn86";
 
-// Email address that receives survey-completion notifications (Shay)
+// Email address that receives survey-completion notifications
 const NOTIFICATION_EMAIL = "shaina@wildewoodeducation.com";
+
+// Optional: Noto's email-to-lead intake address. When set, each survey
+// response is also emailed here so it flows straight into Noto. Leave blank
+// until you have that address from Noto (Settings → intake / integrations).
+const NOTO_INTAKE_EMAIL = "";
 
 // Full URL to the parent-facing survey folder (including trailing slash)
 // After deploying to GitHub Pages this will be:

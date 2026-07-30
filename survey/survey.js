@@ -19,13 +19,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   db = firebase.firestore();
   emailjs.init(EMAILJS_PUBLIC_KEY);
 
-  if (!familyId) {
-    document.getElementById('s1-identity').hidden = false;
-    parentName = ''; // will be collected from form
-  }
+  // Identity is always collected on the survey itself now. Pre-fill the
+  // fields if an old personalized link (?family / ?student) was used.
+  const knownParent  = params.get('family')  ? parentName  : '';
+  const knownStudent = params.get('student') ? studentName : '';
+  if (knownParent)  document.getElementById('s1-parent-name').value  = knownParent;
+  if (knownStudent) document.getElementById('s1-student-name').value = knownStudent;
+  if (!familyId) parentName = ''; // collected from the form
 
-  // Inject names
-  document.querySelectorAll('.parent-name').forEach(el  => { el.textContent = parentName; });
+  // Inject names (default placeholders until collected)
+  document.querySelectorAll('.parent-name').forEach(el  => { el.textContent = parentName || 'there'; });
   document.querySelectorAll('.student-name').forEach(el => { el.textContent = studentName; });
 
   // Pre-fetch family record to get program/location/frequency
@@ -82,8 +85,40 @@ function wireSection1() {
     });
   });
 
+  // Reveal the phone field only when Text or Phone Call is chosen
+  document.querySelectorAll('input[name="s1-comm"]').forEach(r => {
+    r.addEventListener('change', () => {
+      const comm = document.querySelector('input[name="s1-comm"]:checked')?.value;
+      document.getElementById('s1-phone-card').hidden = !(comm === 'Text' || comm === 'Phone');
+    });
+  });
+
   document.getElementById('s1-next').addEventListener('click', () => {
-    surveyData.preferredComm = document.querySelector('input[name="s1-comm"]:checked')?.value || '';
+    const parent  = (document.getElementById('s1-parent-name').value  || '').trim();
+    const email   = (document.getElementById('s1-email').value        || '').trim();
+    const student = (document.getElementById('s1-student-name').value || '').trim();
+    const comm    = document.querySelector('input[name="s1-comm"]:checked')?.value || '';
+    const phone   = (document.getElementById('s1-phone').value        || '').trim();
+
+    if (!parent)  { alert('Please enter your name so we know who to reach.'); return; }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Please enter a valid email address.'); return; }
+    if (!student) { alert("Please enter the student's name."); return; }
+    if ((comm === 'Text' || comm === 'Phone') && !phone) {
+      alert('Please add a phone number so we can reach you that way.'); return;
+    }
+
+    parentName  = parent;
+    studentName = student;
+    surveyData.parentName    = parent;
+    surveyData.studentName   = student;
+    surveyData.email         = email.toLowerCase();
+    surveyData.phone         = phone;
+    surveyData.preferredComm = comm;
+
+    // Reflect the collected names throughout the survey
+    document.querySelectorAll('.parent-name').forEach(el  => { el.textContent = parentName; });
+    document.querySelectorAll('.student-name').forEach(el => { el.textContent = studentName; });
+
     showSection(2);
   });
 }
@@ -229,6 +264,10 @@ async function submitSurvey() {
   const PLANNING_LABELS   = { 0: 'Can commit to a recurring weekly slot', 1: 'Knows schedule 1–2 weeks ahead', 2: 'Books week to week' };
 
   const update = {
+    parentName:          surveyData.parentName        || parentName || '',
+    studentName:         surveyData.studentName       || studentName || '',
+    email:               surveyData.email             || '',
+    phone:               surveyData.phone             || '',
     schedulingType:      surveyData.schedulingType      || '',
     sameTimePref:        SAME_TIME_LABELS[surveyData.q1]  || '',
     sameTutorPref:       SAME_TUTOR_LABELS[surveyData.q2] || '',
@@ -245,79 +284,132 @@ async function submitSurvey() {
     updatedAt:           now
   };
 
-  try {
-    if (familyId) {
-      await db.collection('families').doc(familyId).update(update);
-    } else {
-      // Generic link: try to match by email
-      const emailInput = (document.getElementById('s1-email')?.value || '').trim().toLowerCase();
-      const nameInput  = (document.getElementById('s1-parent-name')?.value || '').trim();
-      parentName = nameInput || parentName;
+  // The email is the primary handoff (read it to create the Noto lead).
+  // The database write is a non-fatal backup, so the survey still completes
+  // even if Firebase is ever turned off after the pipeline retires.
+  const emailOk = await sendEmail(update);
+  const dbOk    = await saveToFirestore(update);
 
-      let matched = false;
-      if (emailInput) {
-        const snap = await db.collection('families')
-          .where('email', '==', emailInput)
-          .where('surveyComplete', '==', false)
-          .limit(1)
-          .get();
-        if (!snap.empty) {
-          await snap.docs[0].ref.update(update);
-          matched = true;
-        }
-      }
-
-      if (!matched) {
-        await db.collection('families').add({
-          ...update,
-          parentName:   nameInput  || 'Unknown',
-          studentName:  studentName || '',
-          email:        emailInput  || '',
-          pendingMatch: true,
-          surveyComplete: true,
-          createdAt:    firebase.firestore.Timestamp.now(),
-          consultDate:  firebase.firestore.Timestamp.now(),
-          status:       'active',
-          monthTab:     '',
-        });
-      }
-    }
-    await sendEmail(update);
+  if (emailOk || dbOk) {
     showSection(6);
     document.getElementById('progress-bar').style.width = '100%';
     document.getElementById('progress-label').textContent = 'Complete!';
-  } catch (err) {
-    console.error('Submit error:', err);
+  } else {
     submitBtn.disabled    = false;
     submitBtn.textContent = '✅ This looks right — submit';
-    alert('There was a problem submitting. Please try again or contact us directly.');
+    alert('There was a problem submitting. Please try again, or email us directly at ' + NOTIFICATION_EMAIL + '.');
+  }
+}
+
+// Backup record in Firestore. Returns true on success, false on failure
+// (never throws — a failure here must not block the submission).
+async function saveToFirestore(update) {
+  try {
+    if (familyId) {
+      await db.collection('families').doc(familyId).update(update);
+      return true;
+    }
+    // Match an existing awaiting-survey record by email, else add a new one.
+    let matched = false;
+    if (update.email) {
+      const snap = await db.collection('families')
+        .where('email', '==', update.email)
+        .where('surveyComplete', '==', false)
+        .limit(1)
+        .get();
+      if (!snap.empty) {
+        await snap.docs[0].ref.update(update);
+        matched = true;
+      }
+    }
+    if (!matched) {
+      await db.collection('families').add({
+        ...update,
+        pendingMatch: true,
+        createdAt:    firebase.firestore.Timestamp.now(),
+        consultDate:  firebase.firestore.Timestamp.now(),
+        status:       'active',
+        monthTab:     '',
+      });
+    }
+    return true;
+  } catch (err) {
+    console.warn('Firestore save failed (non-fatal):', err);
+    return false;
   }
 }
 
 async function sendEmail(data) {
-  try {
-    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      to_email:             NOTIFICATION_EMAIL,
-      parent_name:          parentName,
-      student_name:         studentName,
-      program:              familyData.program   || 'TBD',
-      location:             familyData.location  || 'TBD',
-      scheduling_type:      data.schedulingType,
-      same_time_pref:       data.sameTimePref  || 'Not answered',
-      same_tutor_pref:      data.sameTutorPref || 'Not answered',
-      planning_pref:        data.planningPref  || 'Not answered',
-      frequency:            data.sessionFrequency,
-      available_days:       (data.availableDays  || []).join(', ') || 'None specified',
-      preferred_times:      (data.preferredTimes || []).join(', ') || 'None specified',
-      hard_constraints:     data.hardConstraints     || 'None noted',
-      schedule_known_through: data.scheduleKnownThrough || 'Open-ended',
-      survey_notes:         data.surveyNotes          || 'None',
-      family_id:            familyId
-    });
-  } catch (err) {
-    // Non-fatal — survey was saved to Firestore successfully
-    console.warn('EmailJS notification failed (non-fatal):', err);
+  const days  = (data.availableDays  || []).join(', ') || 'None specified';
+  const times = (data.preferredTimes || []).join(', ') || 'None specified';
+
+  // A complete plain-text digest — everything needed to create the Noto lead
+  // in one block, so nothing is lost regardless of the email template layout.
+  const fullSummary =
+`NEW SCHEDULING SURVEY — ${data.studentName || 'Unknown student'}
+
+CONTACT
+• Parent:  ${data.parentName || '—'}
+• Student: ${data.studentName || '—'}
+• Email:   ${data.email || '—'}
+• Phone:   ${data.phone || '—'}
+• Prefers contact by: ${data.preferredComm || '—'}
+
+SCHEDULING PREFERENCES
+• Style:            ${data.schedulingType || '—'}
+• Same time weekly: ${data.sameTimePref  || 'Not answered'}
+• Same tutor:       ${data.sameTutorPref || 'Not answered'}
+• Plans ahead:      ${data.planningPref  || 'Not answered'}
+• Frequency:        ${data.sessionFrequency || '—'}
+
+AVAILABILITY
+• Days:  ${days}
+• Times: ${times}
+• Never available: ${data.hardConstraints || 'None noted'}
+• Schedule known through: ${data.scheduleKnownThrough || 'Open-ended'}
+
+NOTES
+${data.surveyNotes || 'None'}`;
+
+  const params = {
+    parent_name:            data.parentName  || '',
+    student_name:           data.studentName || '',
+    parent_email:           data.email || '',
+    parent_phone:           data.phone || '',
+    preferred_comm:         data.preferredComm || '',
+    program:                familyData.program   || 'TBD',
+    location:               familyData.location  || 'TBD',
+    scheduling_type:        data.schedulingType,
+    same_time_pref:         data.sameTimePref  || 'Not answered',
+    same_tutor_pref:        data.sameTutorPref || 'Not answered',
+    planning_pref:          data.planningPref  || 'Not answered',
+    frequency:              data.sessionFrequency,
+    available_days:         days,
+    preferred_times:        times,
+    hard_constraints:       data.hardConstraints     || 'None noted',
+    schedule_known_through: data.scheduleKnownThrough || 'Open-ended',
+    survey_notes:           data.surveyNotes          || 'None',
+    full_summary:           fullSummary,
+    family_id:              familyId
+  };
+
+  // Recipients: always the team inbox, plus a Noto intake address if one is
+  // configured (email-to-lead), so responses can flow straight into Noto.
+  const recipients = [NOTIFICATION_EMAIL];
+  if (typeof NOTO_INTAKE_EMAIL !== 'undefined' && NOTO_INTAKE_EMAIL) {
+    recipients.push(NOTO_INTAKE_EMAIL);
   }
+
+  let anySent = false;
+  for (const to of recipients) {
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, { ...params, to_email: to });
+      anySent = true;
+    } catch (err) {
+      console.warn(`EmailJS send to ${to} failed:`, err);
+    }
+  }
+  return anySent;
 }
 
 // ─── Helpers ─────────────────────────────────────────────
