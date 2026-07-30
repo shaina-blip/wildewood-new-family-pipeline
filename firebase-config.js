@@ -25,6 +25,11 @@ const NOTIFICATION_EMAIL = "shaina@wildewoodeducation.com";
 // until you have that address from Noto (Settings → intake / integrations).
 const NOTO_INTAKE_EMAIL = "";
 
+// Optional: URL of the deployed noto-lead-worker Cloudflare Worker. When set,
+// each survey response is POSTed here to create a lead in Noto via its API.
+// Leave blank until the Worker is deployed (see noto-lead-worker.js).
+const NOTO_WORKER_URL = "";
+
 // Full URL to the parent-facing survey folder (including trailing slash)
 // After deploying to GitHub Pages this will be:
 const SURVEY_BASE_URL = "https://shaina-blip.github.io/wildewood-new-family-pipeline/survey/";
