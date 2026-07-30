@@ -27,31 +27,31 @@
 
 // ─── CONFIG — fill these in after running the GET lookups above ───────────
 
-const NOTO_BASE_URL = "https://app.noto.nyc/api/v1";
+const NOTO_BASE_URL = "https://app.withnoto.com/api/v1";
 
-// Get this from GET /api/v1/stages — the CRM stage new survey leads land in.
-const STAGE_ID = null; // e.g. 1
+// The CRM stage new survey leads land in — "Survey Completed" (board: Leads).
+const STAGE_ID = 5968;
 
 // EITHER set a staff id (from GET /api/v1/staff) OR an email to assign by.
-// Only one of these two should be non-null.
-const ASSIGN_STAFF_ID = null; // e.g. 4001
-const ASSIGN_STAFF_EMAIL = null; // e.g. "intake@example.com"
+// Only one of these two should be non-null. Assigning by email to Shaina.
+const ASSIGN_STAFF_ID = null;
+const ASSIGN_STAFF_EMAIL = "shaina@wildewoodeducation.com";
 
 // Map each non-native survey field to its Noto custom_fields definition_id.
 // Get these from GET /api/v1/custom-fields after creating the fields in Noto.
 // Fields left as `null` are skipped (not sent) until you fill them in.
 const CUSTOM_FIELD_IDS = {
-  preferredComm: null,
-  schedulingType: null,
-  sameTimePref: null,
-  sameTutorPref: null,
-  planningPref: null,
-  availableDays: null, // expects MULTI_SELECT in Noto
-  preferredTimes: null, // expects MULTI_SELECT in Noto
-  hardConstraints: null,
-  scheduleKnownThrough: null,
-  sessionFrequency: null,
-  surveyNotes: null,
+  preferredComm: 5915,        // Preferred Communication Method (TEXT)
+  schedulingType: 5966,       // Scheduling Style
+  sameTimePref: 5967,         // Same time each week?
+  sameTutorPref: 5969,        // Tutor consistency preference
+  planningPref: 5970,         // Planning horizon
+  availableDays: 5971,        // Available Days (MULTI_SELECT)
+  preferredTimes: 5972,       // Preferred times (MULTI_SELECT)
+  hardConstraints: 5974,      // Never available (TEXT)
+  scheduleKnownThrough: 5975, // Schedule known through (TEXT)
+  sessionFrequency: 5973,     // Session frequency
+  surveyNotes: 5524,          // Additional Information Before Consultation (TEXT)
 };
 
 // Only allow requests from your actual survey origin.

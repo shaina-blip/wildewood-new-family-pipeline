@@ -28,7 +28,7 @@ const NOTO_INTAKE_EMAIL = "";
 // Optional: URL of the deployed noto-lead-worker Cloudflare Worker. When set,
 // each survey response is POSTed here to create a lead in Noto via its API.
 // Leave blank until the Worker is deployed (see noto-lead-worker.js).
-const NOTO_WORKER_URL = "";
+const NOTO_WORKER_URL = "https://noto-lead-worker.shaina-4f5.workers.dev";
 
 // Full URL to the parent-facing survey folder (including trailing slash)
 // After deploying to GitHub Pages this will be:
