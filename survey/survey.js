@@ -97,12 +97,14 @@ function wireSection1() {
     const parent  = (document.getElementById('s1-parent-name').value  || '').trim();
     const email   = (document.getElementById('s1-email').value        || '').trim();
     const student = (document.getElementById('s1-student-name').value || '').trim();
+    const term    = document.getElementById('s1-term')?.value || '';
     const comm    = document.querySelector('input[name="s1-comm"]:checked')?.value || '';
     const phone   = (document.getElementById('s1-phone').value        || '').trim();
 
     if (!parent)  { alert('Please enter your name so we know who to reach.'); return; }
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Please enter a valid email address.'); return; }
     if (!student) { alert("Please enter the student's name."); return; }
+    if (!term)    { alert("Please let us know what you're scheduling for."); return; }
     if ((comm === 'Text' || comm === 'Phone') && !phone) {
       alert('Please add a phone number so we can reach you that way.'); return;
     }
@@ -113,6 +115,7 @@ function wireSection1() {
     surveyData.studentName   = student;
     surveyData.email         = email.toLowerCase();
     surveyData.phone         = phone;
+    surveyData.term          = term;
     surveyData.preferredComm = comm;
 
     // Reflect the collected names throughout the survey
@@ -179,6 +182,9 @@ function wireSection3() {
     const times = Array.from(document.querySelectorAll('.time-chip.selected')).map(c => c.dataset.time);
     const schedKnown = document.querySelector('input[name="s3-sched-known"]:checked')?.value;
 
+    if (!days.length)  { alert('Please pick at least one day you could work with.'); return; }
+    if (!times.length) { alert('Please pick at least one time window that could work.'); return; }
+
     surveyData.availableDays       = days;
     surveyData.preferredTimes      = times;
     surveyData.hardConstraints     = (document.getElementById('s3-constraints')?.value || '').trim();
@@ -219,9 +225,11 @@ function buildSummary() {
   const programPart  = program  ? ` in the <strong>${esc(program)}</strong> program` : '';
   const locationPart = location ? ` at <strong>${esc(location)}</strong>`            : '';
 
+  const termPart = surveyData.term ? ` for <strong>${esc(surveyData.term)}</strong>` : '';
+
   const summaryEl = document.getElementById('summary-text');
   summaryEl.innerHTML = `
-    <p>You're looking for <strong>${freq}</strong> sessions for <strong>${esc(studentName)}</strong>${programPart}${locationPart}.</p>
+    <p>You're looking for <strong>${freq}</strong> sessions for <strong>${esc(studentName)}</strong>${programPart}${locationPart}${termPart}.</p>
 
     <p>You prefer <strong>${typeStr}</strong> and are available <strong>${esc(daysStr)}</strong>,
     typically in the <strong>${esc(timesStr)}</strong>.</p>
@@ -252,13 +260,26 @@ function buildSummary() {
 // ─── Submit ───────────────────────────────────────────────
 async function submitSurvey() {
   const submitBtn = document.getElementById('s5-submit');
+
+  // Honeypot — real visitors never see or fill this field. If it's filled,
+  // silently show the normal "thank you" screen without sending anything,
+  // so bots get no signal that they were caught.
+  const honeypot = document.getElementById('s1-hp')?.value || '';
+  if (honeypot) {
+    showSection(6);
+    document.getElementById('progress-bar').style.width = '100%';
+    document.getElementById('progress-label').textContent = 'Complete!';
+    return;
+  }
+
   submitBtn.disabled    = true;
   submitBtn.textContent = 'Submitting…';
 
   const now = firebase.firestore.Timestamp.now();
 
-  // Readable labels for the three scheduling-style questions, so the
-  // pipeline card can show each preference plainly (not just the blended type).
+  // Readable labels for the three scheduling-style questions, so Noto and
+  // the notification email show each preference plainly (not just the
+  // blended type).
   const SAME_TIME_LABELS  = { 0: 'Very important', 1: 'Somewhat important', 2: 'Not important' };
   const SAME_TUTOR_LABELS = { 0: 'Wants one consistent tutor', 1: 'Prefers one, but flexible', 2: 'Any tutor is fine' };
   const PLANNING_LABELS   = { 0: 'Can commit to a recurring weekly slot', 1: 'Knows schedule 1-2 weeks ahead', 2: 'Books week to week' };
@@ -268,6 +289,7 @@ async function submitSurvey() {
     studentName:         surveyData.studentName       || studentName || '',
     email:               surveyData.email             || '',
     phone:               surveyData.phone             || '',
+    term:                surveyData.term              || '',
     schedulingType:      surveyData.schedulingType      || '',
     sameTimePref:        SAME_TIME_LABELS[surveyData.q1]  || '',
     sameTutorPref:       SAME_TUTOR_LABELS[surveyData.q2] || '',
@@ -284,14 +306,19 @@ async function submitSurvey() {
     updatedAt:           now
   };
 
-  // The email is the primary handoff (read it to create the Noto lead).
-  // The database write is a non-fatal backup, so the survey still completes
-  // even if Firebase is ever turned off after the pipeline retires.
-  // sendToNoto pushes the lead straight into Noto's API when configured.
+  // The email is a reliable backup record. sendToNoto pushes the lead
+  // straight into Noto's API when configured. The Firestore write is a
+  // non-fatal archive, so the survey still completes even if Firebase
+  // is ever turned off.
   const emailOk = await sendEmail(update);
   const dbOk    = await saveToFirestore(update);
   const notoOk  = await sendToNoto(update);
+  sendFamilyCopy(update); // fire-and-forget — never blocks or gates success
   console.log('Submit results:', { emailOk, dbOk, notoOk });
+
+  // Only promise the family a copy if that template is actually configured.
+  const copyNote = document.getElementById('thankyou-copy-note');
+  if (copyNote) copyNote.hidden = !(typeof EMAILJS_PARENT_TEMPLATE_ID !== 'undefined' && EMAILJS_PARENT_TEMPLATE_ID);
 
   if (emailOk || dbOk || notoOk) {
     showSection(6);
@@ -304,28 +331,61 @@ async function submitSurvey() {
   }
 }
 
+// Scheduling-related fields worth preserving in history when a returning
+// family overwrites them with a new term's answers.
+const HISTORY_FIELDS = [
+  'term', 'schedulingType', 'sameTimePref', 'sameTutorPref', 'planningPref',
+  'availableDays', 'preferredTimes', 'hardConstraints', 'scheduleKnownThrough',
+  'sessionFrequency', 'surveyNotes', 'preferredComm', 'surveyCompletedAt'
+];
+
+// Archives a record's current scheduling answers into responseHistory (if it
+// already completed a survey before), then applies the new answers on top —
+// so the new term's answers are what Noto and the team see, while nothing
+// from a prior term is lost.
+async function archiveAndApply(ref, update) {
+  const snap  = await ref.get();
+  const prior = snap.exists ? snap.data() : null;
+  const payload = { ...update };
+
+  if (prior && prior.surveyComplete) {
+    const archived = {};
+    HISTORY_FIELDS.forEach(f => { if (prior[f] !== undefined) archived[f] = prior[f]; });
+    payload.responseHistory = firebase.firestore.FieldValue.arrayUnion(archived);
+  }
+
+  await ref.update(payload);
+}
+
 // Backup record in Firestore. Returns true on success, false on failure
 // (never throws — a failure here must not block the submission).
 async function saveToFirestore(update) {
   try {
     if (familyId) {
-      await db.collection('families').doc(familyId).update(update);
+      await archiveAndApply(db.collection('families').doc(familyId), update);
       return true;
     }
-    // Match an existing awaiting-survey record by email, else add a new one.
-    let matched = false;
+
+    // No personalized link — match an existing family by email regardless of
+    // survey-completion status, so a returning family (e.g. resubmitting for
+    // a new term) updates their own record instead of creating a duplicate.
+    let targetRef = null;
     if (update.email) {
-      const snap = await db.collection('families')
-        .where('email', '==', update.email)
-        .where('surveyComplete', '==', false)
-        .limit(1)
-        .get();
+      const snap = await db.collection('families').where('email', '==', update.email).get();
       if (!snap.empty) {
-        await snap.docs[0].ref.update(update);
-        matched = true;
+        // Most recently created match, in case more than one exists.
+        const docs = snap.docs.slice().sort((a, b) => {
+          const at = a.data().createdAt?.toMillis?.() || 0;
+          const bt = b.data().createdAt?.toMillis?.() || 0;
+          return bt - at;
+        });
+        targetRef = docs[0].ref;
       }
     }
-    if (!matched) {
+
+    if (targetRef) {
+      await archiveAndApply(targetRef, update);
+    } else {
       await db.collection('families').add({
         ...update,
         pendingMatch: true,
@@ -356,6 +416,7 @@ async function sendToNoto(data) {
         studentName:          data.studentName,
         email:                data.email,
         phone:                data.phone,
+        term:                 data.term,
         preferredComm:        data.preferredComm,
         schedulingType:       data.schedulingType,
         sameTimePref:         data.sameTimePref,
@@ -388,6 +449,7 @@ async function sendEmail(data) {
   // in one block, so nothing is lost regardless of the email template layout.
   const fullSummary =
 `NEW SCHEDULING SURVEY — ${data.studentName || 'Unknown student'}
+Scheduling for: ${data.term || 'Not specified'}
 
 CONTACT
 • Parent:  ${data.parentName || '—'}
@@ -417,6 +479,7 @@ ${data.surveyNotes || 'None'}`;
     student_name:           data.studentName || '',
     parent_email:           data.email || '',
     parent_phone:           data.phone || '',
+    term:                   data.term || 'Not specified',
     preferred_comm:         data.preferredComm || '',
     program:                familyData.program   || 'TBD',
     location:               familyData.location  || 'TBD',
@@ -451,6 +514,35 @@ ${data.surveyNotes || 'None'}`;
     }
   }
   return anySent;
+}
+
+// Emails the family a plain-language copy of their own responses. Uses a
+// separate, family-facing EmailJS template (EMAILJS_PARENT_TEMPLATE_ID) —
+// no-op until that template is created and configured. Never blocks or
+// gates the submission; failures here are silent.
+async function sendFamilyCopy(data) {
+  if (typeof EMAILJS_PARENT_TEMPLATE_ID === 'undefined' || !EMAILJS_PARENT_TEMPLATE_ID) return;
+  if (!data.email) return;
+
+  const days  = (data.availableDays  || []).join(', ') || 'None specified';
+  const times = (data.preferredTimes || []).join(', ') || 'None specified';
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PARENT_TEMPLATE_ID, {
+      to_email:      data.email,
+      parent_name:   data.parentName  || 'there',
+      student_name:  data.studentName || 'your student',
+      term:          data.term || 'Not specified',
+      frequency:     data.sessionFrequency || 'Not sure yet',
+      available_days:  days,
+      preferred_times: times,
+      hard_constraints:       data.hardConstraints     || 'None noted',
+      schedule_known_through: data.scheduleKnownThrough || 'Open-ended',
+      survey_notes:  data.surveyNotes || 'None',
+    });
+  } catch (err) {
+    console.warn('Family copy email failed (non-fatal):', err);
+  }
 }
 
 // ─── Helpers ─────────────────────────────────────────────

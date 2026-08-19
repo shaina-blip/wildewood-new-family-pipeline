@@ -13,9 +13,14 @@ const firebaseConfig = {
 
 // EmailJS — get from emailjs.com → Account → API Keys
 const EMAILJS_SERVICE_ID  = "service_l9mx95t";
-const EMAILJS_TEMPLATE_ID = "template_cj0dhqm";         // survey completion → Shay
+const EMAILJS_TEMPLATE_ID = "template_cj0dhqm";         // survey completion → internal team notification
 const EMAILJS_ASSIGNMENT_TEMPLATE_ID = "template_vz9rnq1"; // owner assignment notification
 const EMAILJS_PUBLIC_KEY  = "qghGWe4KNOpRWqn86";
+
+// Optional: EmailJS template that sends the FAMILY a copy of their own
+// survey responses (separate from the internal notification template
+// above). Leave blank until you've created this template in EmailJS.
+const EMAILJS_PARENT_TEMPLATE_ID = "";
 
 // Email address that receives survey-completion notifications
 const NOTIFICATION_EMAIL = "shaina@wildewoodeducation.com";
