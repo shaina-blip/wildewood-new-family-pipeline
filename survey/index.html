@@ -92,8 +92,26 @@
         </div>
       </div>
 
-      <!-- Survey path: comm preference + Next -->
+      <!-- Survey path: term + comm preference + Next -->
       <div id="s1-survey-path">
+        <!-- Honeypot — hidden from humans, catches bots. Leave empty. -->
+        <input type="text" id="s1-hp" name="website" tabindex="-1" autocomplete="off"
+               aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;">
+
+        <div class="card">
+          <label class="field-label" for="s1-term">What are you scheduling for?</label>
+          <select id="s1-term" class="survey-select">
+            <option value="">Select…</option>
+            <option value="Fall (September-December)">Fall (September–December)</option>
+            <option value="Spring (January-May/June)">Spring (January–May/June)</option>
+            <option value="Winter break">Winter break</option>
+            <option value="Summer">Summer</option>
+            <option value="Entire school year">Entire school year</option>
+            <option value="Other">Other</option>
+            <option value="Unsure">Not sure yet</option>
+          </select>
+        </div>
+
         <div class="card">
           <label class="field-label">How do you prefer we stay in touch?</label>
           <div class="choice-group stacked">
@@ -222,14 +240,16 @@
 
       <!-- Times -->
       <div class="card">
-        <label class="field-label">Preferred time windows</label>
+        <label class="field-label">Preferred time windows
+          <span class="field-hint">💡 During the school year, most families pick after-school or evening slots on weekdays. The daytime windows are usually just for weekends or days off from school.</span>
+        </label>
         <div class="chip-grid">
-          <button type="button" class="time-chip" data-time="8-10am">8-10am</button>
-          <button type="button" class="time-chip" data-time="10am-Noon">10am-Noon</button>
-          <button type="button" class="time-chip" data-time="12-3pm">12-3pm</button>
-          <button type="button" class="time-chip" data-time="3-5pm">3-5pm</button>
-          <button type="button" class="time-chip" data-time="5-7pm">5-7pm</button>
+          <button type="button" class="time-chip" data-time="3-5pm">3-5pm <small>(after school)</small></button>
+          <button type="button" class="time-chip" data-time="5-7pm">5-7pm <small>(early evening)</small></button>
           <button type="button" class="time-chip" data-time="After 7pm">After 7pm</button>
+          <button type="button" class="time-chip" data-time="8-10am">8-10am <small>(daytime)</small></button>
+          <button type="button" class="time-chip" data-time="10am-Noon">10am-Noon <small>(daytime)</small></button>
+          <button type="button" class="time-chip" data-time="12-3pm">12-3pm <small>(daytime)</small></button>
         </div>
       </div>
 
@@ -332,6 +352,9 @@
         <h2 class="section-title">You're all set, <span class="parent-name">friend</span>!</h2>
         <p class="section-body">
           We have everything we need. Our team will review your availability and reach out with a proposed schedule within <strong>1 business day</strong>.
+        </p>
+        <p class="section-body" id="thankyou-copy-note" style="margin-top: .75rem;" hidden>
+          📩 A copy of your responses is on its way to your email.
         </p>
         <p class="section-body" style="margin-top: .75rem;">
           If you have questions in the meantime, just reply to our email or text anytime — we're happy to help.

@@ -11,37 +11,23 @@
     <!-- Header -->
     <div style="background:#2D6A4F;padding:28px 32px;text-align:center;">
       <p style="margin:0;font-size:13px;color:#74C69D;letter-spacing:.12em;text-transform:uppercase;font-family:'Helvetica Neue',sans-serif;">Wildewood Education</p>
-      <h1 style="margin:6px 0 0;font-size:22px;color:#ffffff;font-weight:700;letter-spacing:.01em;">🗓️ New Survey Complete</h1>
+      <h1 style="margin:6px 0 0;font-size:22px;color:#ffffff;font-weight:700;letter-spacing:.01em;">🌿 We've Got Your Info!</h1>
     </div>
 
     <!-- Intro -->
     <div style="padding:28px 32px 8px;">
       <p style="margin:0;font-size:16px;color:#1A2420;line-height:1.6;">
-        <strong>{{parent_name}}</strong> just completed their scheduling survey.
-        Here's everything you need to build their schedule. 🌿
+        Hi {{parent_name}}, thanks for filling out the scheduling survey for <strong>{{student_name}}</strong>!
+        Here's a copy of what you shared, for your records. We'll be in touch within <strong>1 business day</strong> with a proposed schedule.
       </p>
     </div>
 
-    <!-- Family card -->
+    <!-- Response card -->
     <div style="margin:20px 32px;background:#F5F0EB;border-radius:12px;padding:20px 24px;">
       <table style="width:100%;border-collapse:collapse;font-family:'Helvetica Neue',sans-serif;font-size:14px;">
         <tr>
-          <td style="padding:7px 0;color:#7A7068;width:160px;vertical-align:top;">Student</td>
-          <td style="padding:7px 0;color:#1A2420;font-weight:600;">{{student_name}}</td>
-        </tr>
-        <tr>
-          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Scheduling For</td>
-          <td style="padding:7px 0;color:#1A2420;font-weight:600;border-top:1px solid #E8E0D8;">{{term}}</td>
-        </tr>
-        <tr>
-          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Program</td>
-          <td style="padding:7px 0;color:#1A2420;font-weight:600;border-top:1px solid #E8E0D8;">{{program}} — {{location}}</td>
-        </tr>
-        <tr>
-          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Scheduling Type</td>
-          <td style="padding:7px 0;border-top:1px solid #E8E0D8;">
-            <span style="background:#2D6A4F;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;">{{scheduling_type}}</span>
-          </td>
+          <td style="padding:7px 0;color:#7A7068;width:160px;vertical-align:top;">Scheduling For</td>
+          <td style="padding:7px 0;color:#1A2420;font-weight:600;">{{term}}</td>
         </tr>
         <tr>
           <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Frequency</td>
@@ -56,31 +42,31 @@
           <td style="padding:7px 0;color:#1A2420;border-top:1px solid #E8E0D8;">{{preferred_times}}</td>
         </tr>
         <tr>
-          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Hard Constraints</td>
+          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Never Available</td>
           <td style="padding:7px 0;color:#1A2420;border-top:1px solid #E8E0D8;">{{hard_constraints}}</td>
         </tr>
         <tr>
-          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Schedule Through</td>
+          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Schedule Known Through</td>
           <td style="padding:7px 0;color:#1A2420;border-top:1px solid #E8E0D8;">{{schedule_known_through}}</td>
         </tr>
         <tr>
-          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Notes</td>
+          <td style="padding:7px 0;color:#7A7068;border-top:1px solid #E8E0D8;vertical-align:top;">Anything Else</td>
           <td style="padding:7px 0;color:#1A2420;border-top:1px solid #E8E0D8;">{{survey_notes}}</td>
         </tr>
       </table>
     </div>
 
-    <!-- CTA -->
+    <!-- Note -->
     <div style="padding:8px 32px 32px;text-align:center;">
       <p style="margin:0;font-size:14px;color:#7A7068;font-family:'Helvetica Neue',sans-serif;line-height:1.5;">
-        A lead has been created in Noto with these answers attached. They're ready to be scheduled! 🎉
+        Something look off? Just reply to this email and let us know — we're happy to fix it.
       </p>
     </div>
 
     <!-- Footer -->
     <div style="background:#1B4332;padding:16px 32px;text-align:center;">
       <p style="margin:0;font-size:11px;color:#74C69D;font-family:'Helvetica Neue',sans-serif;letter-spacing:.06em;text-transform:uppercase;">
-        Wildewood Education · Internal Notification
+        Wildewood Education
       </p>
     </div>
 
