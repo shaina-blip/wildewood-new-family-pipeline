@@ -238,25 +238,13 @@
         </div>
       </div>
 
-      <!-- Times -->
-      <div class="card">
-        <label class="field-label">Preferred time windows
-          <span class="field-hint">💡 During the school year, most families pick after-school or evening slots on weekdays. The daytime windows are usually just for weekends or days off from school.</span>
-        </label>
-        <div class="chip-grid">
-          <button type="button" class="time-chip" data-time="3-4pm">3-4pm</button>
-          <button type="button" class="time-chip" data-time="3:30-4:30pm">3:30-4:30pm</button>
-          <button type="button" class="time-chip" data-time="4-5pm">4-5pm</button>
-          <button type="button" class="time-chip" data-time="4:30-5:30pm">4:30-5:30pm</button>
-          <button type="button" class="time-chip" data-time="5-6pm">5-6pm</button>
-          <button type="button" class="time-chip" data-time="5:30-6:30pm">5:30-6:30pm</button>
-          <button type="button" class="time-chip" data-time="6-7pm">6-7pm</button>
-          <button type="button" class="time-chip" data-time="6:30-7:30pm">6:30-7:30pm</button>
-          <button type="button" class="time-chip" data-time="After 7:30pm">After 7:30pm</button>
-          <button type="button" class="time-chip" data-time="8-10am">8-10am <small>(daytime)</small></button>
-          <button type="button" class="time-chip" data-time="10am-Noon">10am-Noon <small>(daytime)</small></button>
-          <button type="button" class="time-chip" data-time="12-3pm">12-3pm <small>(daytime)</small></button>
-        </div>
+      <!-- Times — one panel per selected day, injected by JS -->
+      <div id="day-time-section">
+        <p class="field-hint" style="margin: 0 0 .75rem;">
+          💡 Pick the times that work for <strong>each day</strong> you selected above — schedules often look different day to day (e.g. after school on weekdays, more open on weekends).
+        </p>
+        <div id="day-time-panels"></div>
+        <p class="field-hint" id="day-time-empty">Select at least one day above to choose times for it.</p>
       </div>
 
       <!-- Hard constraints -->

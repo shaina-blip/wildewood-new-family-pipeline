@@ -213,6 +213,17 @@ html, body {
   gap: .5rem;
 }
 
+/* ─── Per-day time panels ───────────────────────────── */
+.day-time-panel { margin-bottom: 1rem; }
+.day-time-panel-heading {
+  font-weight: 700;
+  color: var(--text);
+  font-size: .95rem;
+  margin-bottom: .5rem;
+  display: block;
+}
+#day-time-empty { margin: 0; }
+
 .day-chip, .time-chip {
   padding: .55rem 1.1rem;
   border: 1.5px solid var(--border);
