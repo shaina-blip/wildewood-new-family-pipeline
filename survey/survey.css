@@ -213,74 +213,57 @@ html, body {
   gap: .5rem;
 }
 
-/* ─── Per-day time panels ───────────────────────────── */
-.day-time-panel { margin-bottom: 1rem; }
-.day-time-panel-header {
+/* ─── Day accordion ──────────────────────────────────── */
+/* All 7 days always shown, always in Monday→Sunday order. Tapping a day's
+   row expands its own times in place — no separate section, no reordering. */
+#day-accordion { display: flex; flex-direction: column; gap: .5rem; }
+
+.day-accordion-item { border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+
+.day-row-toggle {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: .5rem;
-}
-.day-time-panel-heading {
-  font-weight: 700;
-  color: var(--text);
-  font-size: .95rem;
-}
-#day-time-empty { margin: 0; }
-
-/* Copy-to-day */
-.copy-day-btn {
-  display: block;
-  margin-top: .6rem;
-  background: none;
+  gap: .6rem;
+  padding: .75rem 1rem;
+  background: #fff;
   border: none;
-  color: var(--green);
   font-family: inherit;
-  font-size: .85rem;
+  font-size: .95rem;
   font-weight: 600;
+  color: var(--text-muted);
   cursor: pointer;
-  padding: .3rem 0;
+  transition: background .15s, color .15s;
+  text-align: left;
 }
-.copy-day-btn:hover { color: var(--green-light); text-decoration: underline; }
+.day-row-toggle:hover { background: var(--bg); }
+.day-row-toggle.active { background: #EBF5EF; color: var(--green); }
 
-.copy-target-panel {
-  margin-top: .5rem;
-  padding: .75rem;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-}
+.day-row-name { flex: 0 0 auto; }
+.day-row-summary { flex: 1; text-align: right; font-size: .8rem; font-weight: 500; color: var(--green-light); }
+.day-row-summary-empty { color: var(--text-muted); font-style: italic; }
+.day-row-chevron { flex: 0 0 auto; font-size: 1.1rem; font-weight: 700; width: 1.2rem; text-align: center; }
 
-.copy-day-toggle {
-  padding: .4rem .85rem;
-  border: 1.5px solid var(--border);
+.day-row-expanded { padding: 1rem; border-top: 1.5px solid var(--border); background: #fff; }
+
+/* Same-as one-tap copy */
+.same-as-row { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-bottom: .75rem; }
+.same-as-label { font-size: .8rem; color: var(--text-muted); margin-right: .15rem; }
+.same-as-btn {
+  padding: .3rem .75rem;
+  border: 1.5px solid var(--green-light);
   border-radius: 20px;
   background: #fff;
   font-family: inherit;
-  font-size: .82rem;
-  font-weight: 500;
-  color: var(--text-muted);
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--green);
   cursor: pointer;
   transition: all .15s;
 }
-.copy-day-toggle:hover { border-color: var(--green-light); color: var(--green); }
-.copy-day-toggle.selected { border-color: var(--green); background: var(--green); color: #fff; }
+.same-as-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
 
-.copy-target-actions { display: flex; gap: .5rem; margin-top: .65rem; }
-.btn-copy-apply, .btn-copy-cancel {
-  padding: .4rem 1rem;
-  border-radius: var(--radius-sm);
-  font-family: inherit;
-  font-size: .85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-copy-apply { background: var(--green); border: none; color: #fff; }
-.btn-copy-apply:hover { background: var(--green-light); }
-.btn-copy-cancel { background: none; border: 1.5px solid var(--border); color: var(--text-muted); }
-.btn-copy-cancel:hover { border-color: var(--text-muted); color: var(--text); }
-
-.day-chip, .time-chip {
+.time-chip {
   padding: .55rem 1.1rem;
   border: 1.5px solid var(--border);
   border-radius: 20px;
@@ -293,12 +276,9 @@ html, body {
   transition: all .15s;
 }
 
-.day-chip:hover, .time-chip:hover {
-  border-color: var(--green-light);
-  color: var(--green);
-}
+.time-chip:hover { border-color: var(--green-light); color: var(--green); }
 
-.day-chip.selected, .time-chip.selected {
+.time-chip.selected {
   border-color: var(--green);
   background: var(--green);
   color: #fff;
@@ -306,7 +286,7 @@ html, body {
 
 .time-chip small { display: block; font-size: .72rem; font-weight: 400; opacity: .75; margin-top: .1rem; }
 
-.day-chip.field-error, .time-chip.field-error { border-color: #DC2626; }
+.time-chip.field-error { border-color: #DC2626; }
 
 /* ─── Textarea / Input / Select ─────────────────────── */
 textarea, input[type="text"], input[type="email"], input[type="tel"], .survey-select {
