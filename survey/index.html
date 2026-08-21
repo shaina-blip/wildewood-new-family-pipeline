@@ -6,7 +6,10 @@
   <title>Wildewood Education — Scheduling Survey</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Gelasio:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="survey.css">
+  <!-- The ?v= on survey.css/survey.js busts browser/CDN caching. Bump it
+       (e.g. to today's date) any time either file changes, or visitors may
+       keep running stale JS against new HTML after a deploy. -->
+  <link rel="stylesheet" href="survey.css?v=20260821">
 </head>
 <body>
 
@@ -359,7 +362,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <!-- Config -->
 <script src="../firebase-config.js"></script>
-<script src="survey.js"></script>
+<script src="survey.js?v=20260821"></script>
 
 </body>
 </html>
