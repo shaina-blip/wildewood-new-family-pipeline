@@ -157,16 +157,67 @@ function classify(q1, q2, q3) {
 }
 
 // ─── Section 3: Availability ──────────────────────────────
-function wireSection3() {
-  // Day chips
-  document.querySelectorAll('.day-chip').forEach(chip => {
-    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+const DAY_ORDER          = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const AFTER_SCHOOL_TIMES = ['3-4pm', '3:30-4:30pm', '4-5pm', '4:30-5:30pm', '5-6pm', '5:30-6:30pm', '6-7pm', '6:30-7:30pm', 'After 7:30pm'];
+const DAYTIME_TIMES      = ['8-10am', '10am-Noon', '12-3pm'];
+const ALL_TIME_WINDOWS   = [...AFTER_SCHOOL_TIMES, ...DAYTIME_TIMES];
+
+// { Monday: Set(['3-4pm', ...]), ... } — which times are picked for each day
+let dayTimeSelections = {};
+
+function renderDayTimePanels() {
+  const selectedDays = Array.from(document.querySelectorAll('.day-chip.selected')).map(c => c.dataset.day);
+  const panelsEl  = document.getElementById('day-time-panels');
+  const emptyHint = document.getElementById('day-time-empty');
+
+  // Forget times for any day that's no longer selected.
+  Object.keys(dayTimeSelections).forEach(day => {
+    if (!selectedDays.includes(day)) delete dayTimeSelections[day];
   });
 
-  // Time chips
-  document.querySelectorAll('.time-chip').forEach(chip => {
-    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  emptyHint.hidden = selectedDays.length > 0;
+
+  const orderedDays = DAY_ORDER.filter(d => selectedDays.includes(d));
+
+  panelsEl.innerHTML = orderedDays.map(day => {
+    const picked = dayTimeSelections[day] || new Set();
+    const chips = ALL_TIME_WINDOWS.map(t => {
+      const label = DAYTIME_TIMES.includes(t) ? `${t} <small>(daytime)</small>` : t;
+      const sel   = picked.has(t) ? ' selected' : '';
+      return `<button type="button" class="time-chip${sel}" data-day="${day}" data-time="${t}">${label}</button>`;
+    }).join('');
+    return `
+      <div class="card day-time-panel">
+        <span class="day-time-panel-heading">${day}</span>
+        <div class="chip-grid">${chips}</div>
+      </div>`;
+  }).join('');
+
+  panelsEl.querySelectorAll('.time-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const day  = chip.dataset.day;
+      const time = chip.dataset.time;
+      if (!dayTimeSelections[day]) dayTimeSelections[day] = new Set();
+      if (dayTimeSelections[day].has(time)) {
+        dayTimeSelections[day].delete(time);
+        chip.classList.remove('selected');
+      } else {
+        dayTimeSelections[day].add(time);
+        chip.classList.add('selected');
+      }
+    });
   });
+}
+
+function wireSection3() {
+  // Day chips — toggling a day shows/hides its own time panel below
+  document.querySelectorAll('.day-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+      renderDayTimePanels();
+    });
+  });
+  renderDayTimePanels(); // initial render (empty until a day is picked)
 
   // Schedule horizon toggle
   document.querySelectorAll('input[name="s3-sched-known"]').forEach(r => {
@@ -178,15 +229,32 @@ function wireSection3() {
 
   document.getElementById('s3-back').addEventListener('click', () => showSection(2));
   document.getElementById('s3-next').addEventListener('click', () => {
-    const days  = Array.from(document.querySelectorAll('.day-chip.selected')).map(c => c.dataset.day);
-    const times = Array.from(document.querySelectorAll('.time-chip.selected')).map(c => c.dataset.time);
-    const schedKnown = document.querySelector('input[name="s3-sched-known"]:checked')?.value;
+    const selectedDays = Array.from(document.querySelectorAll('.day-chip.selected')).map(c => c.dataset.day);
+    const schedKnown   = document.querySelector('input[name="s3-sched-known"]:checked')?.value;
 
-    if (!days.length)  { alert('Please pick at least one day you could work with.'); return; }
-    if (!times.length) { alert('Please pick at least one time window that could work.'); return; }
+    if (!selectedDays.length) { alert('Please pick at least one day you could work with.'); return; }
 
-    surveyData.availableDays       = days;
-    surveyData.preferredTimes      = times;
+    const incompleteDay = selectedDays.find(d => !dayTimeSelections[d] || dayTimeSelections[d].size === 0);
+    if (incompleteDay) {
+      alert(`Please pick at least one time for ${incompleteDay}, or deselect that day.`);
+      return;
+    }
+
+    const orderedDays = DAY_ORDER.filter(d => selectedDays.includes(d));
+    const dayAvailability = {};
+    orderedDays.forEach(d => { dayAvailability[d] = Array.from(dayTimeSelections[d]); });
+
+    // Flattened union fields kept for backward compatibility (e.g. Noto's
+    // existing "Available Days" / "Preferred times" fields, which don't
+    // know about per-day detail).
+    const allTimes = new Set();
+    orderedDays.forEach(d => dayAvailability[d].forEach(t => allTimes.add(t)));
+
+    surveyData.dayAvailability     = dayAvailability;
+    surveyData.availableDays       = orderedDays;
+    surveyData.preferredTimes      = Array.from(allTimes);
+    surveyData.availabilityDetail  = orderedDays.map(d => `${d}: ${dayAvailability[d].join(', ')}`).join(' | ');
+
     surveyData.hardConstraints     = (document.getElementById('s3-constraints')?.value || '').trim();
     surveyData.scheduleKnownThrough = schedKnown === 'yes'
       ? (document.getElementById('s3-sched-through')?.value || '').trim()
@@ -219,20 +287,27 @@ function buildSummary() {
   const location = familyData.location || '';
   const freq     = surveyData.sessionFrequency || 'TBD';
   const typeStr  = typeLabels[surveyData.schedulingType] || 'flexible scheduling';
-  const daysStr  = surveyData.availableDays?.length  ? surveyData.availableDays.join(', ')  : 'any day';
-  const timesStr = surveyData.preferredTimes?.length ? surveyData.preferredTimes.join(', ') : 'flexible times';
 
   const programPart  = program  ? ` in the <strong>${esc(program)}</strong> program` : '';
   const locationPart = location ? ` at <strong>${esc(location)}</strong>`            : '';
 
   const termPart = surveyData.term ? ` for <strong>${esc(surveyData.term)}</strong>` : '';
 
+  const dayAvailability = surveyData.dayAvailability || {};
+  const dayListHtml = Object.keys(dayAvailability).length
+    ? `<ul style="margin:.5rem 0 0; padding-left:1.25rem;">${
+        Object.entries(dayAvailability).map(([day, times]) =>
+          `<li><strong>${esc(day)}</strong>: ${esc(times.join(', '))}</li>`
+        ).join('')
+      }</ul>`
+    : '<p style="margin:.5rem 0 0;">any day, flexible times</p>';
+
   const summaryEl = document.getElementById('summary-text');
   summaryEl.innerHTML = `
     <p>You're looking for <strong>${freq}</strong> sessions for <strong>${esc(studentName)}</strong>${programPart}${locationPart}${termPart}.</p>
 
-    <p>You prefer <strong>${typeStr}</strong> and are available <strong>${esc(daysStr)}</strong>,
-    typically in the <strong>${esc(timesStr)}</strong>.</p>
+    <p>You prefer <strong>${typeStr}</strong>, and here's your availability by day:</p>
+    ${dayListHtml}
 
     ${surveyData.hardConstraints
       ? `<p>You mentioned: <em>"${esc(surveyData.hardConstraints)}"</em></p>`
@@ -296,6 +371,8 @@ async function submitSurvey() {
     planningPref:        PLANNING_LABELS[surveyData.q3]   || '',
     availableDays:       surveyData.availableDays        || [],
     preferredTimes:      surveyData.preferredTimes       || [],
+    dayAvailability:     surveyData.dayAvailability       || {},
+    availabilityDetail:  surveyData.availabilityDetail    || '',
     hardConstraints:     surveyData.hardConstraints      || '',
     scheduleKnownThrough:surveyData.scheduleKnownThrough || '',
     sessionFrequency:    surveyData.sessionFrequency     || '',
@@ -335,8 +412,9 @@ async function submitSurvey() {
 // family overwrites them with a new term's answers.
 const HISTORY_FIELDS = [
   'term', 'schedulingType', 'sameTimePref', 'sameTutorPref', 'planningPref',
-  'availableDays', 'preferredTimes', 'hardConstraints', 'scheduleKnownThrough',
-  'sessionFrequency', 'surveyNotes', 'preferredComm', 'surveyCompletedAt'
+  'availableDays', 'preferredTimes', 'dayAvailability', 'availabilityDetail',
+  'hardConstraints', 'scheduleKnownThrough', 'sessionFrequency', 'surveyNotes',
+  'preferredComm', 'surveyCompletedAt'
 ];
 
 // Archives a record's current scheduling answers into responseHistory (if it
@@ -444,6 +522,9 @@ async function sendToNoto(data) {
 async function sendEmail(data) {
   const days  = (data.availableDays  || []).join(', ') || 'None specified';
   const times = (data.preferredTimes || []).join(', ') || 'None specified';
+  const byDay = data.availabilityDetail
+    ? data.availabilityDetail.split(' | ').map(line => `  - ${line}`).join('\n')
+    : '  None specified';
 
   // A complete plain-text digest — everything needed to create the Noto lead
   // in one block, so nothing is lost regardless of the email template layout.
@@ -465,9 +546,8 @@ SCHEDULING PREFERENCES
 • Plans ahead:      ${data.planningPref  || 'Not answered'}
 • Frequency:        ${data.sessionFrequency || '—'}
 
-AVAILABILITY
-• Days:  ${days}
-• Times: ${times}
+AVAILABILITY BY DAY
+${byDay}
 • Never available: ${data.hardConstraints || 'None noted'}
 • Schedule known through: ${data.scheduleKnownThrough || 'Open-ended'}
 
@@ -490,6 +570,7 @@ ${data.surveyNotes || 'None'}`;
     frequency:              data.sessionFrequency,
     available_days:         days,
     preferred_times:        times,
+    availability_by_day:    byDay,
     hard_constraints:       data.hardConstraints     || 'None noted',
     schedule_known_through: data.scheduleKnownThrough || 'Open-ended',
     survey_notes:           data.surveyNotes          || 'None',
@@ -524,8 +605,9 @@ async function sendFamilyCopy(data) {
   if (typeof EMAILJS_PARENT_TEMPLATE_ID === 'undefined' || !EMAILJS_PARENT_TEMPLATE_ID) return;
   if (!data.email) return;
 
-  const days  = (data.availableDays  || []).join(', ') || 'None specified';
-  const times = (data.preferredTimes || []).join(', ') || 'None specified';
+  const byDay = data.availabilityDetail
+    ? data.availabilityDetail.split(' | ').join('\n')
+    : 'Not specified';
 
   try {
     await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_PARENT_TEMPLATE_ID, {
@@ -534,8 +616,7 @@ async function sendFamilyCopy(data) {
       student_name:  data.studentName || 'your student',
       term:          data.term || 'Not specified',
       frequency:     data.sessionFrequency || 'Not sure yet',
-      available_days:  days,
-      preferred_times: times,
+      availability_by_day:    byDay,
       hard_constraints:       data.hardConstraints     || 'None noted',
       schedule_known_through: data.scheduleKnownThrough || 'Open-ended',
       survey_notes:  data.surveyNotes || 'None',
