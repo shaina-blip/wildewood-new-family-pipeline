@@ -215,14 +215,70 @@ html, body {
 
 /* ─── Per-day time panels ───────────────────────────── */
 .day-time-panel { margin-bottom: 1rem; }
+.day-time-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+}
 .day-time-panel-heading {
   font-weight: 700;
   color: var(--text);
   font-size: .95rem;
-  margin-bottom: .5rem;
-  display: block;
 }
 #day-time-empty { margin: 0; }
+
+/* Copy-to-day */
+.copy-day-btn {
+  display: block;
+  margin-top: .6rem;
+  background: none;
+  border: none;
+  color: var(--green);
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: .3rem 0;
+}
+.copy-day-btn:hover { color: var(--green-light); text-decoration: underline; }
+
+.copy-target-panel {
+  margin-top: .5rem;
+  padding: .75rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.copy-day-toggle {
+  padding: .4rem .85rem;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  background: #fff;
+  font-family: inherit;
+  font-size: .82rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.copy-day-toggle:hover { border-color: var(--green-light); color: var(--green); }
+.copy-day-toggle.selected { border-color: var(--green); background: var(--green); color: #fff; }
+
+.copy-target-actions { display: flex; gap: .5rem; margin-top: .65rem; }
+.btn-copy-apply, .btn-copy-cancel {
+  padding: .4rem 1rem;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-copy-apply { background: var(--green); border: none; color: #fff; }
+.btn-copy-apply:hover { background: var(--green-light); }
+.btn-copy-cancel { background: none; border: 1.5px solid var(--border); color: var(--text-muted); }
+.btn-copy-cancel:hover { border-color: var(--text-muted); color: var(--text); }
 
 .day-chip, .time-chip {
   padding: .55rem 1.1rem;

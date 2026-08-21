@@ -186,10 +186,28 @@ function renderDayTimePanels() {
       const sel   = picked.has(t) ? ' selected' : '';
       return `<button type="button" class="time-chip${sel}" data-day="${day}" data-time="${t}">${label}</button>`;
     }).join('');
+
+    const otherDays = orderedDays.filter(d => d !== day);
+    const copySection = otherDays.length ? `
+        <button type="button" class="copy-day-btn" data-source-day="${day}">📋 Copy these times to...</button>
+        <div class="copy-target-panel" data-copy-panel-for="${day}" hidden>
+          <p class="field-hint" style="margin:0 0 .4rem;">Copy ${day}'s times to:</p>
+          <div class="chip-grid">
+            ${otherDays.map(d => `<button type="button" class="copy-day-toggle" data-day="${d}">${d}</button>`).join('')}
+          </div>
+          <div class="copy-target-actions">
+            <button type="button" class="btn-copy-apply" data-source-day="${day}">Copy</button>
+            <button type="button" class="btn-copy-cancel" data-source-day="${day}">Cancel</button>
+          </div>
+        </div>` : '';
+
     return `
       <div class="card day-time-panel">
-        <span class="day-time-panel-heading">${day}</span>
+        <div class="day-time-panel-header">
+          <span class="day-time-panel-heading">${day}</span>
+        </div>
         <div class="chip-grid">${chips}</div>
+        ${copySection}
       </div>`;
   }).join('');
 
@@ -205,6 +223,39 @@ function renderDayTimePanels() {
         dayTimeSelections[day].add(time);
         chip.classList.add('selected');
       }
+    });
+  });
+
+  // Copy-to-day: open the target-day picker for this source day
+  panelsEl.querySelectorAll('.copy-day-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = panelsEl.querySelector(`.copy-target-panel[data-copy-panel-for="${btn.dataset.sourceDay}"]`);
+      if (panel) panel.hidden = !panel.hidden;
+    });
+  });
+
+  // Toggle which days are picked as copy targets
+  panelsEl.querySelectorAll('.copy-day-toggle').forEach(btn => {
+    btn.addEventListener('click', () => btn.classList.toggle('selected'));
+  });
+
+  panelsEl.querySelectorAll('.btn-copy-cancel').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = panelsEl.querySelector(`.copy-target-panel[data-copy-panel-for="${btn.dataset.sourceDay}"]`);
+      if (panel) panel.hidden = true;
+    });
+  });
+
+  panelsEl.querySelectorAll('.btn-copy-apply').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const sourceDay = btn.dataset.sourceDay;
+      const panel = panelsEl.querySelector(`.copy-target-panel[data-copy-panel-for="${sourceDay}"]`);
+      const targets = Array.from(panel.querySelectorAll('.copy-day-toggle.selected')).map(b => b.dataset.day);
+      if (!targets.length) { alert('Pick at least one day to copy to.'); return; }
+
+      const sourceTimes = dayTimeSelections[sourceDay] || new Set();
+      targets.forEach(day => { dayTimeSelections[day] = new Set(sourceTimes); });
+      renderDayTimePanels();
     });
   });
 }
