@@ -162,113 +162,85 @@ const AFTER_SCHOOL_TIMES = ['3-4pm', '3:30-4:30pm', '4-5pm', '4:30-5:30pm', '5-6
 const DAYTIME_TIMES      = ['8-10am', '10am-Noon', '12-3pm'];
 const ALL_TIME_WINDOWS   = [...AFTER_SCHOOL_TIMES, ...DAYTIME_TIMES];
 
-// { Monday: Set(['3-4pm', ...]), ... } — which times are picked for each day
-let dayTimeSelections = {};
+let activeDays        = new Set(); // days the family has marked available
+let dayTimeSelections = {};        // { Monday: Set(['3-4pm', ...]), ... }
 
-function renderDayTimePanels() {
-  const selectedDays = Array.from(document.querySelectorAll('.day-chip.selected')).map(c => c.dataset.day);
-  const panelsEl  = document.getElementById('day-time-panels');
-  const emptyHint = document.getElementById('day-time-empty');
+// A single accordion — all 7 days always shown, always in Monday→Sunday
+// order. Tapping a day expands its own times right below it in place, so
+// nothing reorders or appears in a separate section elsewhere on the page.
+function renderDayAccordion() {
+  const container = document.getElementById('day-accordion');
 
-  // Forget times for any day that's no longer selected.
-  Object.keys(dayTimeSelections).forEach(day => {
-    if (!selectedDays.includes(day)) delete dayTimeSelections[day];
-  });
+  container.innerHTML = DAY_ORDER.map(day => {
+    const isActive = activeDays.has(day);
+    const picked   = dayTimeSelections[day] || new Set();
 
-  emptyHint.hidden = selectedDays.length > 0;
-
-  const orderedDays = DAY_ORDER.filter(d => selectedDays.includes(d));
-
-  panelsEl.innerHTML = orderedDays.map(day => {
-    const picked = dayTimeSelections[day] || new Set();
     const chips = ALL_TIME_WINDOWS.map(t => {
       const label = DAYTIME_TIMES.includes(t) ? `${t} <small>(daytime)</small>` : t;
       const sel   = picked.has(t) ? ' selected' : '';
       return `<button type="button" class="time-chip${sel}" data-day="${day}" data-time="${t}">${label}</button>`;
     }).join('');
 
-    const otherDays = orderedDays.filter(d => d !== day);
-    const copySection = otherDays.length ? `
-        <button type="button" class="copy-day-btn" data-source-day="${day}">📋 Copy these times to...</button>
-        <div class="copy-target-panel" data-copy-panel-for="${day}" hidden>
-          <p class="field-hint" style="margin:0 0 .4rem;">Copy ${day}'s times to:</p>
-          <div class="chip-grid">
-            ${otherDays.map(d => `<button type="button" class="copy-day-toggle" data-day="${d}">${d}</button>`).join('')}
-          </div>
-          <div class="copy-target-actions">
-            <button type="button" class="btn-copy-apply" data-source-day="${day}">Copy</button>
-            <button type="button" class="btn-copy-cancel" data-source-day="${day}">Cancel</button>
-          </div>
+    // One-tap copy from any other already-active day that has times picked.
+    const sameAsDays = DAY_ORDER.filter(d => d !== day && activeDays.has(d) && dayTimeSelections[d]?.size > 0);
+    const sameAsRow  = sameAsDays.length ? `
+        <div class="same-as-row">
+          <span class="same-as-label">Same as:</span>
+          ${sameAsDays.map(d => `<button type="button" class="same-as-btn" data-day="${day}" data-from="${d}">${d}</button>`).join('')}
         </div>` : '';
 
+    const summary = !isActive ? '' : picked.size
+      ? `<span class="day-row-summary">${picked.size} time${picked.size > 1 ? 's' : ''} picked</span>`
+      : `<span class="day-row-summary day-row-summary-empty">Pick times below</span>`;
+
     return `
-      <div class="card day-time-panel">
-        <div class="day-time-panel-header">
-          <span class="day-time-panel-heading">${day}</span>
-        </div>
-        <div class="chip-grid">${chips}</div>
-        ${copySection}
+      <div class="day-accordion-item">
+        <button type="button" class="day-row-toggle${isActive ? ' active' : ''}" data-day="${day}">
+          <span class="day-row-name">${day}</span>
+          ${summary}
+          <span class="day-row-chevron">${isActive ? '−' : '+'}</span>
+        </button>
+        ${isActive ? `<div class="day-row-expanded">${sameAsRow}<div class="chip-grid">${chips}</div></div>` : ''}
       </div>`;
   }).join('');
 
-  panelsEl.querySelectorAll('.time-chip').forEach(chip => {
+  // Tap a day row to mark it available/unavailable
+  container.querySelectorAll('.day-row-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const day = btn.dataset.day;
+      if (activeDays.has(day)) {
+        activeDays.delete(day);
+        delete dayTimeSelections[day];
+      } else {
+        activeDays.add(day);
+      }
+      renderDayAccordion();
+    });
+  });
+
+  // Pick/unpick a time within an active day
+  container.querySelectorAll('.time-chip').forEach(chip => {
     chip.addEventListener('click', () => {
       const day  = chip.dataset.day;
       const time = chip.dataset.time;
       if (!dayTimeSelections[day]) dayTimeSelections[day] = new Set();
-      if (dayTimeSelections[day].has(time)) {
-        dayTimeSelections[day].delete(time);
-        chip.classList.remove('selected');
-      } else {
-        dayTimeSelections[day].add(time);
-        chip.classList.add('selected');
-      }
+      if (dayTimeSelections[day].has(time)) dayTimeSelections[day].delete(time);
+      else dayTimeSelections[day].add(time);
+      renderDayAccordion(); // keeps the summary badge + "Same as" pills in sync
     });
   });
 
-  // Copy-to-day: open the target-day picker for this source day
-  panelsEl.querySelectorAll('.copy-day-btn').forEach(btn => {
+  // One-tap copy: "Same as [another day]"
+  container.querySelectorAll('.same-as-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      const panel = panelsEl.querySelector(`.copy-target-panel[data-copy-panel-for="${btn.dataset.sourceDay}"]`);
-      if (panel) panel.hidden = !panel.hidden;
-    });
-  });
-
-  // Toggle which days are picked as copy targets
-  panelsEl.querySelectorAll('.copy-day-toggle').forEach(btn => {
-    btn.addEventListener('click', () => btn.classList.toggle('selected'));
-  });
-
-  panelsEl.querySelectorAll('.btn-copy-cancel').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const panel = panelsEl.querySelector(`.copy-target-panel[data-copy-panel-for="${btn.dataset.sourceDay}"]`);
-      if (panel) panel.hidden = true;
-    });
-  });
-
-  panelsEl.querySelectorAll('.btn-copy-apply').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const sourceDay = btn.dataset.sourceDay;
-      const panel = panelsEl.querySelector(`.copy-target-panel[data-copy-panel-for="${sourceDay}"]`);
-      const targets = Array.from(panel.querySelectorAll('.copy-day-toggle.selected')).map(b => b.dataset.day);
-      if (!targets.length) { alert('Pick at least one day to copy to.'); return; }
-
-      const sourceTimes = dayTimeSelections[sourceDay] || new Set();
-      targets.forEach(day => { dayTimeSelections[day] = new Set(sourceTimes); });
-      renderDayTimePanels();
+      dayTimeSelections[btn.dataset.day] = new Set(dayTimeSelections[btn.dataset.from] || []);
+      renderDayAccordion();
     });
   });
 }
 
 function wireSection3() {
-  // Day chips — toggling a day shows/hides its own time panel below
-  document.querySelectorAll('.day-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      chip.classList.toggle('selected');
-      renderDayTimePanels();
-    });
-  });
-  renderDayTimePanels(); // initial render (empty until a day is picked)
+  renderDayAccordion(); // initial render — all 7 days collapsed
 
   // Schedule horizon toggle
   document.querySelectorAll('input[name="s3-sched-known"]').forEach(r => {
@@ -280,31 +252,30 @@ function wireSection3() {
 
   document.getElementById('s3-back').addEventListener('click', () => showSection(2));
   document.getElementById('s3-next').addEventListener('click', () => {
-    const selectedDays = Array.from(document.querySelectorAll('.day-chip.selected')).map(c => c.dataset.day);
+    const selectedDays = DAY_ORDER.filter(d => activeDays.has(d));
     const schedKnown   = document.querySelector('input[name="s3-sched-known"]:checked')?.value;
 
     if (!selectedDays.length) { alert('Please pick at least one day you could work with.'); return; }
 
     const incompleteDay = selectedDays.find(d => !dayTimeSelections[d] || dayTimeSelections[d].size === 0);
     if (incompleteDay) {
-      alert(`Please pick at least one time for ${incompleteDay}, or deselect that day.`);
+      alert(`Please pick at least one time for ${incompleteDay}, or tap it again to mark it unavailable.`);
       return;
     }
 
-    const orderedDays = DAY_ORDER.filter(d => selectedDays.includes(d));
     const dayAvailability = {};
-    orderedDays.forEach(d => { dayAvailability[d] = Array.from(dayTimeSelections[d]); });
+    selectedDays.forEach(d => { dayAvailability[d] = Array.from(dayTimeSelections[d]); });
 
     // Flattened union fields kept for backward compatibility (e.g. Noto's
     // existing "Available Days" / "Preferred times" fields, which don't
     // know about per-day detail).
     const allTimes = new Set();
-    orderedDays.forEach(d => dayAvailability[d].forEach(t => allTimes.add(t)));
+    selectedDays.forEach(d => dayAvailability[d].forEach(t => allTimes.add(t)));
 
     surveyData.dayAvailability     = dayAvailability;
-    surveyData.availableDays       = orderedDays;
+    surveyData.availableDays       = selectedDays;
     surveyData.preferredTimes      = Array.from(allTimes);
-    surveyData.availabilityDetail  = orderedDays.map(d => `${d}: ${dayAvailability[d].join(', ')}`).join(' | ');
+    surveyData.availabilityDetail  = selectedDays.map(d => `${d}: ${dayAvailability[d].join(', ')}`).join(' | ');
 
     surveyData.hardConstraints     = (document.getElementById('s3-constraints')?.value || '').trim();
     surveyData.scheduleKnownThrough = schedKnown === 'yes'

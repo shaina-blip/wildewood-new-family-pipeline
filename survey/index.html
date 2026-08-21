@@ -224,27 +224,12 @@
       <h2 class="section-title">Your Availability</h2>
       <p class="section-body">Tap everything that could work — we'll find the best fit from there.</p>
 
-      <!-- Days -->
+      <!-- Days + times, one unified accordion — tap a day to set its times right there -->
       <div class="card">
-        <label class="field-label">Which days are generally available?</label>
-        <div class="chip-grid">
-          <button type="button" class="day-chip" data-day="Monday">Mon</button>
-          <button type="button" class="day-chip" data-day="Tuesday">Tue</button>
-          <button type="button" class="day-chip" data-day="Wednesday">Wed</button>
-          <button type="button" class="day-chip" data-day="Thursday">Thu</button>
-          <button type="button" class="day-chip" data-day="Friday">Fri</button>
-          <button type="button" class="day-chip" data-day="Saturday">Sat</button>
-          <button type="button" class="day-chip" data-day="Sunday">Sun</button>
-        </div>
-      </div>
-
-      <!-- Times — one panel per selected day, injected by JS -->
-      <div id="day-time-section">
-        <p class="field-hint" style="margin: 0 0 .75rem;">
-          💡 Pick the times that work for <strong>each day</strong> you selected above — schedules often look different day to day (e.g. after school on weekdays, more open on weekends).
-        </p>
-        <div id="day-time-panels"></div>
-        <p class="field-hint" id="day-time-empty">Select at least one day above to choose times for it.</p>
+        <label class="field-label">Which days work, and when?
+          <span class="field-hint">Tap a day to mark it available and choose times for it. Schedules often look different day to day — that's expected.</span>
+        </label>
+        <div id="day-accordion"></div>
       </div>
 
       <!-- Hard constraints -->
