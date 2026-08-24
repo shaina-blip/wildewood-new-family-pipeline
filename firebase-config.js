@@ -22,8 +22,9 @@ const EMAILJS_PUBLIC_KEY  = "qghGWe4KNOpRWqn86";
 // above). Leave blank until you've created this template in EmailJS.
 const EMAILJS_PARENT_TEMPLATE_ID = "";
 
-// Email address that receives survey-completion notifications
+// Email addresses that receive survey-completion notifications
 const NOTIFICATION_EMAIL = "shaina@wildewoodeducation.com";
+const OPERATIONS_EMAIL   = "operations@wildewoodeducation.com";
 
 // Optional: Noto's email-to-lead intake address. When set, each survey
 // response is also emailed here so it flows straight into Noto. Leave blank
