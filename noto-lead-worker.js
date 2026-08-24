@@ -54,8 +54,12 @@ const CUSTOM_FIELD_IDS = {
   surveyNotes: 5524,          // Additional Information Before Consultation (TEXT)
 };
 
-// Only allow requests from your actual survey origin.
-const ALLOWED_ORIGIN = "https://shaina-blip.github.io";
+// Only allow requests from an actual survey origin. Add/remove entries here
+// any time the survey moves to a new domain — nothing else needs to change.
+const ALLOWED_ORIGINS = [
+  "https://shaina-blip.github.io",
+  "https://wildewood-education.github.io",
+];
 
 // ────────────────────────────────────────────────────────────────────────
 
@@ -99,7 +103,12 @@ function corsHeaders(origin) {
 
 export default {
   async fetch(request, env) {
-    const origin = ALLOWED_ORIGIN;
+    // Echo back the caller's origin only if it's on the allow-list — this is
+    // what actually lets the browser accept the response. Previously this
+    // always echoed a single hardcoded origin, so calls from any other
+    // allowed domain were silently blocked by the browser's CORS check.
+    const requestOrigin = request.headers.get("Origin") || "";
+    const origin = ALLOWED_ORIGINS.includes(requestOrigin) ? requestOrigin : ALLOWED_ORIGINS[0];
 
     // Preflight
     if (request.method === "OPTIONS") {
