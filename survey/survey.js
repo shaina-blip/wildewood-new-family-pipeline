@@ -600,12 +600,11 @@ ${data.surveyNotes || 'None'}`;
     family_id:              familyId
   };
 
-  // Recipients: the team inbox, ops, plus a Noto intake address if one is
-  // configured (email-to-lead), so responses can flow straight into Noto.
-  const recipients = [NOTIFICATION_EMAIL];
-  if (typeof OPERATIONS_EMAIL !== 'undefined' && OPERATIONS_EMAIL) {
-    recipients.push(OPERATIONS_EMAIL);
-  }
+  // Recipients: just operations@ — it auto-forwards to NOTIFICATION_EMAIL,
+  // so sending to both here would burn 2x the EmailJS quota for the same
+  // result. Plus a Noto intake address if one is configured (email-to-lead),
+  // so responses can flow straight into Noto.
+  const recipients = [OPERATIONS_EMAIL];
   if (typeof NOTO_INTAKE_EMAIL !== 'undefined' && NOTO_INTAKE_EMAIL) {
     recipients.push(NOTO_INTAKE_EMAIL);
   }
