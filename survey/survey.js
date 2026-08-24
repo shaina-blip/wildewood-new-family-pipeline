@@ -600,9 +600,12 @@ ${data.surveyNotes || 'None'}`;
     family_id:              familyId
   };
 
-  // Recipients: always the team inbox, plus a Noto intake address if one is
+  // Recipients: the team inbox, ops, plus a Noto intake address if one is
   // configured (email-to-lead), so responses can flow straight into Noto.
   const recipients = [NOTIFICATION_EMAIL];
+  if (typeof OPERATIONS_EMAIL !== 'undefined' && OPERATIONS_EMAIL) {
+    recipients.push(OPERATIONS_EMAIL);
+  }
   if (typeof NOTO_INTAKE_EMAIL !== 'undefined' && NOTO_INTAKE_EMAIL) {
     recipients.push(NOTO_INTAKE_EMAIL);
   }
