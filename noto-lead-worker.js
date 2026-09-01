@@ -149,6 +149,14 @@ export default {
       );
     }
 
+    if (!env.NOTO_API_KEY) {
+      console.error("NOTO_API_KEY secret is not set on this Worker.");
+      return new Response(
+        JSON.stringify({ error: "Worker misconfigured: NOTO_API_KEY secret not set" }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
+      );
+    }
+
     const guardianName = splitName(payload.parentName);
     const studentName = splitName(payload.studentName);
 
@@ -183,6 +191,7 @@ export default {
         body: JSON.stringify(notoPayload),
       });
     } catch (err) {
+      console.error("Failed to reach Noto API:", String(err), "payload:", JSON.stringify(notoPayload));
       return new Response(
         JSON.stringify({ error: "Failed to reach Noto API", details: String(err) }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
@@ -193,6 +202,12 @@ export default {
 
     if (!notoResponse.ok) {
       // Surface Noto's error back so you can see validation issues while testing
+      console.error(
+        "Noto API rejected the lead:",
+        notoResponse.status,
+        JSON.stringify(notoBody),
+        "payload sent:", JSON.stringify(notoPayload)
+      );
       return new Response(
         JSON.stringify({ error: "Noto API error", status: notoResponse.status, details: notoBody }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders(origin) } }
