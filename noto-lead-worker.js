@@ -41,18 +41,17 @@ const ASSIGN_STAFF_EMAIL = "shaina@wildewoodeducation.com";
 // Get these from GET /api/v1/custom-fields after creating the fields in Noto.
 // Fields left as `null` are skipped (not sent) until you fill them in.
 const CUSTOM_FIELD_IDS = {
-  // preferredComm: was 5915 ("Preferred Communication Method") — that field
-  // was deleted in Noto at some point. Omitted for now so it doesn't block
-  // every submission; re-add it (create the field again, get its new id)
-  // whenever you want it back.
+  // "Preferred Communication Method" was recreated in Noto — fill in its
+  // new definition_id (from GET /custom-fields) once you have it.
+  preferredComm: null,
   schedulingType: 5966,       // Scheduling Style
   sameTimePref: 5967,         // Same time each week?
   sameTutorPref: 5969,        // Tutor consistency preference
   planningPref: 5970,         // Planning horizon
-  availableDays: 5971,        // Available Days (MULTI_SELECT)
-  preferredTimes: 5972,       // Preferred times (MULTI_SELECT) — options in Noto
-                               // must be updated to match the survey's current
-                               // half-hour slots, see accompanying instructions
+  // availableDays / preferredTimes: replaced by availabilityDetail below —
+  // "Available Days" and "Preferred times" are being deleted in Noto in
+  // favor of one combined day-by-day text field.
+  availabilityDetail: null,   // NEW "Availability" (TEXT) field — fill in its id
   hardConstraints: 5974,      // Never available (TEXT)
   scheduleKnownThrough: 5975, // Schedule known through (TEXT)
   sessionFrequency: 5973,     // Session frequency

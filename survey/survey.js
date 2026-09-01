@@ -524,6 +524,7 @@ async function sendToNoto(data) {
         planningPref:         data.planningPref,
         availableDays:        data.availableDays,
         preferredTimes:       data.preferredTimes,
+        availabilityDetail:   data.availabilityDetail,
         hardConstraints:      data.hardConstraints,
         scheduleKnownThrough: data.scheduleKnownThrough,
         sessionFrequency:     data.sessionFrequency,
